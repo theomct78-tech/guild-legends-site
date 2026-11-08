@@ -1,0 +1,934 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2a1c13">
+<title>Repère Guild Legends</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@700;800&family=Alegreya+Sans:wght@400;500;700;800&family=Alegreya:ital,wght@1,500&display=swap">
+<style>
+/* Mise en page : une appli de poche, une colonne de 440 px au plus, quatre onglets en bas. Le repère la nuit, à la lueur des lanternes : un seul thème, sombre et chaud, choisi exprès. */
+:root {
+  --nuit: #1b130e; --bois: #281d15; --bois-haut: #33261c; --bois-clair: #3f2f23;
+  --lin: #f4e7d4; --cendre: #b8a28a; --miel: #f2b65e; --miel-doux: rgba(242, 182, 94, .16);
+  --sauge: #95cfa5; --braise: #ec7d63; --nuit-voile: rgba(14, 9, 6, .72);
+  --f-titre: "Alegreya SC", Georgia, serif; --f-ui: "Alegreya Sans", "Trebuchet MS", sans-serif; --f-plume: "Alegreya", Georgia, serif;
+  --r-carte: 22px; --r-petit: 14px; --ombre: 0 10px 30px rgba(0, 0, 0, .35), 0 2px 6px rgba(0, 0, 0, .25);
+  --ressort: linear(0, .009, .035 2.1%, .141, .281 6.7%, .723 12.9%, .938 16.7%, 1.017, 1.077, 1.121, 1.149 24.3%, 1.159, 1.163, 1.161, 1.154 29.9%, 1.129 32.8%, 1.051 39.6%, 1.017 43.1%, .991, .977 51%, .974 53.8%, .975 57.1%, .997 69.8%, 1.003 76.9%, 1.004 83.8%, 1);
+  --doux: cubic-bezier(.22, 1, .36, 1);
+  color-scheme: dark;
+}
+[hidden] { display: none !important; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; }
+body { background: radial-gradient(120% 80% at 50% -10%, #3a2617 0%, var(--nuit) 55%) fixed, var(--nuit); color: var(--lin); font: 16px/1.45 var(--f-ui); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--nuit); }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+button:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--miel); outline-offset: 3px; border-radius: 12px; }
+.app { max-width: 440px; margin: 0 auto; min-height: 100%; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 18px calc(110px + env(safe-area-inset-bottom, 0px)); }
+.ecran { display: grid; gap: 26px; }
+.ecran[hidden] { display: none; }
+.entre > * { animation: monte .55s var(--doux) both; animation-delay: calc(var(--i, 0) * 55ms); }
+@keyframes monte { from { opacity: 0; transform: translateY(14px) scale(.98); } }
+h1 { font: 800 1.9rem/1.05 var(--f-titre); margin: 0; letter-spacing: .01em; text-wrap: balance; }
+h2 { font: 800 1.15rem/1.2 var(--f-titre); margin: 0; letter-spacing: .02em; }
+p { margin: 0; }
+.bloc { display: grid; gap: 12px; }
+.tete-bloc { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.discret { color: var(--cendre); font-size: .9rem; }
+.pastille { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 99px; background: var(--bois-haut); font-size: .82rem; font-weight: 700; color: var(--cendre); white-space: nowrap; }
+.pastille.miel { background: var(--miel-doux); color: var(--miel); }
+/* Accueil */
+.marque { font: 800 .78rem var(--f-titre); letter-spacing: .14em; text-transform: uppercase; color: var(--miel); }
+.accueil { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.coffre { display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 99px; background: var(--bois); box-shadow: var(--ombre); font-weight: 800; font-variant-numeric: tabular-nums; }
+.piece { width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ffe3a3, var(--miel) 55%, #a8661f); box-shadow: inset 0 -2px 0 rgba(0,0,0,.25); }
+/* Histoires (stories) */
+.rail { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; margin-inline: -16px; padding: 4px 16px 10px; scrollbar-width: none; }
+.rail::-webkit-scrollbar { display: none; }
+.vignette { flex: 0 0 150px; height: 210px; border-radius: var(--r-carte); overflow: hidden; position: relative; scroll-snap-align: start; box-shadow: var(--ombre); transition: transform .4s var(--ressort); background: var(--bois); text-align: left; }
+.vignette:active { transform: scale(.96); }
+.vignette > img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; }
+.vignette::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 35%, rgba(12,8,5,.92)); }
+.vignette span { position: absolute; z-index: 1; left: 12px; right: 12px; bottom: 12px; font-weight: 800; font-size: .95rem; line-height: 1.2; }
+.vignette .anneau { position: absolute; z-index: 1; top: 10px; left: 10px; width: 34px; height: 34px; border-radius: 50%; padding: 2px; background: conic-gradient(var(--miel), var(--braise), var(--miel)); }
+.vignette .anneau img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; border: 2px solid var(--nuit); }
+.vignette.vue .anneau { background: var(--bois-clair); }
+/* Plis */
+.pli { position: relative; display: grid; grid-template-columns: 56px 1fr auto; gap: 14px; align-items: center; padding: 14px; border-radius: var(--r-carte); background: linear-gradient(160deg, var(--bois-haut), var(--bois)); box-shadow: var(--ombre); text-align: left; transition: transform .4s var(--ressort); width: 100%; }
+.pli:active { transform: scale(.98); }
+.sceau { width: 34px; height: 34px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #f08e74, #b6402c 60%, #7e2618); box-shadow: inset 0 -3px 0 rgba(0,0,0,.25), 0 3px 8px rgba(0,0,0,.4); display: grid; place-items: center; color: #ffd9cc; font: 800 .9rem var(--f-titre); }
+.duo { position: relative; width: 56px; height: 56px; }
+.duo img { position: absolute; width: 42px; height: 42px; border-radius: 50%; border: 3px solid var(--bois-haut); object-fit: cover; }
+.duo img:first-child { top: 0; left: 0; } .duo img:nth-child(2) { bottom: 0; right: 0; }
+.duo img:only-child { width: 56px; height: 56px; position: static; }
+.sceau.brise { animation: brise .32s var(--doux) forwards; }
+@keyframes brise { 40% { transform: scale(1.25) rotate(-12deg); } to { transform: scale(.2) rotate(40deg); opacity: 0; } }
+.pli b { display: block; font-weight: 800; line-height: 1.2; }
+.pli small { color: var(--cendre); }
+/* Avatars et anneau de moral */
+.avatar { --m: 60; position: relative; width: 58px; height: 58px; border-radius: 50%; padding: 3px; background: conic-gradient(var(--teinte, var(--miel)) calc(var(--m) * 1%), var(--bois-clair) 0); flex: none; }
+.avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid var(--nuit); display: block; }
+.avatar.absent img { filter: grayscale(.8) brightness(.7); }
+.presents { display: flex; gap: 14px; overflow-x: auto; margin-inline: -16px; padding: 4px 16px 6px; scrollbar-width: none; }
+.present { display: grid; justify-items: center; gap: 6px; width: 66px; flex: none; text-align: center; }
+.present small { font-size: .74rem; color: var(--cendre); line-height: 1.15; }
+.present b { font-size: .82rem; }
+/* Arcs en cours */
+.arc { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: var(--r-carte); background: var(--bois); }
+.points { display: flex; gap: 5px; margin-top: 6px; }
+.points i { width: 22px; height: 6px; border-radius: 6px; background: var(--bois-clair); }
+.points i.fait { background: var(--miel); }
+/* Grille des héros */
+.grille { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.fiche { position: relative; aspect-ratio: 3 / 4; max-width: 100%; border-radius: var(--r-carte); overflow: hidden; box-shadow: var(--ombre); transition: transform .45s var(--ressort); text-align: left; background: var(--bois); }
+.fiche:active { transform: scale(.96); }
+.fiche > img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; }
+.fiche::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, rgba(12,8,5,.95)); }
+.fiche .bas { position: absolute; z-index: 1; left: 12px; right: 58px; bottom: 12px; display: grid; gap: 2px; }
+.fiche .bas b { font: 800 1.1rem var(--f-titre); }
+.fiche .moralette { position: absolute; z-index: 1; bottom: 12px; right: 12px; }
+.mini { --m: 60; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: conic-gradient(var(--teinte, var(--miel)) calc(var(--m) * 1%), rgba(255,255,255,.15) 0); font: 800 .8rem var(--f-ui); position: relative; }
+.mini::before { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: rgba(20,13,9,.85); }
+.mini span { position: relative; }
+/* Chronique */
+.filtres { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+.filtres button { padding: 8px 14px; border-radius: 99px; background: var(--bois); font-weight: 700; font-size: .9rem; color: var(--cendre); transition: background .3s var(--doux), color .3s var(--doux); white-space: nowrap; }
+.filtres button[aria-pressed="true"] { background: var(--miel); color: var(--nuit); }
+.jour { display: grid; gap: 10px; }
+.jour h3 { margin: 6px 0 0; font: 800 .8rem var(--f-ui); letter-spacing: .12em; text-transform: uppercase; color: var(--cendre); }
+.moment { display: grid; grid-template-columns: 44px 1fr; gap: 12px; align-items: start; }
+.moment .tetes { position: relative; height: 44px; }
+.moment .tetes img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid var(--nuit); position: absolute; top: 0; left: 0; }
+.moment .tetes img + img { top: 14px; left: 12px; width: 30px; height: 30px; }
+.bulle { padding: 10px 13px; border-radius: 4px 18px 18px 18px; background: var(--bois); font-size: .95rem; }
+.bulle.fort { background: linear-gradient(160deg, var(--bois-haut), var(--bois)); box-shadow: inset 0 0 0 1px rgba(242,182,94,.35); }
+.bulle .meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 4px; color: var(--cendre); font-size: .78rem; font-weight: 700; }
+.icone-evt { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--miel-doux); color: var(--miel); }
+/* Feuille (bottom sheet) */
+.voile { position: fixed; inset: 0; z-index: 40; background: var(--nuit-voile); backdrop-filter: blur(4px); opacity: 0; transition: opacity .35s var(--doux); }
+.voile.ouvert { opacity: 1; }
+.feuille { position: fixed; z-index: 41; left: 50%; bottom: 0; width: min(440px, 100%); max-height: 88vh; overflow-y: auto; transform: translate(-50%, 110%); visibility: hidden; transition: transform .5s var(--ressort), visibility 0s .5s; border-radius: 28px 28px 0 0; background: var(--bois); box-shadow: 0 -10px 40px rgba(0,0,0,.5); padding: 0 max(18px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(18px, env(safe-area-inset-left, 0px)); overscroll-behavior: contain; }
+.feuille.ouvert { transform: translate(-50%, 0); visibility: visible; transition: transform .5s var(--ressort), visibility 0s; }
+.poignee { position: sticky; top: 0; z-index: 2; display: grid; place-items: center; height: 26px; margin-inline: -18px; background: var(--bois); touch-action: none; cursor: grab; }
+.poignee::before { content: ""; width: 42px; height: 5px; border-radius: 5px; background: var(--bois-clair); }
+.banniere { margin-inline: -18px; height: 220px; position: relative; overflow: hidden; }
+.banniere img { width: 100%; height: 100%; object-fit: cover; }
+.banniere::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 30%, var(--bois)); }
+.contenu-feuille { display: grid; gap: 18px; margin-top: -40px; position: relative; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { padding: 6px 11px; border-radius: 99px; background: var(--bois-haut); font-size: .86rem; font-weight: 700; }
+.chip.plus { background: rgba(149,207,165,.14); color: var(--sauge); }
+.chip.moins { background: rgba(236,125,99,.14); color: var(--braise); }
+.jauges { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; text-align: center; }
+.jauge { display: grid; justify-items: center; gap: 6px; font-size: .76rem; color: var(--cendre); font-weight: 700; }
+.jauge svg { width: 54px; height: 54px; transform: rotate(-90deg); }
+.jauge circle { fill: none; stroke-width: 6; }
+.jauge .fond { stroke: var(--bois-clair); }
+.jauge .val { stroke: var(--miel); stroke-linecap: round; stroke-dasharray: 138.2; stroke-dashoffset: 138.2; transition: stroke-dashoffset 1s var(--doux) .15s; }
+.jauge .val.bas { stroke: var(--braise); }
+.liens { display: flex; gap: 14px; overflow-x: auto; scrollbar-width: none; }
+.lien { display: grid; justify-items: center; gap: 4px; flex: none; width: 60px; font-size: .74rem; color: var(--cendre); text-align: center; }
+.lien .avatar { width: 50px; height: 50px; }
+.grand-moral { display: flex; align-items: center; gap: 14px; }
+.grand-moral .mini { width: 64px; height: 64px; font-size: 1.15rem; }
+.lettre { padding: 16px 18px; border-radius: var(--r-petit); background: var(--lin); color: #3a2a1c; font: italic 500 1.05rem/1.5 var(--f-plume); box-shadow: inset 0 0 30px rgba(120,80,40,.18); }
+.reponses { display: grid; gap: 8px; }
+.reponses button { padding: 14px 16px; border-radius: 16px; background: var(--bois-haut); font-weight: 800; text-align: left; transition: transform .35s var(--ressort), background .3s; display: flex; justify-content: space-between; gap: 10px; align-items: center; }
+.reponses button:active { transform: scale(.97); }
+.reponses button.defaut::after { content: "par défaut"; font-size: .72rem; font-weight: 700; color: var(--cendre); }
+.suite { display: grid; gap: 6px; padding: 14px; border-radius: 16px; background: var(--miel-doux); }
+.suite p { font-size: .95rem; }
+.vues { display: grid; grid-template-columns: 1fr 1fr; padding: 4px; border-radius: 16px; background: var(--bois-haut); position: relative; }
+.vues button { position: relative; z-index: 1; padding: 9px 0; border-radius: 12px; font-weight: 800; font-size: .9rem; color: var(--cendre); transition: color .3s var(--doux); }
+.vues button[aria-pressed="true"] { color: var(--nuit); }
+.vues .glisse { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 12px; background: var(--miel); transition: transform .45s var(--ressort); }
+.vues.combat .glisse { transform: translateX(100%); }
+.stat { display: grid; grid-template-columns: 7.5rem 1fr 2.6rem; gap: 10px; align-items: center; font-size: .88rem; }
+.stat .barre { height: 8px; border-radius: 8px; background: var(--bois-clair); overflow: hidden; }
+.stat .barre i { display: block; height: 100%; width: 0; border-radius: 8px; background: linear-gradient(90deg, var(--miel), #ffd28e); transition: width .9s var(--doux); }
+.stat b { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.etoile { color: var(--miel); margin-right: 3px; text-shadow: 0 0 8px rgba(242,182,94,.7); }
+.stat small { grid-column: 2 / 4; margin-top: -6px; color: var(--miel); font-weight: 700; font-size: .74rem; }
+.epreuve { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 14px; background: var(--bois-haut); }
+.epreuve .pct { font-weight: 800; font-variant-numeric: tabular-nums; }
+.potentiel { display: flex; gap: 12px; align-items: center; padding: 14px; border-radius: 16px; background: linear-gradient(140deg, rgba(242,182,94,.18), rgba(242,182,94,.04)); }
+.potentiel .sceau-pot { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font: 800 1.1rem var(--f-titre); background: var(--bois-clair); color: var(--cendre); flex: none; }
+.potentiel.revele .sceau-pot { background: radial-gradient(circle at 35% 30%, #ffe3a3, var(--miel) 60%, #a8661f); color: var(--nuit); box-shadow: 0 0 22px rgba(242,182,94,.45); }
+.lex { border-bottom: 1.5px dotted var(--miel); cursor: pointer; }
+.lex:hover { color: var(--miel); }
+.carte-lex { position: fixed; z-index: 71; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); width: min(400px, calc(100% - 32px)); transform: translate(-50%, calc(100% + 60px)); visibility: hidden; transition: transform .45s var(--ressort), visibility 0s .45s; padding: 18px 18px 16px; border-radius: 24px; background: var(--lin); color: #2c2016; box-shadow: 0 20px 50px rgba(0,0,0,.55); display: grid; gap: 8px; }
+.carte-lex.ouvert { transform: translate(-50%, 0); visibility: visible; transition: transform .45s var(--ressort); }
+.carte-lex b { font: 800 1.25rem var(--f-titre); }
+.carte-lex .reg { justify-self: start; padding: 3px 10px; border-radius: 99px; background: rgba(120,80,40,.14); font-weight: 800; font-size: .76rem; letter-spacing: .06em; text-transform: uppercase; }
+.voile-lex { position: fixed; inset: 0; z-index: 70; }
+.qui { font-size: .98rem; line-height: 1.5; color: var(--lin); opacity: .92; }
+/* Plan du repère */
+.plan-cadre { position: relative; border-radius: var(--r-carte); overflow: hidden; background: #241a12; box-shadow: var(--ombre); }
+.plan-cadre svg { display: block; width: 100%; height: auto; }
+.piece-plan { transition: filter .3s; }
+.lot { cursor: pointer; }
+.lot:hover rect, .lot:focus rect { stroke: var(--miel); }
+.point { cursor: pointer; }
+.point .halo { transform-box: fill-box; transform-origin: center; animation: halo 2.2s ease-out infinite; }
+@keyframes halo { 0% { transform: scale(1); opacity: .75; } 100% { transform: scale(3.2); opacity: 0; } }
+.point .coeur { animation: clign 2.2s ease-in-out infinite; }
+@keyframes clign { 50% { opacity: .55; } }
+.bulle-plan { position: absolute; z-index: 3; transform: translate(-50%, calc(-100% - 12px)); display: flex; align-items: center; gap: 8px; padding: 6px 10px 6px 6px; border-radius: 99px; background: var(--lin); color: #2c2016; font-weight: 700; font-size: .82rem; white-space: nowrap; box-shadow: 0 8px 20px rgba(0,0,0,.4); pointer-events: none; animation: monte .3s var(--doux) both; }
+.bulle-plan img { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; }
+.legende { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: .8rem; color: var(--cendre); }
+.legende span { display: inline-flex; align-items: center; gap: 6px; }
+.legende i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.choix-bat { display: grid; gap: 8px; }
+.choix-bat button { display: grid; grid-template-columns: 44px 1fr; gap: 12px; align-items: center; text-align: left; padding: 12px; border-radius: 16px; background: var(--bois-haut); transition: transform .35s var(--ressort); }
+.choix-bat button:active { transform: scale(.97); }
+.choix-bat .ico { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; }
+/* Carte du monde */
+.monde-cadre { position: relative; border-radius: var(--r-carte); overflow: hidden; box-shadow: var(--ombre); background: #102028; }
+.monde-cadre svg { display: block; width: 100%; height: auto; }
+.terre { stroke: #c8a56a; stroke-width: 1.4; stroke-linejoin: round; transition: filter .3s; }
+.nom-region { font: 800 13px var(--f-titre); letter-spacing: .12em; fill: #f1dfbf; text-transform: uppercase; paint-order: stroke; stroke: rgba(20,14,9,.7); stroke-width: 3px; pointer-events: none; }
+.nom-mer { font: italic 500 12px var(--f-plume); fill: rgba(220,200,170,.55); pointer-events: none; letter-spacing: .08em; }
+.route { fill: none; stroke: var(--miel); stroke-width: 2.4; stroke-dasharray: 2 7; stroke-linecap: round; animation: defile 1.2s linear infinite; }
+@keyframes defile { to { stroke-dashoffset: -18; } }
+.epingle-repere { filter: drop-shadow(0 0 6px rgba(242,182,94,.8)); }
+.mission-carte { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; padding: 12px 14px; border-radius: var(--r-carte); background: var(--bois); }
+.progression { height: 6px; border-radius: 6px; background: var(--bois-clair); overflow: hidden; margin-top: 6px; }
+.progression i { display: block; height: 100%; background: var(--miel); border-radius: 6px; }
+.btn-voir { display: inline-flex; align-items: center; gap: 8px; justify-self: start; padding: 10px 14px; border-radius: 99px; background: var(--miel-doux); color: var(--miel); font-weight: 800; }
+.voix { display: grid; grid-template-columns: 40px 1fr; gap: 10px; align-items: start; }
+/* Histoire plein écran */
+.histoire { position: fixed; inset: 0; z-index: 50; background: #000; display: grid; opacity: 0; pointer-events: none; transition: opacity .3s var(--doux); }
+.histoire.ouvert { opacity: 1; pointer-events: auto; }
+.histoire .cadre { position: relative; width: min(440px, 100%); height: 100%; margin: 0 auto; overflow: hidden; }
+.histoire .cadre > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; animation: zoom 6s linear both; }
+@keyframes zoom { from { transform: scale(1.12); } to { transform: scale(1); } }
+.histoire .cadre::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.55) 0%, transparent 22%, transparent 45%, rgba(10,6,4,.95) 85%); }
+.barres { position: absolute; z-index: 2; top: calc(12px + env(safe-area-inset-top, 0px)); left: 12px; right: 12px; display: flex; gap: 4px; }
+.barres i { flex: 1; height: 3px; border-radius: 3px; background: rgba(255,255,255,.3); overflow: hidden; }
+.barres i::after { content: ""; display: block; height: 100%; width: 0; background: #fff; }
+.barres i.fait::after { width: 100%; }
+.barres i.encours::after { animation: barre 6s linear forwards; }
+@keyframes barre { to { width: 100%; } }
+.histoire .texte { position: absolute; z-index: 2; left: 22px; right: 22px; bottom: calc(46px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 10px; animation: monte .6s var(--doux) both .1s; }
+.histoire .texte p { font: 500 1.25rem/1.4 var(--f-ui); text-wrap: pretty; }
+.histoire .fermer { position: absolute; z-index: 3; top: calc(26px + env(safe-area-inset-top, 0px)); right: 14px; width: 40px; height: 40px; border-radius: 50%; background: rgba(0,0,0,.35); display: grid; place-items: center; }
+.histoire .zone { position: absolute; z-index: 1; top: 0; bottom: 0; width: 40%; }
+.histoire .zone.g { left: 0; } .histoire .zone.d { right: 0; width: 60%; }
+/* Barre d'onglets */
+.onglets { position: fixed; z-index: 20; left: 50%; transform: translateX(-50%); bottom: calc(14px + env(safe-area-inset-bottom, 0px)); width: min(408px, calc(100% - 28px)); display: grid; grid-template-columns: repeat(5, 1fr); padding: 7px; border-radius: 26px; background: rgba(40, 29, 21, .86); backdrop-filter: blur(14px) saturate(1.3); box-shadow: 0 12px 34px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,255,255,.05); }
+.onglet { position: relative; z-index: 1; display: grid; justify-items: center; gap: 2px; padding: 8px 0 6px; border-radius: 20px; color: var(--cendre); font-size: .68rem; font-weight: 800; transition: color .3s var(--doux); }
+.onglet[aria-selected="true"] { color: var(--nuit); }
+.onglet svg { width: 22px; height: 22px; }
+.curseur { position: absolute; z-index: 0; top: 7px; bottom: 7px; left: 7px; width: calc((100% - 14px) / 5); border-radius: 20px; background: var(--miel); transition: transform .5s var(--ressort); }
+.badge { position: absolute; top: 3px; right: calc(50% - 22px); min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--braise); color: #fff; font-size: .7rem; display: grid; place-items: center; animation: pouls 2s var(--doux) infinite; }
+@keyframes pouls { 50% { transform: scale(1.12); } }
+/* Message éphémère */
+.toast { position: fixed; z-index: 60; left: 50%; bottom: calc(100px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 30px); opacity: 0; width: min(400px, calc(100% - 32px)); display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px 12px 18px; border-radius: 18px; background: var(--lin); color: var(--nuit); font-weight: 700; box-shadow: var(--ombre); transition: transform .5s var(--ressort), opacity .3s; pointer-events: none; }
+.toast.ouvert { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; }
+.toast button { padding: 8px 12px; border-radius: 12px; background: var(--nuit); color: var(--miel); font-weight: 800; }
+.aide { width: 26px; height: 26px; border-radius: 50%; display: inline-grid; place-items: center; background: var(--bois-haut); color: var(--miel); font-weight: 900; font-size: .85rem; flex: none; transition: transform .35s var(--ressort); }
+.aide:active { transform: scale(.9); }
+.coin { display: flex; gap: 8px; align-items: center; }
+.chien { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px 6px 8px; border-radius: 99px; background: var(--bois); font-weight: 700; font-size: .88rem; }
+.chien svg { width: 22px; height: 22px; }
+.calendrier { display: flex; height: 10px; border-radius: 6px; overflow: hidden; gap: 2px; margin: 8px 0 4px; }
+.calendrier i { display: block; height: 100%; }
+.calendrier .route { background: var(--bois-clair); } .calendrier .place { background: var(--miel); } .calendrier .repos { background: rgba(127,200,248,.45); }
+.cal-legende { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: .8rem; color: var(--cendre); }
+.cal-legende b { color: var(--lin); font-weight: 800; }
+.contrat { display: grid; gap: 6px; padding: 14px; border-radius: var(--r-carte); background: var(--bois); text-align: left; }
+.contrat .haut { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.po { font-weight: 900; color: var(--miel); white-space: nowrap; }
+.risque { background: rgba(236,125,99,.16); color: var(--braise); }
+.repos-badge { background: rgba(127,200,248,.14); color: #9fd2f5; }
+.guilde-ligne { display: grid; grid-template-columns: 46px 1fr auto; gap: 12px; align-items: center; padding: 12px 14px; border-radius: var(--r-carte); background: var(--bois); text-align: left; width: 100%; }
+.blason { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; font: 900 1.2rem var(--f-titre, serif); color: #1b130e; }
+.allie { position: relative; }
+.allie::after { content: ''; position: absolute; right: -2px; bottom: -2px; width: 12px; height: 12px; border-radius: 50%; background: var(--c); border: 2px solid var(--bois); }
+.guide-sec { display: grid; gap: 8px; padding: 14px 16px; border-radius: var(--r-carte); background: var(--bois); }
+.guide-sec h3 { display: flex; align-items: center; gap: 10px; font-size: 1.05rem; }
+.guide-sec h3 span { font-size: 1.3rem; }
+.guide-sec h3, .guide-sec p { margin: 0; }
+.accueil .discret, .accueil .marque { white-space: nowrap; }
+.carnet { display: grid; gap: 10px; padding: 16px; border-radius: var(--r-carte); background: linear-gradient(160deg, rgba(242,182,94,.16), rgba(242,182,94,.05)); border: 1px solid rgba(242,182,94,.25); }
+.carnet .tete { display: flex; gap: 12px; align-items: center; }
+.carnet .portrait { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--miel); color: #1b130e; font: 900 1.2rem var(--f-titre, serif); flex: none; }
+.carnet .mot { font-style: italic; line-height: 1.45; }
+.etape-carnet { display: grid; grid-template-columns: 22px 1fr auto; gap: 10px; align-items: center; font-size: .92rem; }
+.etape-carnet .coche { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--bois-clair); display: grid; place-items: center; font-size: .75rem; font-weight: 900; }
+.etape-carnet.fait { color: var(--cendre); text-decoration: line-through; }
+.etape-carnet.fait .coche { background: var(--sauge); border-color: var(--sauge); color: #1b130e; }
+.etape-carnet.actuelle b { color: var(--miel); }
+.montre { padding: 6px 12px; border-radius: 99px; background: var(--miel); color: #1b130e; font-weight: 800; font-size: .82rem; }
+.vise-moi { animation: vise 1.2s var(--doux) 3; border-radius: 16px; }
+@keyframes vise { 0%, 100% { box-shadow: 0 0 0 0 rgba(242,182,94,0); } 50% { box-shadow: 0 0 0 6px rgba(242,182,94,.55); } }
+.guide-sec p { line-height: 1.45; }
+.guide-sec.vise { outline: 2px solid var(--miel); }
+.etapes-bienvenue { display: grid; gap: 10px; counter-reset: e; }
+.etapes-bienvenue div { display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; }
+.etapes-bienvenue div::before { counter-increment: e; content: counter(e); width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--miel); color: #1b130e; font-weight: 900; }
+.champ-nom { display: flex; gap: 8px; }
+.champ-nom input { flex: 1; min-width: 0; padding: 12px 14px; border-radius: 14px; border: 0; background: var(--bois-haut); color: var(--lin); font: inherit; font-weight: 700; }
+.btn-plein { padding: 12px 16px; border-radius: 14px; background: var(--miel); color: #1b130e; font-weight: 900; }
+.lettre.billet { font-family: 'Alegreya', serif; font-style: italic; font-size: 1.08rem; line-height: 1.55; transform: rotate(-.6deg); box-shadow: 0 10px 24px rgba(0,0,0,.35); }
+.lettre.billet .signature { display: block; text-align: right; margin-top: 8px; font-weight: 700; }
+.lettre.billet.clown { transform: rotate(1.2deg); }
+.lettre.billet.triste { background: #e9e2d6; color: #3b332b; }
+.lettre.billet.langue { letter-spacing: .12em; }
+.bascule { display: flex; gap: 6px; padding: 4px; border-radius: 99px; background: var(--bois-haut); }
+.bascule button { flex: 1; padding: 9px 12px; border-radius: 99px; font-weight: 800; color: var(--cendre); }
+.bascule button[aria-pressed="true"] { background: var(--miel); color: #1b130e; }
+.vide { padding: 22px; border-radius: var(--r-carte); background: var(--bois); text-align: center; color: var(--cendre); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0ms !important; transition-duration: .01ms !important; } }
+.pastille.rang{background:rgba(201,164,106,.18);color:#e0c79d;font-weight:800;letter-spacing:.04em}
+.poste-rang{display:grid;gap:6px;padding:10px 0;border-top:1px solid rgba(255,255,255,.08)}
+.cand{display:flex;gap:10px;align-items:center;padding:6px 8px;border-radius:12px;border-left:3px solid transparent}
+.cand img{width:36px;height:36px;border-radius:50%;object-fit:cover;flex:none}
+.cand.ok{border-left-color:#7fbf7f}.cand.moyen{border-left-color:#e0b25c}.cand.dur{border-left-color:#d9694f}
+</style>
+</head>
+<body>
+
+<main class="app">
+  <section class="ecran entre" id="e-repere" aria-label="Le repère"></section>
+  <section class="ecran" id="e-heros" aria-label="Les héros" hidden></section>
+  <section class="ecran" id="e-monde" aria-label="Le monde" hidden></section>
+  <section class="ecran" id="e-courrier" aria-label="Le courrier" hidden></section>
+  <section class="ecran" id="e-chronique" aria-label="La chronique" hidden></section>
+</main>
+
+<nav class="onglets" role="tablist" aria-label="Navigation">
+  <span class="curseur" id="curseur"></span>
+  <button class="onglet" role="tab" data-e="repere" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10l3-2V5h3v1l2-1 2 1V5h3v3l3 2v10z"/><path d="M10 20v-4a2 2 0 0 1 4 0v4"/></svg>Repère</button>
+  <button class="onglet" role="tab" data-e="heros" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c.6-3.4 3-5 6-5s5.4 1.6 6 5"/><circle cx="17" cy="9" r="2.4"/><path d="M16 14.2c2.6 0 4.4 1.4 5 4.3"/></svg>Héros</button>
+  <button class="onglet" role="tab" data-e="monde" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 6.5 9 4l6 2.5L21 4v13.5L15 20l-6-2.5L3 20z"/><path d="M9 4v13.5M15 6.5V20"/></svg>Monde</button>
+  <button class="onglet" role="tab" data-e="courrier" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="3"/><path d="m4 7 8 6 8-6"/></svg>Courrier<span class="badge" id="badge"></span></button>
+  <button class="onglet" role="tab" data-e="chronique" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 4h11a2 2 0 0 1 2 2v13a1 1 0 0 1-1 1H8a2 2 0 0 1-2-2z"/><path d="M6 18a2 2 0 0 0 2 2M10 9h5M10 13h5"/></svg>Chronique</button>
+</nav>
+
+<div class="voile" id="voile" hidden></div>
+<div class="feuille" id="feuille" role="dialog" aria-modal="true" aria-label="Détail"><div class="poignee" id="poignee"></div><div id="corps-feuille"></div></div>
+<div class="histoire" id="histoire" aria-hidden="true"><div class="cadre" id="cadre"></div></div>
+<div class="voile-lex" id="voile-lex" hidden></div><div class="carte-lex" id="carte-lex" role="dialog" aria-label="Lexique"></div>
+<div class="toast" id="toast" role="status"><span id="toast-texte"></span><button type="button" id="annuler">Annuler</button></div>
+
+<script type="module" src="js/jeu-boot.js"></script>
+<script type="module">
+/* En ligne (jeu.html), window.GL parle au serveur ; sans lui, c'est la démonstration, avec ses données intégrées. */
+const EN_LIGNE = Boolean(window.GL);
+let D = EN_LIGNE ? await window.GL.charger() : {};
+const IMG = {};
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const H = id => D.heros.find(h => h.id === id) || D.etrangers?.[id] || (D.candidatures || []).find(c => c.cle === id);
+const NOM = id => H(id)?.nom || id;
+const cap = t => t ? t.charAt(0).toUpperCase() + t.slice(1) : '';
+const GUILDE = id => D.guildes.find(g => g.id === id);
+let chien = D.chien;
+// Images : intégrées dans la démo ; en ligne, un fichier par héros (tools/images.py), nommé d'après sa fiche.
+const fichier = (id, type) => H(id)?.img?.[type] || '';
+const av = id => IMG[id]?.av || fichier(id, 'av');
+const ban = id => IMG[id]?.ban || fichier(id, 'carte');
+const carte = id => IMG[id]?.carte || ban(id);
+const story = id => IMG[id]?.story || ban(id);
+const pos = id => IMG[id]?.pos || '50% 30%';
+const teinte = m => m >= 62 ? 'var(--sauge)' : m >= 45 ? 'var(--miel)' : 'var(--braise)';
+const ROLES = { Tank: 'Tank', Combattant: 'Combattant', Mage: 'Mage', Tireur: 'Tireur', Assassin: 'Assassin', Support: 'Support' };
+const MOT = { or: "L'or", gloire: 'La gloire', cause: 'Une cause', vengeance: 'La vengeance', savoir: 'Le savoir', proteger: 'Protéger', pouvoir: 'Le pouvoir', liberte: 'La liberté', redemption: 'La rédemption', appartenance: 'Trouver sa place', plaisir: 'Le plaisir' };
+const LIEN = { famille: 'Famille', amour: 'Amour', ami: 'Ami', rival: 'Rival', ennemi: 'Ennemi', mentor: 'Maître/élève' };
+const repondues = {};
+let titre = 'maître', billetsDoux = true;
+if (EN_LIGNE) { titre = D.guilde.titre; billetsDoux = D.guilde.billetsDoux; }
+else try { titre = localStorage.getItem('gl-titre') || 'maître'; billetsDoux = localStorage.getItem('gl-doux') !== 'non'; } catch {}
+/* Une action du joueur : en ligne, le serveur l'applique et renvoie la nouvelle vue. Renvoie le résultat, ou null si refusée. */
+async function agir(action, donnees = {}) {
+  try { const r = await window.GL.agir({ action, ...donnees }); appliquer(r.vue); return r.resultat ?? true; }
+  catch (e) { toast(e.message || 'Le serveur n\'a pas répondu.'); return null; }
+}
+function appliquer(vue) { if (!vue) return; D = vue; chien = D.chien; construites = new Set(D.salles.filter(s => s.etat === 'construite').map(s => s.cle)); for (const k in repondues) delete repondues[k]; rafraichir(); }
+if (EN_LIGNE) setInterval(async () => { if (document.hidden || !$('#voile').hidden) return; try { appliquer(await window.GL.charger()); } catch {} }, 5 * 60 * 1000);
+const Titre = () => titre[0].toUpperCase() + titre.slice(1);
+
+/* ---------- Repère ---------- */
+const forts = D.chronique.filter(e => (e.importance >= 3 || e.arc || ['recit_mission', 'arrivee'].includes(e.dec)) && !e.evt && e.heros.length).slice(0, 10);
+function repere() {
+  const ouvertes = D.cartes.filter(c => !repondues[c.id]);
+  const presents = D.heros;
+  $('#e-repere').innerHTML = `
+  <div class="accueil" style="--i:0"><div><span class="marque">Guild Legends</span><span class="discret"> · ${esc(D.maintenant.jour)}, ${D.maintenant.heure} h</span><h1>Bon retour,<br>${titre}</h1></div><div class="coin"><button type="button" class="aide" data-guide="" aria-label="Comment ça marche">?</button><div class="coffre" title="Pièces d'or"><span class="piece"></span>${D.po.toLocaleString('fr-FR')} <small>PO</small></div></div></div>
+  ${blocCarnet()}
+  ${(D.candidatures || []).length ? `<button type="button" class="pli" data-aller="courrier" style="--i:1"><span class="duo">${D.candidatures.slice(0, 3).map(c => `<img src="${av(c.cle)}" alt="">`).join('')}</span><span><b>${D.candidatures.length} candidature${D.candidatures.length > 1 ? 's' : ''} à la porte</b><small>Dans le courrier</small></span><span class="sceau">G</span></button>` : ''}
+  ${(D.avis || []).length ? `<div class="bloc" style="--i:1"><h2>Les nouvelles</h2>${D.avis.slice(0, 4).map(a => `<p class="discret" style="margin:0"><b style="color:var(--lin)">${esc(a.jour)}, ${a.heure} h</b> · ${annoter(a.texte)}</p>`).join('')}</div>` : ''}
+  <div class="bloc" style="--i:1"><div class="tete-bloc"><h2>Ton repère</h2><span class="discret">${presentsRepere().length} héros présents</span></div>${planRepere()}<button type="button" class="chien" data-chien style="justify-self:start">${SVG_CHIEN}${esc(chien)}, le chien du repère</button></div>
+  <div class="bloc" style="--i:2"><div class="tete-bloc"><h2>Pendant ton absence</h2><span class="discret">${forts.length} moments</span></div>
+    <div class="rail">${forts.map((e, i) => `<button class="vignette" data-h="${i}"><img src="${carte(e.heros[0])}" alt=""><span class="anneau"><img src="${av(e.heros[0])}" alt=""></span><span>${esc(accroche(e))}</span></button>`).join('')}</div></div>
+  <div class="bloc" style="--i:2"><div class="tete-bloc"><h2>Sur ton bureau</h2>${ouvertes.length ? `<span class="pastille miel">${ouvertes.length} à traiter</span>` : ''}</div>
+    ${ouvertes.length ? ouvertes.map(pli).join('') : '<div class="vide">Rien à signer. Profite du calme.</div>'}</div>
+  ${D.arcs.length ? `<div class="bloc" style="--i:4"><h2>Histoires en cours</h2>${D.arcs.map(a => `<div class="arc"><span class="duo"><img src="${av(a.a)}" alt=""><img src="${av(a.b)}" alt=""></span><div style="min-width:0"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><b>${esc(a.titre)}</b><span class="pastille miel">À suivre</span></div><div class="discret">${esc(NOM(a.a))} et ${esc(NOM(a.b))}</div>${a.dernier && a.total ? `<p class="discret" style="margin-top:6px;font-style:italic">« ${annoter(a.dernier.length > 120 ? a.dernier.slice(0, 118).replace(/\s\S*$/, '') + '…' : a.dernier)} »</p>` : ''}<div class="points">${Array.from({ length: (a.total || a.etape) + 1 }, (_, k) => `<i class="${k < a.etape ? 'fait' : ''}"></i>`).join('')}</div></div></div>`).join('')}</div>` : ''}
+  ${D.soiree ? `<div class="bloc" style="--i:5"><div class="tete-bloc"><h2>La soirée de ${esc(D.soiree.jour)}</h2><span class="discret">${D.soiree.venus.length} présents</span></div>
+    <div class="arc" style="display:grid;gap:12px"><div class="presents" style="margin:0;padding:0">${D.soiree.venus.map(id => `<span class="avatar" style="--m:100;width:44px;height:44px"><img src="${av(id)}" alt="${esc(id)}"></span>`).join('')}</div>
+    <div class="chips">${D.soiree.absents.map(a => `<span class="chip"><img src="${av(a.id)}" alt="" style="width:18px;height:18px;border-radius:50%;vertical-align:-4px;margin-right:6px">${esc(NOM(a.id))} · ${esc(a.raison)}</span>`).join('')}</div></div></div>` : ''}`;
+}
+function accroche(e) { const t = e.texte.split(/(?<=[.!?»])\s/)[0]; return t.length > 70 ? t.slice(0, 68).replace(/\s\S*$/, '') + '…' : t; }
+function pli(c) {
+  return `<button class="pli" data-carte="${c.id}"><span class="duo">${c.heros.map(id => `<img src="${av(id)}" alt="">`).join('')}</span><span><b>${esc(c.titre.replace(/ : « .* »$/, ''))}</b><small>${esc({ billet: 'Un billet, glissé sous la porte', quete: 'Une quête personnelle', conflit: 'Un conflit à arbitrer', conges: 'Une demande de congés', augmentation: 'Une question de salaire', soiree: 'Une fête', depart: 'Une lettre de départ' }[c.type] || '')}</small></span><span class="sceau">G</span></button>`;
+}
+
+
+/* ---------- Plan du repère ----------
+ * Le repère vu d'en haut. Chaque héros présent est un point de couleur qui clignote dans la pièce où il se trouve.
+ * Les absents (mission, congés, en ville) n'apparaissent pas. Chaque pièce s'ouvre à un rang du repère, à prix fixe.
+ */
+const SVG_CHIEN = '<svg viewBox="0 0 24 24" fill="#c99a62"><ellipse cx="12" cy="15" rx="5" ry="4.2"/><circle cx="6" cy="9" r="2.1"/><circle cx="10" cy="6.2" r="2.1"/><circle cx="14" cy="6.2" r="2.1"/><circle cx="18" cy="9" r="2.1"/></svg>';
+const COULEURS = ['#f2b65e', '#7fc8f8', '#ec7d63', '#b18cf2', '#95cfa5', '#f28fb1', '#5fd4c4', '#e8d36a', '#9fb4ff', '#ff9f5a'];
+const couleur = id => COULEURS[D.heros.findIndex(h => h.id === id) % COULEURS.length];
+const PIECES = {
+  salle_commune: { x: 112, y: 36, l: 136, h: 78, nom: 'Salle commune', fond: '#5b3d26' },
+  dortoirs: { x: 26, y: 36, l: 74, h: 118, nom: 'Dortoirs', fond: '#4a3424' },
+  cour: { x: 112, y: 126, l: 136, h: 104, nom: "Cour d'entraînement", fond: '#6b5a3c' },
+};
+// Chaque pièce a sa place sur le plan. Elle s'ouvre au rang voulu du repère (le niveau de la guilde), à prix fixe.
+const LOTS = {
+  cuisines: { x: 260, y: 36, l: 74, h: 60 }, infirmerie: { x: 260, y: 104, l: 74, h: 60 }, salle_armes: { x: 260, y: 172, l: 74, h: 58 },
+  taverne: { x: 26, y: 166, l: 74, h: 64 },
+  bibliotheque: { x: 26, y: 244, l: 100, h: 62 }, sanctuaire: { x: 134, y: 244, l: 100, h: 62 }, ecuries: { x: 242, y: 244, l: 92, h: 62 },
+  forge: { x: 26, y: 316, l: 100, h: 62 }, salle_cartes: { x: 134, y: 316, l: 100, h: 62 }, aile_nord: { x: 242, y: 316, l: 92, h: 62 },
+  bains: { x: 26, y: 388, l: 72, h: 54 }, galerie: { x: 104, y: 388, l: 74, h: 54 }, observatoire: { x: 184, y: 388, l: 74, h: 54 }, grand_hall: { x: 264, y: 388, l: 70, h: 54 },
+};
+const FONDS = { bains: '#3f5a66', galerie: '#6a5a2e', observatoire: '#2f3f5f', grand_hall: '#6b2f2f', cuisines: '#6a4a26', infirmerie: '#5a4f5f', salle_armes: '#5e4a3a', taverne: '#6b3a2c', bibliotheque: '#3f4d6b', sanctuaire: '#4f5d4a', ecuries: '#5f4a2e', forge: '#4a3a36', salle_cartes: '#3d5458', aile_nord: '#4a3424' };
+const SALLE = k => D.salles.find(s => s.cle === k);
+let construites = new Set(D.salles.filter(s => s.etat === 'construite').map(s => s.cle)); // le choix vit le temps de la visite
+const etatSalle = s => construites.has(s.cle) ? 'construite' : D.niveau >= s.niveau ? 'disponible' : 'verrouillee';
+const presentsRepere = () => D.heros.filter(h => h.etat === 'present' && h.lieu && (PIECES[h.lieu] || h.lieu === 'remparts' || construites.has(h.lieu)));
+function graineTxt(s) { let h = 2166136261; for (const c of s) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return (h >>> 0) / 4294967296; }
+function positionHeros(h) {
+  const p = PIECES[h.lieu] || (construites.has(h.lieu) ? LOTS[h.lieu] : null);
+  const r1 = graineTxt(h.id + '#x'), r2 = graineTxt(h.id + '#y');
+  if (p) return { x: (p.x + 12) + r1 * (p.l - 24), y: (p.y + 22) + r2 * (p.h - 32) };
+  // remparts : le long du chemin de ronde
+  const tour = r1 * 4; const s = tour % 1;
+  return tour < 1 ? { x: 20 + s * 320, y: 18 } : tour < 2 ? { x: 342, y: 18 + s * 442 } : tour < 3 ? { x: 20 + s * 320, y: 464 } : { x: 18, y: 18 + s * 442 };
+}
+function planRepere() {
+  const pres = presentsRepere();
+  const absents = D.heros.filter(h => !pres.includes(h));
+  const pieces = Object.entries(PIECES).map(([k, p]) => `<g class="piece-plan"><rect x="${p.x}" y="${p.y}" width="${p.l}" height="${p.h}" rx="12" fill="${p.fond}" stroke="#2a1d14" stroke-width="2"/><text x="${p.x + 10}" y="${p.y + 16}" font-size="10" font-weight="800" fill="#f4e7d4" opacity=".85" font-family="Alegreya Sans, sans-serif" letter-spacing=".08em">${p.nom.toUpperCase()}</text></g>`).join('');
+  const txt = (x, y, t, o = '') => `<text x="${x}" y="${y}" text-anchor="middle" font-family="Alegreya Sans, sans-serif" ${o}>${t}</text>`;
+  const lots = D.salles.map(sl => { const l = LOTS[sl.cle], e = etatSalle(sl), cx = l.x + l.l / 2, cy = l.y + l.h / 2;
+    if (e === 'construite') return `<g class="piece-plan entre-bat" data-salle="${sl.cle}" tabindex="0" role="button" aria-label="${esc(sl.nom)}"><rect x="${l.x}" y="${l.y}" width="${l.l}" height="${l.h}" rx="12" fill="${FONDS[sl.cle]}" stroke="#2a1d14" stroke-width="2"/><text x="${l.x + 8}" y="${l.y + 16}" font-size="8" font-weight="800" fill="#f4e7d4" font-family="Alegreya Sans, sans-serif" letter-spacing=".03em">${esc(sl.nom.replace(/^(Les|La|Le|L')\s?/, '').toUpperCase())}</text></g>`;
+    if (e === 'disponible') return `<g class="lot" data-salle="${sl.cle}" tabindex="0" role="button" aria-label="${esc(sl.nom)} : à construire"><rect x="${l.x}" y="${l.y}" width="${l.l}" height="${l.h}" rx="12" fill="rgba(255,255,255,.04)" stroke="#c9a46a" stroke-width="1.5" stroke-dasharray="5 5"/>${txt(cx, cy - 4, '+', 'font-size="16" fill="#e0c79d"')}${txt(cx, cy + 10, esc(sl.nom.replace(/^(Les|La|Le|L')\s?/, '')), 'font-size="8.5" fill="#e0c79d"')}${txt(cx, cy + 21, sl.prix.toLocaleString('fr-FR') + ' PO', 'font-size="7.5" fill="#b8a28a"')}</g>`;
+    return `<g class="verrou" data-salle="${sl.cle}" tabindex="0" role="button" aria-label="${esc(sl.nom)} : rang ${sl.niveau}"><rect x="${l.x}" y="${l.y}" width="${l.l}" height="${l.h}" rx="12" fill="rgba(0,0,0,.22)" stroke="#5c4a39" stroke-width="1.2" stroke-dasharray="2 4"/>${txt(cx, cy - 2, '🔒', 'font-size="11" opacity=".7"')}${txt(cx, cy + 13, 'Rang ' + sl.niveau, 'font-size="8" fill="#8f7a64"')}</g>`; }).join('');
+  const points = pres.map(h => { const p = positionHeros(h), c = couleur(h.id);
+    return `<g class="point" data-point="${h.id}" tabindex="0" role="button" aria-label="${esc(h.nom)}, ${esc(h.activite)}"><circle class="halo" cx="${p.x}" cy="${p.y}" r="5" fill="${c}"/><circle class="coeur" cx="${p.x}" cy="${p.y}" r="5.5" fill="${c}" stroke="#1b130e" stroke-width="1.5"/></g>`; }).join('');
+  const pc = { x: 128 + graineTxt(chien + D.maintenant.heure) * 100, y: 200 + graineTxt(chien) * 20 };
+  const chienPlan = `<g class="point" data-chien tabindex="0" role="button" aria-label="${esc(chien)}, le chien"><circle cx="${pc.x}" cy="${pc.y}" r="7" fill="#1b130e" opacity=".35"/><text x="${pc.x}" y="${pc.y + 4}" text-anchor="middle" font-size="11">🐾</text></g>`;
+  return `<div class="plan-cadre" id="plan"><svg viewBox="0 0 360 484" role="img" aria-label="Plan du repère">
+    <defs><pattern id="paves" width="12" height="12" patternUnits="userSpaceOnUse"><rect width="12" height="12" fill="#3a2b1e"/><path d="M0 6h12M6 0v6M0 12h12" stroke="#2f2318" stroke-width="1"/></pattern></defs>
+    <rect x="8" y="8" width="344" height="462" rx="20" fill="url(#paves)" stroke="#8a7155" stroke-width="7"/>
+    ${[...Array(15)].map((_, i) => `<rect x="${18 + i * 22}" y="2" width="10" height="9" rx="2" fill="#8a7155"/>`).join('')}
+    <rect x="152" y="460" width="56" height="16" rx="4" fill="#241a12"/><text x="180" y="482" text-anchor="middle" font-size="8.5" fill="#b8a28a" font-family="Alegreya Sans, sans-serif">Vers ${esc(D.repere.bourg)}</text>
+    ${pieces}${lots}${chienPlan}${points}</svg></div>
+    <div class="legende">${pres.map(h => `<span><i style="background:${couleur(h.id)}"></i>${esc(h.nom)}</span>`).join('')}${absents.length ? `<span style="margin-left:auto">Hors du repère : ${absents.map(h => esc(h.nom)).join(', ')}</span>` : ''}</div>`;
+}
+document.addEventListener('click', e => {
+  const pt = e.target.closest('[data-point]');
+  if (pt) { const h = H(pt.dataset.point), box = $('#plan').getBoundingClientRect(), r = pt.getBoundingClientRect();
+    $('#plan').querySelector('.bulle-plan')?.remove();
+    $('#plan').insertAdjacentHTML('beforeend', `<div class="bulle-plan" style="left:${r.left - box.left + r.width / 2}px;top:${r.top - box.top}px"><img src="${av(h.id)}" alt="">${esc(h.nom)} · ${esc(h.activite)}</div>`);
+    clearTimeout(window.__bulle); window.__bulle = setTimeout(() => $('#plan')?.querySelector('.bulle-plan')?.remove(), 2600); return; }
+  const piece = e.target.closest('[data-salle]');
+  if (piece) { const sl = SALLE(piece.dataset.salle), etat = etatSalle(sl), net = D.economie.revenu.net, manque = sl.prix - D.po, sem = Math.max(1, Math.ceil(manque / net));
+    const suivante = D.salles.filter(x => etatSalle(x) === 'verrouillee').sort((a, b) => a.niveau - b.niveau)[0];
+    ouvrir(`<div class="contenu-feuille" style="margin-top:6px"><div style="display:flex;gap:12px;align-items:center"><span class="ico" style="width:42px;height:42px;border-radius:12px;flex:none;background:${FONDS[sl.cle]}"></span><h2 style="font-size:1.35rem">${esc(sl.nom)}</h2></div>
+      <p>${esc(sl.effet)}</p>
+      ${etat === 'construite' ? `<p class="discret">Construite. Tes héros y passent du temps, et l'effet joue chaque jour.</p>`
+      : etat === 'verrouillee' ? `<p class="discret">Cette pièce s'ouvre au <b>rang ${sl.niveau}</b> du repère. Ton repère est au rang ${D.niveau}. Le rang monte avec la réputation de la guilde : chaque mission réussie t'en rapproche.</p><p class="discret">Prix fixe : ${sl.prix.toLocaleString('fr-FR')} PO.</p>`
+      : `<p class="discret">Prix fixe : <b>${sl.prix.toLocaleString('fr-FR')} PO</b>.${manque > 0 ? ` Il te manque ${manque.toLocaleString('fr-FR')} PO, environ ${sem} semaine${sem > 1 ? 's' : ''} de contrats.` : ''}</p>
+        <button type="button" class="btn-plein" data-construire="${sl.cle}" style="width:100%" ${manque > 0 ? 'aria-disabled="true" style="width:100%;opacity:.6"' : ''}>Construire · ${sl.prix.toLocaleString('fr-FR')} PO</button>`}
+      ${suivante && etat !== 'verrouillee' ? `<p class="discret">Prochaine pièce : ${esc(suivante.nom)}, au rang ${suivante.niveau}.</p>` : ''}</div>`); return; }
+  const bat = e.target.closest('[data-construire]');
+  if (bat) { const sl = SALLE(bat.dataset.construire); if (D.po < sl.prix) { bat.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'translateX(0)' }], { duration: 300 }); return; }
+    if (EN_LIGNE) { agir('construire', { salle: sl.cle }).then(r => { if (r) { cocher('batir'); fermer(); toast(`${sl.nom} : les travaux sont finis.`); } }); return; }
+    D.po -= sl.prix; construites.add(sl.cle); cocher('batir'); fermer(); rafraichir();
+    toast(`${sl.nom} en construction · −${sl.prix.toLocaleString('fr-FR')} PO`, () => { D.po += sl.prix; construites.delete(sl.cle); rafraichir(); }); }
+});
+
+/* ---------- Carte du monde ----------
+ * Runeterra dessiné d'après la carte officielle (à remplacer par l'illustration officielle quand Théo la fournira).
+ * On y voit le repère, les héros partis en mission (route animée, temps restant) et, avant d'accepter une quête, où elle mène.
+ */
+// La carte officielle de Runeterra (fournie par Théo), débarrassée de ses légendes ; nos repères se posent par-dessus.
+const CARTE_IMG = 'img/carte.webp';
+const REG_CARTE = {
+  freljord: { nom: 'Freljord', i: [425, 113] }, noxus: { nom: 'Noxus', i: [678, 226] }, demacia: { nom: 'Demacia', i: [372, 308] },
+  ionia: { nom: 'Ionia', i: [1152, 183] }, piltover: { nom: 'Piltover', i: [860, 420] }, zaun: { nom: 'Zaun', i: [860, 485] },
+  bilgewater: { nom: 'Bilgewater', i: [1200, 503] }, shurima: { nom: 'Shurima', i: [845, 620] }, ixtal: { nom: 'Ixtal', i: [980, 602] },
+  targon: { nom: 'Targon', i: [555, 683] }, iles: { nom: 'Îles obscures', i: [1252, 688] },
+};
+const POS_REPERE = Object.fromEntries(Object.entries(REG_CARTE).map(([k, r]) => [k, r.i]));
+POS_REPERE.bandle = [1380, 330];
+const ANCRE_REPERE = { demacia: [455, 300], noxus: [760, 250], freljord: [500, 140], ionia: [1080, 150], piltover: [930, 400], zaun: [930, 500], bilgewater: [1140, 470], shurima: [760, 600], targon: [600, 650], ixtal: [1030, 640], bandle: [1380, 330] };
+function svgMonde({ routes = [], epingles = [] } = {}) {
+  const badges = Object.entries(REG_CARTE).map(([k, r]) => `<g><circle cx="${r.i[0]}" cy="${r.i[1]}" r="27" fill="#0f2733" stroke="#c9a46a" stroke-width="2.5"/><text x="${r.i[0]}" y="${r.i[1] + 9}" text-anchor="middle" style="font: 800 26px Alegreya SC, serif; fill: #e7c88f">${r.nom[0]}</text>
+    <text class="nom-region" x="${r.i[0]}" y="${r.i[1] + 56}" text-anchor="middle" style="font-size:24px">${r.nom}</text></g>`).join('');
+  const bandle = `<g><circle cx="1380" cy="330" r="20" fill="none" stroke="#b18cf2" stroke-width="3" stroke-dasharray="5 5"><animateTransform attributeName="transform" type="rotate" from="0 1380 330" to="360 1380 330" dur="18s" repeatCount="indefinite"/></circle><text class="nom-mer" x="1380" y="372" text-anchor="middle" style="font-size:20px">Portails de Bandle</text></g>`;
+  const rep = ANCRE_REPERE[D.repere.region];
+  const rts = routes.map((r, i) => { const a = rep, b = r.vers, mx = (a[0] + b[0]) / 2, my = Math.min(a[1], b[1]) - 120;
+    const d = `M${a[0]},${a[1]} Q${mx},${my} ${b[0]},${b[1]}`;
+    return `<path id="route${i}" class="route" d="${d}" style="stroke-width:5;stroke-dasharray:4 14"/>${r.voyageur ? `<circle r="10" fill="${r.couleur || '#f2b65e'}" stroke="#1b130e" stroke-width="3"><animateMotion dur="${r.duree || 6}s" repeatCount="indefinite" keyPoints="0;${r.avancee};${r.avancee}" keyTimes="0;.85;1" calcMode="linear"><mpath href="#route${i}"/></animateMotion></circle>` : ''}`; }).join('');
+  const eps = epingles.map(p => `<g><circle cx="${p.x}" cy="${p.y}" r="20" fill="${p.couleur}" opacity=".35"><animate attributeName="r" values="14;34;14" dur="2.2s" repeatCount="indefinite"/><animate attributeName="opacity" values=".55;0;.55" dur="2.2s" repeatCount="indefinite"/></circle><circle cx="${p.x}" cy="${p.y}" r="11" fill="${p.couleur}" stroke="#1b130e" stroke-width="3"/>${p.texte ? `<text x="${p.x}" y="${p.y - 22}" text-anchor="middle" class="nom-region" style="font-size:20px;fill:#ffe7bd">${esc(p.texte)}</text>` : ''}</g>`).join('');
+  return `<svg viewBox="0 0 1500 996" role="img" aria-label="Carte de Runeterra">
+    <image href="${CARTE_IMG}" x="0" y="0" width="1500" height="996" preserveAspectRatio="xMidYMid slice"/>
+    ${badges}${bandle}${rts}
+    <g class="epingle-repere"><path d="M${rep[0]},${rep[1]} l-16,-36 a18,18 0 1 1 32,0 z" fill="#f2b65e" stroke="#1b130e" stroke-width="3"/><circle cx="${rep[0]}" cy="${rep[1] - 43}" r="7" fill="#1b130e"/><text x="${rep[0]}" y="${rep[1] + 26}" text-anchor="middle" class="nom-region" style="font-size:18px;fill:#ffe7bd">Ton repère</text></g>
+    ${eps}</svg>`;
+}
+function barreCal(c, repos = 0) {
+  const tot = c.total + repos, w = x => (x / tot * 100).toFixed(1) + '%';
+  return `<div class="calendrier" aria-hidden="true"><i class="route" style="width:${w(c.aller)}"></i><i class="place" style="width:${w(c.surPlace)}"></i><i class="route" style="width:${w(c.retour)}"></i>${repos ? `<i class="repos" style="width:${w(repos)}"></i>` : ''}</div>
+  <div class="cal-legende"><span>Aller <b>${c.aller} h</b></span><span>Sur place <b>${c.surPlace} h</b></span><span>Retour <b>${c.retour} h</b></span><span>Total <b>${c.total} h</b></span>${repos ? `<span>Repos ensuite <b>~${repos} h</b></span>` : ''}</div>`;
+}
+// Repos estimé (même formule que le serveur : missions.js, reposApresMission), pour une mission réussie sans blessure
+const reposEstime = (total, risque) => Math.min(72, Math.ceil((6 + total * 0.3 * (1 + (risque ? 0.75 : 0))) / 2) * 2);
+function monde() {
+  const ms = D.missionsEnCours || [];
+  const routes = ms.map(m => ({ vers: POS_REPERE[m.region], voyageur: true, avancee: Math.min(.98, m.ecoule / m.trajet).toFixed(2), couleur: couleur(m.heros[0]) }));
+  const eps = ms.flatMap(m => m.heros.map((id, k) => ({ x: POS_REPERE[m.region][0] + 40 + k * 30, y: POS_REPERE[m.region][1] - 30, couleur: couleur(id) })));
+  $('#e-monde').innerHTML = `<div class="tete-bloc" style="--i:0"><h1>Runeterra</h1><span class="discret">Ton repère : ${esc(REG_CARTE[D.repere.region].nom)}</span></div>
+  <div class="monde-cadre" style="--i:1">${svgMonde({ routes, epingles: eps })}</div>
+  <div class="bloc" style="--i:2"><h2>En mission</h2>${ms.length ? ms.map(m => { const reste = m.total - m.ecoule;
+    return `<div class="mission-carte"><span class="duo">${m.heros.map(id => `<img src="${av(id)}" alt="" style="outline:2px solid ${couleur(id)}" data-fiche="${id}">`).join('')}${(m.allies || []).map(a => `<img class="allie" src="${av(a.id)}" alt="${esc(a.id)}" data-etranger="${a.id}" style="outline:2px solid ${GUILDE(a.guilde).couleur};cursor:pointer">`).join('')}</span><div style="min-width:0"><b>${esc(m.titre)}</b><div class="discret">${esc(m.heros.map(NOM).join(' et '))}${(m.allies || []).length ? `, avec ${m.allies.map(a => `<button type="button" data-etranger="${a.id}" style="color:var(--lin);font-weight:800;text-decoration:underline dotted">${esc(NOM(a.id))}</button> (${esc(GUILDE(a.guilde).nom)})`).join(', ')}` : ''} · ${esc(m.lieu)}, ${esc(REG_CARTE[m.region].nom)}</div><div class="discret">${m.ecoule < m.trajet ? `En route : arrivée dans ${m.trajet - m.ecoule} h` : 'Sur place'} · retour dans ${reste} h</div><div class="progression"><i style="width:${Math.round(m.ecoule / m.total * 100)}%"></i></div></div></div>`; }).join('') : '<div class="vide">Personne sur les routes. Le repère est au complet.</div>'}</div>
+  <div class="bloc" style="--i:3"><div class="tete-bloc"><h2>Contrats de la Chambre</h2><button type="button" class="aide" data-guide="missions" aria-label="Les missions">?</button></div>
+    ${D.contrats.map(c => `<div class="contrat" data-contrat="${c.id}" role="button" tabindex="0"><div class="haut"><b>${esc(c.titre)}</b><span class="po">${c.po} PO</span></div>
+      <div class="discret"><span class="pastille rang">Rang ${esc(c.rang)}</span> ${esc(c.lieu)} · ${esc(c.postes.join(', '))}${c.risque ? ' · <span class="pastille risque">À risque</span>' : ''}</div>
+      <p style="font-style:italic">${annoter(c.accroche)}</p>${barreCal(c.cal, reposEstime(c.cal.total, c.risque))}
+      ${c.detailPostes?.some(p => p.tenu?.moi) ? `<div class="discret"><b style="color:var(--sauge)">Tes héros : ${c.detailPostes.filter(p => p.tenu?.moi).map(p => esc(p.tenu.nom)).join(', ')}</b>${c.chance != null ? ` · chances ${c.chance} %` : ''}${c.ferme != null ? ` · départ dans ${Math.max(0, c.ferme)} h` : ''}</div>` : c.ferme != null ? `<div class="discret">Recrutement ouvert encore ${Math.max(0, c.ferme)} h</div>` : ''}</div>`).join('') || '<div class="vide">Pas de contrat ouvert pour l\'instant. La Chambre publie les nouveaux contrats chaque matin à 6 h.</div>'}
+    <p class="discret">Au début, les contrats rapportent peu. Ceux marqués « à risque » paient beaucoup mieux, et blessent plus souvent.</p></div>
+  ${D.territoires ? `<div class="bloc" style="--i:4"><div class="tete-bloc"><h2>Les territoires</h2><button type="button" class="aide" data-guide="territoires" aria-label="Les territoires">?</button></div>
+    <div class="chips">${Object.keys(REG_CARTE).map(r => { const d = D.territoires.detenteurs[r]; return `<span class="chip ${d === D.guilde.id ? 'plus' : ''}">${esc(REG_CARTE[r].nom)} · ${d ? esc(d === D.guilde.id ? 'à toi' : GUILDE(d)?.nom || '?') : 'libre'}${D.territoires.influences[r]?.[D.guilde.id] ? ` (${D.territoires.influences[r][D.guilde.id]})` : ''}</span>`; }).join('')}</div>
+    <p class="discret">Entre parenthèses : ton influence (réputation gagnée là-bas en 4 semaines). Recompte chaque lundi midi.</p></div>` : ''}
+  ${D.tournoi ? `<div class="bloc" style="--i:4"><div class="tete-bloc"><h2>Le tournoi du mois</h2><button type="button" class="aide" data-guide="tournoi" aria-label="Le tournoi">?</button></div>
+    <p class="discret">Le premier samedi du mois, à 18 h. ${D.tournoi.inscrits.length} guilde${D.tournoi.inscrits.length > 1 ? 's' : ''} inscrite${D.tournoi.inscrits.length > 1 ? 's' : ''}. Inscription : ${D.tournoi.frais} PO.</p>
+    ${D.tournoi.monEquipe ? `<p>Ton équipe : <b>${D.tournoi.monEquipe.map(NOM).join(', ')}</b></p>` : ''}
+    <button type="button" class="btn-voir" data-tournoi>${D.tournoi.monEquipe ? 'Changer l\'équipe' : 'Inscrire trois héros'}</button>
+    ${D.tournoi.dernier ? `<p class="discret">Dernier vainqueur : ${esc(GUILDE(D.tournoi.dernier.classement[0])?.nom || (D.tournoi.dernier.classement[0] === D.guilde.id ? 'ta guilde' : '?'))}.</p>` : ''}</div>` : ''}
+  <div class="bloc" style="--i:4"><div class="tete-bloc"><h2>Les autres guildes</h2><button type="button" class="aide" data-guide="guildes" aria-label="Les autres guildes">?</button></div>
+    ${D.guildes.map(gd => `<button type="button" class="guilde-ligne" data-guilde="${gd.id}"><span class="blason" style="background:${gd.couleur}">${esc(gd.nom.split(' ').pop()[0])}</span><span><b>${esc(gd.nom)}</b><br><span class="discret">${esc(gd.maitre)} · ${esc(REGIONS_NOM[gd.region])} · niveau ${gd.niveau}</span></span><span class="duo">${gd.heros.slice(0, 3).map(h => `<img src="${av(h)}" alt="">`).join('')}</span></button>`).join('') || '<div class="vide">Aucune autre guilde pour l\'instant.</div>'}</div>
+  ${(D.registre || []).length ? `<div class="bloc" style="--i:5"><div class="tete-bloc"><h2>Le Registre</h2><button type="button" class="aide" data-guide="registre" aria-label="Le Registre">?</button></div>${D.registre.map(r => `<div class="cand ok"><img src="${av(r.cle)}" alt=""><span style="flex:1"><b>${esc(r.nom)}</b><br><span class="discret">${esc(ROLES[r.role] || r.role)}${r.interessee ? ` · tu es ${r.interessee}${r.interessee === 1 ? 're' : 'e'} sur la liste` : r.perdu ? ' · a quitté ta guilde' : ''}</span></span>${EN_LIGNE && !r.interessee && !r.perdu ? `<button type="button" class="btn-voir" data-registre="${esc(r.cle)}">Intéressé</button>` : ''}</div>`).join('')}</div>` : ''}`;
+}
+function apercuQuete(c) {
+  const g = c.geo, h = H(c.heros[0]);
+  const eps = g.map((e, i) => ({ x: POS_REPERE[e.region][0] + (i ? 50 : -50), y: POS_REPERE[e.region][1] + (i ? 70 : 40), couleur: couleur(h.id), texte: e.lieu }));
+  ouvrir(`<div class="contenu-feuille" style="margin-top:6px"><h2 style="font-size:1.3rem">Où mène la quête de ${esc(h.nom)}</h2>
+    <div class="monde-cadre">${svgMonde({ routes: [{ vers: POS_REPERE[g[0].region] }], epingles: eps })}</div>
+    <p>${g.map((e, i) => `<b>${i + 1}.</b> ${annoter(e.lieu)}, ${annoter(REG_CARTE[e.region]?.nom || e.region)} : ${esc(e.recit)}.`).join('<br>')}</p>
+    <p class="discret">Environ ${g[0].heures} h de route depuis le repère, à l'aller comme au retour.</p>
+    <button type="button" class="btn-voir" data-retour-carte="${c.id}">Revenir à la lettre</button></div>`);
+}
+document.addEventListener('click', e => {
+  const v = e.target.closest('[data-voir-quete]'); if (v) { apercuQuete(D.cartes.find(c => c.id === v.dataset.voirQuete)); return; }
+  const r = e.target.closest('[data-retour-carte]'); if (r) ouvrirCarte(r.dataset.retourCarte);
+});
+
+/* ---------- Héros ---------- */
+function heros() {
+  $('#e-heros').innerHTML = `<div class="tete-bloc" style="--i:0"><h1>Tes héros</h1><span class="pastille">${D.heros.length} / ${D.capacite || 9}</span></div>
+  <div class="grille">${D.heros.map((h, i) => `<button class="fiche" data-fiche="${h.id}" style="--i:${i + 1}"><img src="${carte(h.id)}" alt=""><span class="moralette mini" style="--m:${h.moral};--teinte:${teinte(h.moral)}"><span>${h.moral}</span></span><span class="bas"><b>${esc(h.nom)}</b><span class="discret">${h.etat === 'mission' ? 'En mission' : h.repos ? `Au repos · ${h.repos} h` : esc(ROLES[h.role] || h.role)}${h.quete ? ' · quête' : ''}</span></span></button>`).join('') || '<div class="vide">Personne encore. Les candidatures arrivent dans le courrier.</div>'}</div>
+  ${(D.inventaire || []).length ? `<div class="bloc" style="--i:2"><div class="tete-bloc"><h2>L'inventaire</h2><button type="button" class="aide" data-guide="equipement" aria-label="L'équipement">?</button></div>${D.inventaire.map(o => `<div class="arc" style="display:block"><b>${esc(o.nom)}</b>${o.recharge ? ` <span class="pastille">recharge ${o.recharge} h</span>` : ''}<p class="discret" style="margin:2px 0 0">${esc(o.texte)}</p></div>`).join('')}<p class="discret">Ouvre la fiche d'un héros pour lui donner un objet.</p></div>` : ''}
+  ${(D.pantheon || []).length ? `<div class="bloc" style="--i:3"><h2>Le Panthéon</h2>${D.pantheon.map(m => `<div class="arc" style="display:block"><b>${esc(m.nom)}</b><p class="discret" style="margin:2px 0 0">${esc(m.souvenir)}</p></div>`).join('')}</div>` : ''}`;
+}
+function ficheHeros(id) {
+  const h = H(id); cocher('fiche');
+  const R = 22, C = 2 * Math.PI * R;
+  const besoins = [['energie', 'Énergie'], ['social', 'Compagnie'], ['elan', 'Progrès'], ['loisir', 'Détente']];
+  ouvrir(`<div class="banniere"><img src="${ban(id)}" alt="" style="object-position:${pos(id)}"></div>
+  <div class="contenu-feuille">
+    <div class="grand-moral"><span class="mini" style="--m:${h.moral};--teinte:${teinte(h.moral)}"><span>${h.moral}</span></span><div><h1 style="font-size:1.7rem">${esc(h.nom)}</h1><span class="discret">${h.apparence ? `${esc(h.apparence)} · ` : ''}${esc(ROLES[h.role] || h.role)} · ${esc(MOT[h.motivation])}</span></div></div>
+    ${h.presentation ? `<p class="qui">${annoter(h.presentation)}</p>` : ''}
+    ${h.repos ? `<div class="suite" style="background:rgba(127,200,248,.1)"><b>Au repos encore ${h.repos} h</b><p class="discret">${h.blesse ? 'Blessure à soigner, en plus de la fatigue. ' : ''}Reste au repère, mais ne peut pas repartir en mission avant d'avoir récupéré. <button type="button" class="aide" data-guide="repos" aria-label="Le repos" style="width:22px;height:22px;vertical-align:-5px">?</button></p></div>` : ''}
+    <div class="vues" id="vues"><span class="glisse"></span><button type="button" data-v="vie" aria-pressed="true">Au quotidien</button><button type="button" data-v="combat" aria-pressed="false">Au combat</button></div>
+    <div id="v-combat" class="bloc" hidden>${combat(h)}</div>
+    <div id="v-vie" class="bloc" style="gap:18px">
+    <div class="chips">${h.traits.map(t => `<span class="chip">${esc(t)}</span>`).join('')}</div>
+    <div class="bloc"><h2>Ce qui pèse</h2><div class="chips">${h.raisons.map(r => `<span class="chip ${r.valeur > 0 ? 'plus' : 'moins'}">${r.valeur > 0 ? '+' : '−'}${Math.abs(r.valeur)} ${esc(r.libelle)}</span>`).join('') || '<span class="discret">Rien de particulier.</span>'}</div></div>
+    <div class="jauges">${besoins.map(([k, l]) => `<div class="jauge"><svg viewBox="0 0 54 54"><circle class="fond" cx="27" cy="27" r="${R}"/><circle class="val ${h.besoins[k] < 35 ? 'bas' : ''}" cx="27" cy="27" r="${R}" data-v="${C * (1 - h.besoins[k] / 100)}"/></svg>${l}</div>`).join('')}</div>
+    <div class="bloc"><h2>Ses liens</h2><div class="liens">${h.relations.map(r => `<button class="lien" data-fiche="${r.id}"><span class="avatar" style="--m:${Math.abs(r.aff)};--teinte:${r.aff >= 0 ? 'var(--sauge)' : 'var(--braise)'}"><img src="${av(r.id)}" alt=""></span><b style="color:var(--lin)">${esc(NOM(r.id))}</b>${esc(r.type ? LIEN[r.type] : r.aff >= 0 ? 'Bonne entente' : 'Tensions')}</button>`).join('')}</div></div>
+    ${h.quete ? `<div class="suite"><b>Quête${h.quete.titre ? ` : ${esc(h.quete.titre)}` : ''}</b><p>${{ demandee: 'La demande attend ta réponse sur le bureau.', ouverte: h.quete.enCours ? 'En route pour l\'étape en cours.' : `Prête pour l'étape ${(h.quete.etape || 0) + 1}.`, accomplie: 'Accomplie.', attente: 'En attente.', refusee: 'Refusée.' }[h.quete.etat] || ''}</p>
+      ${EN_LIGNE && h.quete.etat === 'ouverte' && !h.quete.enCours && h.etat === 'present' && !h.repos ? `<label class="discret">Compagnon (facultatif) <select id="compagnon"><option value="">Seul</option>${D.heros.filter(x => x.id !== h.id && x.etat === 'present' && !x.repos && !x.reserve).map(x => `<option value="${esc(x.id)}">${esc(x.nom)}</option>`).join('')}</select></label><button type="button" class="btn-plein" data-lancer-quete="${esc(h.id)}" style="width:100%;margin-top:6px">Lancer l'étape</button>` : ''}</div>` : ''}
+    ${h.equipement ? `<div class="bloc"><div class="tete-bloc"><h2>Équipement</h2><button type="button" class="aide" data-guide="equipement" aria-label="L'équipement">?</button></div>
+      ${h.equipement.map(o => `<div class="arc" style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span><b>${esc(o.nom)}</b><br><span class="discret">${esc(o.texte)}</span></span>${EN_LIGNE ? `<button type="button" class="btn-voir" data-desequiper="${esc(h.id)}|${esc(o.uid)}">Retirer</button>` : ''}</div>`).join('') || '<p class="discret">Rien sur le dos pour l\'instant.</p>'}
+      ${h.elixir ? `<p class="discret">Élixir prêt pour la prochaine mission : ${esc(h.elixir)}.</p>` : ''}
+      ${EN_LIGNE && (D.inventaire || []).length ? `<div class="chips">${D.inventaire.map(o => `<button type="button" class="chip" data-equiper="${esc(h.id)}|${esc(o.uid)}">${o.type === 'potion' ? 'Boire' : o.type === 'elixir' ? 'Garder' : 'Équiper'} : ${esc(o.nom)}</button>`).join('')}</div>` : ''}</div>` : ''}
+    <p class="discret">Fidélité ${h.fidelite} sur 100</p>
+    </div>
+  </div>`);
+  $('#vues').onclick = e => { const b = e.target.closest('button'); if (!b) return; const c = b.dataset.v === 'combat';
+    $('#vues').classList.toggle('combat', c); $('#vues').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b));
+    $('#v-combat').hidden = !c; $('#v-vie').hidden = c;
+    if (c) requestAnimationFrame(() => requestAnimationFrame(() => document.querySelectorAll('#v-combat .barre i').forEach(i => i.style.width = i.dataset.w))); };
+  requestAnimationFrame(() => requestAnimationFrame(() => document.querySelectorAll('.jauge .val').forEach(c => c.style.strokeDashoffset = c.dataset.v)));
+}
+
+
+function ficheEtranger(id) {
+  const h = D.etrangers[id], gd = GUILDE(h.guilde);
+  ouvrir(`<div class="banniere"><img src="${ban(id)}" alt="" style="object-position:${pos(id)}"></div>
+  <div class="contenu-feuille">
+    <div><h1 style="font-size:1.7rem">${esc(h.nom)}</h1><span class="discret">${h.apparence ? `${esc(h.apparence)} · ` : ''}${esc(ROLES[h.role] || h.role)} · ${esc(MOT[h.motivation])}</span></div>
+    <button type="button" class="guilde-ligne" data-guilde="${gd.id}"><span class="blason" style="background:${gd.couleur}">${esc(gd.nom.split(' ').pop()[0])}</span><span><b>${esc(gd.nom)}</b><br><span class="discret">Maître : ${esc(gd.maitre)} · ${esc(REGIONS_NOM[gd.region])}</span></span><span class="discret">›</span></button>
+    ${h.presentation ? `<p class="qui">${annoter(h.presentation)}</p>` : ''}
+    <div class="chips">${h.traits.map(t => `<span class="chip">${esc(t)}</span>`).join('')}</div>
+    <div class="bloc">${combat(h)}</div>
+    <p class="discret">Fiche publique : son moral, ses liens et la vie de sa guilde restent l'affaire de son maître.</p>
+  </div>`);
+  requestAnimationFrame(() => requestAnimationFrame(() => document.querySelectorAll('.barre i').forEach(i => i.style.width = i.dataset.w)));
+}
+function ficheGuilde(id) {
+  const gd = GUILDE(id);
+  ouvrir(`<div class="contenu-feuille" style="margin-top:6px">
+    <div style="display:flex;gap:14px;align-items:center"><span class="blason" style="background:${gd.couleur};width:60px;height:60px;font-size:1.6rem">${esc(gd.nom.split(' ').pop()[0])}</span><div><h2 style="font-size:1.35rem">${esc(gd.nom)}</h2><span class="discret">Maître : ${esc(gd.maitre)}</span></div></div>
+    <p class="lettre" style="font-size:1rem">« ${esc(gd.devise)} »</p>
+    <div class="chips"><span class="chip">${esc(REGIONS_NOM[gd.region])}</span><span class="chip">Niveau ${gd.niveau}</span><span class="chip">Réputation ${esc(gd.palier)}</span><span class="chip">${gd.missions} missions</span></div>
+    ${EN_LIGNE && D.alliances ? `<div class="bloc"><h2>Alliance</h2>${gd.allie ? `<p class="discret">Vos guildes sont alliées : vos héros qui se croisent en mission s'entendent mieux.</p><button type="button" class="btn-voir" data-alliance="rompre|${esc(gd.id)}">Rompre l'alliance (48 h de préavis)</button>`
+      : D.alliances.recues.some(i => i.de === gd.id) ? `<button type="button" class="btn-plein" data-alliance="accepter|${esc(D.alliances.recues.find(i => i.de === gd.id).cle)}">Accepter leur proposition d'alliance</button>`
+      : D.alliances.envoyees.includes(gd.id) ? '<p class="discret">Proposition envoyée, en attente de leur réponse.</p>'
+      : `<button type="button" class="btn-voir" data-alliance="proposer|${esc(gd.id)}">Proposer une alliance</button><p class="discret">${D.alliances.allies.length} / ${D.alliances.max} alliances à ton palier.</p>`}<button type="button" class="aide" data-guide="alliances" aria-label="Les alliances">?</button></div>` : ''}
+    <div class="bloc"><h2>Ses héros</h2><div class="grille">${gd.heros.map(hid => `<button class="fiche" data-etranger="${hid}"><img src="${carte(hid)}" alt=""><span class="bas"><b>${esc(NOM(hid))}</b><span class="discret">${esc(ROLES[D.etrangers[hid].role])}${D.etrangers[hid].rang ? ` · ${esc(D.etrangers[hid].rang)}` : ''}</span></span></button>`).join('')}</div></div>
+  </div>`);
+}
+document.addEventListener('click', e => {
+  const et = e.target.closest('[data-etranger]'); if (et) { ficheEtranger(et.dataset.etranger); return; }
+  const gl = e.target.closest('[data-guilde]'); if (gl) { ficheGuilde(gl.dataset.guilde); return; }
+  const ch = e.target.closest('[data-chien]'); if (ch) { ficheChien(); return; }
+  const gu = e.target.closest('[data-guide]'); if (gu) { guide(gu.dataset.guide); return; }
+  const ct = e.target.closest('[data-contrat]'); if (ct) { ficheContrat(ct.dataset.contrat); return; }
+  const an = e.target.closest('[data-annonce]'); if (an) { annonce(); return; }
+  const ar = e.target.closest('[data-role-annonce]'); if (ar && EN_LIGNE) { agir('annonce', { role: ar.dataset.roleAnnonce }).then(r => { if (r) { fermer(); toast(`Annonce affichée à la Chambre : ${ar.dataset.roleAnnonce}`); } }); return; }
+  if (ar) { const prix = D.recrutement.prixAnnonce; D.po -= prix; D.annonce = ar.dataset.roleAnnonce; fermer(); rafraichir();
+    toast(`Annonce affichée à la Chambre : ${ar.dataset.roleAnnonce}`, () => { D.po += prix; D.annonce = null; rafraichir(); }); return; }
+});
+
+/* ---------- Les actions du jeu en ligne ---------- */
+function choisirRemplacant(cle) {
+  const c = D.candidatures.find(x => x.cle === cle), libres = D.heros.filter(h => h.etat === 'present');
+  ouvrir(`<div class="contenu-feuille" style="margin-top:6px"><h2 style="font-size:1.3rem">Le repère est plein</h2>
+    <p>Pour accueillir <b>${esc(c.nom)}</b>, il faut laisser partir quelqu'un. Il ira au Registre, où d'autres guildes pourront le recruter. Il ne reviendra pas chez toi.</p>
+    ${libres.map(h => `<button type="button" class="cand ok" data-remplacer="${esc(cle)}|${esc(h.id)}" style="width:100%;text-align:left"><img src="${av(h.id)}" alt=""><span><b>${esc(h.nom)}</b> <span class="pastille rang">${esc(h.rang || '')}</span><br><span class="discret">Moral ${h.moral} · fidélité ${h.fidelite}</span></span></button>`).join('') || '<p class="discret">Personne n\'est au repère en ce moment : attends le retour d\'un héros.</p>'}</div>`);
+}
+function choisirEquipeTournoi() {
+  const choix = new Set(D.tournoi.monEquipe || []);
+  ouvrir(`<div class="contenu-feuille" style="margin-top:6px"><h2 style="font-size:1.3rem">Le tournoi du mois</h2>
+    <p>Choisis trois héros. Ils devront être au repère le premier samedi du mois, à 18 h : un absent laisse l'équipe à deux.</p>
+    <div id="choix-tournoi">${D.heros.map(h => `<label class="cand ok" style="cursor:pointer"><input type="checkbox" value="${esc(h.id)}" ${choix.has(h.id) ? 'checked' : ''}><img src="${av(h.id)}" alt=""><span><b>${esc(h.nom)}</b> <span class="pastille rang">${esc(h.rang || '')}</span><br><span class="discret">${esc(ROLES[h.role] || h.role)}</span></span></label>`).join('')}</div>
+    <button type="button" class="btn-plein" id="ok-tournoi" style="width:100%">Inscrire l'équipe${D.tournoi.monEquipe ? '' : ` · ${D.tournoi.frais} PO`}</button></div>`);
+  $('#ok-tournoi').onclick = async () => { const ids = [...document.querySelectorAll('#choix-tournoi input:checked')].map(i => i.value);
+    if (ids.length !== 3) { toast('Il faut exactement trois héros.'); return; }
+    if (await agir('tournoi', { heros: ids })) { fermer(); toast('Équipe inscrite au tournoi.'); } };
+}
+document.addEventListener('click', async e => {
+  const al = e.target.closest('[data-aller]'); if (al) { aller(al.dataset.aller); return; }
+  if (!EN_LIGNE) return;
+  const pl = e.target.closest('[data-placer]'); if (pl) { const [contrat, poste, heros] = pl.dataset.placer.split('|'); pl.disabled = true;
+    const r = await agir('placer', { contrat, poste: +poste, heros }); if (r) { cocher('contrat'); ficheContrat(contrat); toast(r.evince ? `${NOM(heros)} reprend le poste : son rang est meilleur.` : `${NOM(heros)} est engagé sur le contrat.`); } else pl.disabled = false; return; }
+  const rt = e.target.closest('[data-retirer]'); if (rt) { const [contrat, heros] = rt.dataset.retirer.split('|'); if (await agir('retirer', { contrat, heros })) ficheContrat(contrat); return; }
+  const rc = e.target.closest('[data-recruter]'); if (rc) { if ((D.effectif ?? D.heros.length) >= D.capacite) { choisirRemplacant(rc.dataset.recruter); return; }
+    if (await agir('recruter', { cle: rc.dataset.recruter })) { cocher('recruter'); toast('Bienvenue au repère !'); } return; }
+  const rm = e.target.closest('[data-remplacer]'); if (rm) { const [cle, remplacer] = rm.dataset.remplacer.split('|'); if (await agir('recruter', { cle, remplacer })) { fermer(); toast('Bienvenue au repère !'); } return; }
+  const rf = e.target.closest('[data-refuser]'); if (rf) { if (await agir('refuser', { cle: rf.dataset.refuser })) toast('Candidature déclinée.'); return; }
+  const eq = e.target.closest('[data-equiper]'); if (eq) { const [heros, objet] = eq.dataset.equiper.split('|'); const r = await agir('equiper', { heros, objet }); if (r) { ficheHeros(heros); toast(typeof r === 'string' ? r : 'C\'est fait.'); } return; }
+  const dq = e.target.closest('[data-desequiper]'); if (dq) { const [heros, objet] = dq.dataset.desequiper.split('|'); if (await agir('desequiper', { heros, objet })) ficheHeros(heros); return; }
+  const lq = e.target.closest('[data-lancer-quete]'); if (lq) { const heros = lq.dataset.lancerQuete, compagnon = $('#compagnon')?.value || null;
+    const r = await agir('quete', { heros, compagnon }); if (r) { fermer(); toast(r.mode === 'voyage' ? `${NOM(heros)} part en voyage. Des lettres arriveront en route.` : `${NOM(heros)} part pour son étape de quête.`); } return; }
+  const to = e.target.closest('[data-tournoi]'); if (to) { choisirEquipeTournoi(); return; }
+  const rg = e.target.closest('[data-registre]'); if (rg) { const r = await agir('registre', { cle: rg.dataset.registre }); if (r) toast(`Tu es ${r}${r === 1 ? 're' : 'e'} sur la liste : il te sera proposé à une prochaine montée de niveau.`); return; }
+  const an = e.target.closest('[data-alliance]'); if (an) { const [quoi, x] = an.dataset.alliance.split('|');
+    const r = await agir(quoi === 'proposer' ? 'allianceProposer' : quoi === 'accepter' ? 'allianceAccepter' : 'allianceRompre', quoi === 'accepter' ? { cle: x } : { guilde: x });
+    if (r) { fermer(); toast(quoi === 'proposer' ? 'Proposition d\'alliance envoyée.' : quoi === 'accepter' ? 'Alliance conclue.' : 'Rupture annoncée : l\'alliance tient encore 48 h.'); } return; }
+});
+
+const RANGS_TXT = ['E', 'D', 'C-', 'C', 'C+', 'B-', 'B', 'B+', 'A-', 'A', 'A+', 'S-', 'S', 'S+', 'G'], RG_IDX = r => RANGS_TXT.indexOf(r);
+function ficheContrat(id) {
+  const c = D.contrats.find(x => x.id === id); cocher('contrat');
+  const libres = D.heros.filter(h => h.etat === 'present' && !h.repos), las = D.heros.filter(h => h.etat === 'present' && h.repos);
+  ouvrir(`<div class="contenu-feuille" style="margin-top:6px"><div class="haut" style="display:flex;justify-content:space-between;gap:10px"><h2 style="font-size:1.35rem">${esc(c.titre)}</h2><span class="po" style="font-size:1.2rem">${c.po} PO</span></div>
+    <p class="discret">${esc(cap(c.demandeur))} · ${esc(c.lieu)}${c.risque ? ' · <span class="pastille risque">À risque</span>' : ''}</p>
+    <div class="lettre">${annoter(c.accroche)}</div>
+    <div class="bloc" style="gap:4px"><h2>Le temps que ça prend</h2>${barreCal(c.cal, reposEstime(c.cal.total, c.risque))}
+    <p class="discret">Le repos dépend aussi de l'issue : plus long après un échec ou une blessure.</p></div>
+    <div class="bloc"><div class="tete-bloc"><h2>Contrat de rang ${esc(c.rang)}</h2><button type="button" class="aide" data-guide="rangs" aria-label="Les rangs">?</button></div>
+      <p class="discret">Chaque poste attend un héros de rang ${esc(c.rang)}. En dessous, ce n'est pas interdit : c'est plus difficile, et le poste peut être repris par une autre guilde qui envoie mieux.</p>
+      ${c.detailPostes.map((p, i) => { const sousRang = p.tenu && RG_IDX(p.tenu.rang) < RG_IDX(c.rang);
+        return `<div class="poste-rang"><b>${esc(p.type)}</b>${p.tenu ? p.tenu.moi ? `<p class="discret" style="margin:2px 0">Tenu par ton héros <b>${esc(p.tenu.nom || NOM(p.tenu.id))}</b>, rang ${esc(p.tenu.rang)}.${sousRang ? ' Sous le rang du contrat : une autre guilde peut te reprendre ce poste avec un meilleur rang.' : ''}</p>${EN_LIGNE ? `<button type="button" class="btn-voir" data-retirer="${esc(c.id)}|${esc(p.tenu.id)}">Rappeler ${esc(p.tenu.nom || NOM(p.tenu.id))}</button>` : ''}`
+          : `<p class="discret" style="margin:2px 0">Déjà tenu par <b>${esc(p.tenu.nom || NOM(p.tenu.id))}</b> (${esc(GUILDE(p.tenu.guilde)?.nom || 'une autre guilde')}), rang ${esc(p.tenu.rang)}${sousRang ? ', sous le rang du contrat : un héros de meilleur rang peut lui reprendre la place.' : '. Ce poste est pris.'}</p>` : ''}
+        ${p.tenu?.moi ? '' : p.candidats.length ? p.candidats.map(x => { const h = H(x.id), dispo = x.dispo ?? (h.etat === 'present' && !h.repos), reprend = !p.tenu || (sousRang && RG_IDX(x.rang) > RG_IDX(p.tenu.rang));
+          return `<div class="cand ${x.ecart === 0 ? 'ok' : x.ecart <= 2 ? 'moyen' : 'dur'}" style="opacity:${dispo ? 1 : .5}"><img src="${av(x.id)}" alt=""><span style="flex:1"><b>${esc(h.nom)}</b> <span class="pastille rang">${esc(x.rang)}</span>${p.tenu && reprend ? ' <span class="pastille miel">peut reprendre le poste</span>' : ''}<br><span class="discret">${esc(x.texte)}${x.chance != null ? ` Chances avec lui : ${x.chance} %.` : ''}${dispo ? '' : h.repos ? ` Au repos (${h.repos} h).` : h.reserve ? ' Déjà engagé sur un contrat.' : ' Absent.'}</span></span>${EN_LIGNE && dispo && reprend ? `<button type="button" class="btn-plein" data-placer="${esc(c.id)}|${i}|${esc(x.id)}" style="padding:8px 12px">Envoyer</button>` : ''}</div>`; }).join('') : '<p class="discret">Personne dans ta guilde ne peut tenir ce poste.</p>'}</div>`; }).join('')}
+      ${las.length ? `<p class="discret">Au repos : ${las.map(h => `${esc(h.nom)} (${h.repos} h)`).join(', ')}.</p>` : ''}</div>
+    ${c.risque ? '<p class="discret">Mission à risque : mieux payée, mais les blessures y sont nettement plus fréquentes.</p>' : ''}
+    ${c.chance != null && c.detailPostes.some(p => p.tenu) ? `<p class="discret">Chances de réussite avec l'équipe actuelle : <b>${c.chance} %</b>.</p>` : ''}
+    <p class="discret">${EN_LIGNE ? `Le recrutement ferme dans ${Math.max(0, c.ferme)} h. Tes héros partent à temps pour être sur place au départ.` : 'Dans cette démo, l\'envoi en mission n\'est pas encore branché.'}</p></div>`);
+}
+
+/* ---------- Le chien ---------- */
+function ficheChien() {
+  ouvrir(`<div class="contenu-feuille" style="margin-top:6px">
+    <h2 style="font-size:1.35rem">${SVG_CHIEN.replace('<svg', '<svg style="width:28px;height:28px;vertical-align:-6px;margin-right:6px"')}${esc(chien)}</h2>
+    <p>Le chien du repère. Il appartient à tout le monde et n'obéit à personne. Il console les blessés, vole dans les gamelles et fait la fête à chaque retour de mission.</p>
+    <p class="discret">Tu peux le renommer quand tu veux. Les héros mettront quelques jours à s'y faire.</p>
+    <form class="champ-nom" id="form-chien"><input id="nom-chien" maxlength="20" value="${esc(chien)}" aria-label="Nom du chien" autocomplete="off"><button class="btn-plein">Nommer</button></form>
+    <p class="discret" id="err-chien" role="alert"></p></div>`);
+  $('#form-chien').onsubmit = ev => { ev.preventDefault(); const n = $('#nom-chien').value.trim().replace(/\s+/g, ' ');
+    if (!/^[\p{L}][\p{L}' -]{0,19}$/u.test(n)) { $('#err-chien').textContent = 'Un nom de 1 à 20 lettres, s\'il te plaît.'; return; }
+    if (EN_LIGNE) { agir('chien', { nom: n }).then(r => { if (r) { cocher('chien'); fermer(); toast(`Le chien s'appelle désormais ${D.chien}`); } }); return; }
+    const ancien = chien; chien = n[0].toUpperCase() + n.slice(1); cocher('chien'); fermer(); rafraichir(); toast(`Le chien s'appelle désormais ${chien}`, () => { chien = ancien; rafraichir(); }); };
+}
+
+/* ---------- Le guide du maître ----------
+ * Tout le jeu en six cartes courtes, ouvrables depuis le « ? » de l'accueil, ou à l'endroit précis où une règle s'applique.
+ */
+const GUIDE = [
+  ['role', '👑', 'Ton rôle', "Tu diriges une guilde. Tes héros vivent leur vie sans toi : ils s'entraînent, se disputent, s'attachent. Toi, tu choisis les missions, tu réponds au courrier et tu agrandis le repère. Chaque réponse est jugée : être dur, juste, à l'écoute ou généreux ne plaît pas à tout le monde."],
+  ['heros', '❤', 'Moral, fidélité, estime', "Le moral dit comment un héros va aujourd'hui. La fidélité, s'il compte rester. L'estime, ce qu'il pense de toi. Un héros qui t'estime ose te confier sa quête personnelle ; un héros trop malheureux finit par écrire sa lettre de départ."],
+  ['missions', '⚔', 'Les missions', "La Chambre des Bannières publie des contrats. Une mission compte l'aller, le temps sur place et le retour : jamais plus de 48 h en tout. Plus c'est loin, moins on reste sur place. Au début, ça rapporte peu de pièces d'or (PO). Quelques missions « à risque » paient bien mieux, mais on y rentre plus souvent blessé."],
+  ['repos', '☾', 'Le repos', "Au retour, un héros doit récupérer avant de repartir. Le repos dépend de la durée de la mission, de sa dureté, de son issue et des blessures : quelques heures après une course facile, jusqu'à trois jours après un échec sanglant. Il reste au repère pendant ce temps."],
+  ['rangs', '★', 'Les rangs', "Chaque héros a un rang sur chaque poste, de E à G, selon ce qu'il vaut aujourd'hui. Une recrue part quelques rangs sous son potentiel, et monte en progressant. Chaque contrat a aussi un rang : celui qu'il faut, à chaque poste, pour avoir de bonnes chances. Envoyer un héros plus faible n'est jamais interdit, mais chaque rang manquant rend la mission plus dure. Et tant que le recrutement est ouvert, une autre guilde qui envoie un héros de meilleur rang peut te reprendre un poste que tu tiens sous le rang du contrat. À rang égal, ou si ton héros a déjà le rang demandé, le premier placé garde sa place."],
+  ['equipement', '⚔', "L'équipement", "Les missions réussies peuvent rapporter un objet. Il rejoint l'inventaire, et tu choisis qui le porte : deux objets par héros. Un objet améliore des statistiques, sans jamais dépasser les limites du héros : il ne change pas son potentiel. Les potions soignent (moins de repos), les élixirs servent pour la prochaine mission. Quand un héros part, son équipement revient à l'inventaire."],
+  ['territoires', '⚑', 'Les territoires', "Chaque région de Runeterra peut être tenue par une guilde. Ton influence dans une région, c'est la réputation que tu y as gagnée en mission sur les quatre dernières semaines. Chaque lundi midi, on recompte : la guilde la plus influente tient la région, et pour la lui reprendre il faut 10 % d'influence de plus qu'elle. Tenir une région : contrats mieux payés là-bas (+10 %), un contrat de plus chaque jour, et le moral des héros qui aiment cette région."],
+  ['tournoi', '🏆', 'Le tournoi', "Un tournoi par mois, le premier samedi à 18 h. Chaque guilde inscrit trois héros et paie des frais selon son palier ; la Chambre ajoute sa part à la cagnotte. Jusqu'à six équipes, tout le monde se rencontre ; au-delà, élimination directe. Un match se joue en trois manches : un combat, une épreuve tirée au hasard, un combat. Gains : 60 % de la cagnotte au vainqueur, 30 % au deuxième, 10 % au troisième, et de la réputation."],
+  ['alliances', '🤝', 'Les alliances', "Deux guildes peuvent s'allier : une au palier Inconnue, deux ensuite, trois à la Renommée. Des héros de guildes alliées qui se croisent en mission s'entendent mieux, ce qui aide l'équipe. Une alliance se rompt avec 48 h de préavis, puis il faut attendre deux semaines pour se réallier."],
+  ['registre', '📜', 'Le Registre', "Les héros qui quittent une guilde vont au Registre. Si l'un d'eux t'intéresse, inscris-toi sur sa liste : il te sera proposé, en priorité, à une prochaine montée de niveau. Un héros qui a quitté ta guilde ne reviendra pas chez toi."],
+  ['repere', '⌂', 'Le repère', "Le repère grandit avec la réputation de ta guilde. Chaque rang ouvre une nouvelle pièce, à prix fixe : les cuisines au rang 2, l'infirmerie au rang 4, la salle d'armes au rang 6, et ainsi de suite jusqu'à l'aile nord. Chaque pièce a un vrai effet : un bon repas qui remonte le moral, des blessures qui guérissent plus vite, des trajets plus courts… Touche une pièce sur le plan pour voir ce qu'elle apporte."],
+  ['recrutement', '✉', 'Le recrutement', "À chaque montée de niveau, 3 à 10 héros postulent, au hasard : rien ne garantit le rôle qui te manque. Entre-temps, une candidature spontanée peut arriver (une chance sur dix par jour). Plus ta guilde est réputée et ancienne, plus les grands noms se présentent. Contre des PO, une annonce à la Chambre augmente tes chances d'attirer le rôle voulu à la prochaine montée de niveau."],
+  ['guildes', '⚑', 'Les autres guildes', "Tes amis dirigent leurs propres guildes. Vous vous croisez sur les contrats ouverts à tous : chaque poste va au premier qui le prend. Touche un héros allié ou une guilde pour voir sa fiche publique. Son moral et ses secrets restent l'affaire de son maître."],
+];
+function guide(cle) {
+  ouvrir(`<div class="contenu-feuille" style="margin-top:6px"><h2 style="font-size:1.4rem">Comment ça marche</h2>
+    ${GUIDE.map(([k, ico, t, txt]) => `<section class="guide-sec ${k === cle ? 'vise' : ''}" id="g-${k}"><h3><span>${ico}</span>${t}</h3><p>${annoter(txt)}</p></section>`).join('')}
+    <p class="discret">Les mots soulignés s'expliquent d'un toucher.</p></div>`);
+  if (cle) requestAnimationFrame(() => $('#g-' + cle)?.scrollIntoView({ block: 'center', behavior: 'smooth' }));
+}
+function bienvenue() {
+  ouvrir(`<div class="contenu-feuille" style="margin-top:6px"><h2 style="font-size:1.45rem">Bienvenue dans ton repère</h2>
+    <div class="etapes-bienvenue">
+      <div><p><b>Regarde le plan.</b> Chaque point qui clignote est un héros présent. Touche-le pour savoir ce qu'il fait.</p></div>
+      <div><p><b>Ouvre le courrier.</b> Tes héros te demandent des choses. Ta réponse change ce qu'ils pensent de toi.</p></div>
+      <div><p><b>Envoie-les en mission</b> depuis le Monde. Ils reviennent avec des PO, des histoires… et parfois des blessures.</p></div>
+    </div>
+    <p style="margin:6px 0 0"><b>Comment veux-tu qu'on t'appelle ?</b></p>
+    <div class="bascule" id="titre1"><button type="button" data-t="maître" aria-pressed="${titre === 'maître'}">Maître</button><button type="button" data-t="maîtresse" aria-pressed="${titre === 'maîtresse'}">Maîtresse</button></div>
+    <label class="discret" style="display:flex;gap:10px;align-items:center"><input type="checkbox" id="doux1" ${billetsDoux ? 'checked' : ''}> Certains héros pourront t'écrire des billets doux, de temps en temps.</label>
+    <form class="champ-nom" id="form-chien1" style="margin-top:6px"><input id="nom-chien1" maxlength="20" placeholder="Le nom du chien du repère" value="${esc(chien)}" aria-label="Nom du chien"><button class="btn-plein">C'est parti</button></form>
+    <p class="discret">Un « ? » en haut de l'accueil explique tout le reste.</p></div>`);
+  $('#titre1').onclick = ev => { const b = ev.target.closest('[data-t]'); if (!b) return; titre = b.dataset.t; $('#titre1').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b)); };
+  $('#form-chien1').onsubmit = ev => { ev.preventDefault(); billetsDoux = $('#doux1').checked; try { localStorage.setItem('gl-titre', titre); localStorage.setItem('gl-doux', billetsDoux ? 'oui' : 'non'); } catch {} const n = $('#nom-chien1').value.trim(); if (/^[\p{L}][\p{L}' -]{0,19}$/u.test(n)) { chien = n[0].toUpperCase() + n.slice(1); cocher('chien'); }
+    try { localStorage.setItem('gl-bienvenue', '1'); } catch {} fermer(); rafraichir(); };
+}
+
+/* ---------- Annonce à la Chambre des Bannières ---------- */
+function annonce() {
+  const prix = D.recrutement.prixAnnonce;
+  ouvrir(`<div class="contenu-feuille" style="margin-top:6px"><h2 style="font-size:1.35rem">Une annonce à la Chambre</h2>
+    <p>Contre <b class="po">${prix} PO</b>, la Chambre des Bannières affiche que ta guilde cherche un rôle. À ta prochaine montée de niveau, tu as <b>10 % de chances en plus</b> qu'au moins un candidat de ce rôle se présente.</p>
+    <p class="discret">Ce n'est pas une garantie : le hasard garde le dernier mot.</p>
+    <div class="choix-bat">${Object.keys(ROLES).map(r => `<button type="button" data-role-annonce="${r}" ${D.po < prix ? 'disabled' : ''}><span class="ico" style="background:var(--bois-clair)">${r[0]}</span><span><b>${r}</b></span></button>`).join('')}</div>
+    ${D.po < prix ? '<p class="discret">Le coffre n\'y suffit pas pour l\'instant.</p>' : ''}</div>`);
+}
+
+const COURT = { 'Résistance magique': 'Rés. magique' };
+function combat(h) {
+  const c = h.combat; if (!c) return '';
+  return `<div class="potentiel ${c.potentiel.revele ? 'revele' : ''}"><span class="sceau-pot">${c.potentiel.revele ? esc(c.potentiel.palier) : '?'}</span><div><b>Potentiel</b><p class="discret">${esc(c.potentiel.texte)}</p></div></div>
+  ${h.rang ? `<div class="potentiel" style="background:rgba(201,164,106,.08)"><span class="sceau-pot" style="background:#3a2b1e;color:#e0c79d">${esc(h.rang)}</span><div><b>Rang actuel · ${esc(ROLES[h.role] || h.role)}</b><p class="discret">Ce que vaut ${esc(h.nom)} aujourd'hui à son poste. Il monte avec la progression, jusqu'à son potentiel. <button type="button" class="aide" data-guide="rangs" aria-label="Les rangs" style="display:inline-grid;vertical-align:middle">?</button></p></div></div>` : ''}
+  <div class="bloc" style="gap:10px"><h2>Statistiques</h2>${c.stats.map(s => `<div class="stat"><span>${esc(COURT[s.nom] || s.nom)}</span><span class="barre"><i data-w="${s.valeur}%"></i></span><b>${s.etat ? `<span class="etoile" title="${s.etat === 'sommet' ? 'Au sommet' : 'Proche de son sommet'}">✦</span>` : ''}${s.valeur}</b></div>`).join('')}${c.stats.some(s => s.etat) ? '<p class="discret"><span class="etoile">✦</span> proche de son sommet</p>' : ''}</div>
+  <div class="bloc" style="gap:8px"><h2>Ses chances en mission</h2><p class="discret">Contre une mission ordinaire de ton palier.</p>${c.epreuves.map(e => `<div class="epreuve"><span>${esc(e.label)}</span><span class="pct" style="color:${e.chance >= 70 ? 'var(--sauge)' : e.chance >= 45 ? 'var(--miel)' : 'var(--braise)'}">${e.chance} %</span></div>`).join('')}</div>
+  ${h.specialites?.length ? `<div class="chips">${h.specialites.map(s => `<span class="chip">${esc(s)}</span>`).join('')}</div>` : ''}`;
+}
+/* ---------- Courrier ---------- */
+function courrier() {
+  const ouvertes = D.cartes.filter(c => !repondues[c.id]);
+  const R = D.recrutement;
+  $('#e-courrier').innerHTML = `<h1 style="--i:0">Le courrier</h1>
+  <div class="bloc" style="--i:1"><div class="tete-bloc"><h2>Recrutement</h2><button type="button" class="aide" data-guide="recrutement" aria-label="Le recrutement">?</button></div>
+    <div class="contrat"><p>Réputation <b>${esc(R.palier)}</b>. À la prochaine montée de niveau, <b>${R.dossiers} héros</b> postuleront. Entre-temps, une candidature spontanée peut arriver chaque jour.</p>
+    ${D.annonce ? `<span class="pastille miel" style="justify-self:start">Annonce affichée : ${esc(D.annonce)}</span>` : `<button type="button" class="btn-voir" data-annonce>Chercher un rôle · ${R.prixAnnonce} PO</button>`}</div></div>
+  ${(D.candidatures || []).length ? `<div class="bloc" style="--i:1"><h2>À la porte</h2>${D.candidatures.map(c => `<div class="cand ok" style="align-items:flex-start"><img src="${av(c.cle)}" alt=""><span style="flex:1"><b>${esc(c.nom)}</b> <span class="pastille rang">${esc(c.rang)}</span>${c.indice ? ` <span class="pastille">${esc(c.indice)}</span>` : ''}<br><span class="discret">${esc(ROLES[c.role] || c.role)} · ${esc(MOT[c.motivation] || '')} · ${c.salaire} PO par semaine · ${c.fondation ? 'dossier de fondation' : c.spontanee ? 'candidature spontanée' : 'dossier de montée de niveau'} · expire dans ${c.expire} h</span>${c.presentation ? `<span class="discret" style="display:block;margin-top:4px;font-style:italic">${annoter(c.presentation.length > 160 ? c.presentation.slice(0, 158).replace(/\s\S*$/, '') + '…' : c.presentation)}</span>` : ''}</span></div>
+    <div style="display:flex;gap:8px;margin:-4px 0 10px 56px">${EN_LIGNE ? `<button type="button" class="btn-plein" data-recruter="${esc(c.cle)}">Accueillir</button><button type="button" class="btn-voir" data-refuser="${esc(c.cle)}">Refuser</button>` : ''}</div>`).join('')}
+    <p class="discret">${D.effectif ?? D.heros.length} héros sur ${D.capacite || 9} places.${(D.effectif ?? D.heros.length) >= (D.capacite || 9) ? ' Repère plein : accueillir quelqu\'un, c\'est laisser partir quelqu\'un.' : ''}</p></div>` : ''}
+  ${(D.rapports || []).length ? `<div class="bloc" style="--i:1"><h2>Rapports de mission</h2>${D.rapports.map(r => `<button class="pli" data-rapport="${r.id}"><span class="duo">${r.heros.map(id => `<img src="${av(id)}" alt="">`).join('')}</span><span><b>${esc(r.titre)}</b><small>${esc({ eclatante: 'Un triomphe', reussite: 'Mission réussie', partielle: 'Mission à moitié réussie', echec: 'Mission ratée' }[r.issue])} · ${esc(r.lieu)}</small></span><span class="sceau">${r.lu === false ? '•' : 'G'}</span></button>`).join('')}</div>` : ''}
+  <div class="bloc" style="--i:1"><h2>À traiter</h2>${ouvertes.length ? ouvertes.map(pli).join('') : '<div class="vide">Tout est signé.</div>'}</div>
+  ${Object.keys(repondues).length ? `<div class="bloc" style="--i:2"><h2>Tes réponses</h2>${D.cartes.filter(c => repondues[c.id]).map(c => `<div class="arc"><span class="duo">${c.heros.map(id => `<img src="${av(id)}" alt="">`).join('')}</span><div><b>${esc(c.options.find(o => o.id === repondues[c.id]).libelle)}</b><div class="discret">${esc(c.titre.replace(/ : « .* »$/, ''))}</div></div></div>`).join('')}</div>` : ''}
+  ${D.traitees.length ? `<div class="bloc" style="--i:3"><h2>Restées sans réponse</h2>${D.traitees.map(t => `<div class="arc" style="display:block"><b>${esc(t.titre)}</b><p class="discret">Réponse par défaut : ${esc(t.reponse)}. ${esc(t.consequences.join(' '))}</p></div>`).join('')}</div>` : ''}`;
+}
+function ouvrirRapport(id) {
+  const r = D.rapports.find(x => x.id === id);
+  ouvrir(`<div class="contenu-feuille" style="margin-top:6px">
+    <div style="display:flex;gap:14px;align-items:center"><span class="duo" style="flex:none">${r.heros.map(h => `<img src="${av(h)}" alt="">`).join('')}</span><h2 style="font-size:1.3rem">Rapport : ${esc(r.titre)}</h2></div>
+    <div class="lettre">${r.paragraphes.map(p => `<p style="margin:0 0 .8em">${annoter(p)}</p>`).join('')}</div>
+    ${r.po != null ? `<div class="chips"><span class="chip plus">+${r.po} PO</span><span class="chip plus">+${r.reputation} réputation</span>${r.objet ? `<span class="chip plus">${esc(r.objet)}</span>` : ''}${(r.allies || []).length ? `<span class="chip">Avec ${r.allies.map(a => esc(a.nom)).join(', ')}</span>` : ''}</div>` : ''}
+    <p class="discret">Le rapport raconte ce qui s'est vraiment passé : qui a mené chaque épreuve, ce qui a réussi, ce qui a raté.</p>
+    <button type="button" class="btn-plein" id="ranger" style="width:100%">Ranger le rapport</button></div>`);
+  $('#ranger').onclick = fermer;
+  if (EN_LIGNE && r.lu === false) agir('lu', { rapport: r.id });
+}
+function ouvrirCarte(id) {
+  const c = D.cartes.find(x => x.id === id);
+  ouvrir(`<div class="contenu-feuille" style="margin-top:6px">
+    <div style="display:flex;gap:14px;align-items:center"><span class="duo" style="flex:none">${c.heros.map(h => `<img src="${av(h)}" alt="">`).join('')}</span><h2 style="font-size:1.3rem">${esc(c.titre.replace(/ : « (.*) »$/, ' : $1'))}</h2></div>
+    ${(c.contexte || []).map(p => `<p>${annoter(p)}</p>`).join('')}
+    ${(c.voix || []).map(v => `<div class="voix"><span class="avatar" style="--m:100;width:40px;height:40px"><img src="${av(v.heros)}" alt=""></span><div class="lettre" style="font-size:1rem"><b style="font: 800 .8rem var(--f-ui); letter-spacing:.06em; text-transform:uppercase; display:block; margin-bottom:2px; font-style:normal">${esc(H(v.heros)?.nom || v.heros)}</b>${annoter(v.texte)}</div></div>`).join('')}
+    ${c.texte ? `<div class="lettre ${c.type === 'billet' ? 'billet ' + c.genre : ''}">${c.type === 'billet' ? esc(titre === 'maîtresse' && c.texteF ? c.texteF : c.texte).replace(/ — /, '<br><span class="signature">— ') + '</span>' : annoter(c.texte)}</div>` : ''}
+    <p class="discret" style="margin-top:4px">${c.type === 'billet' ? 'Un billet n\'attend pas de réponse. Mais une réponse se remarque toujours.' : 'Ta réponse sera jugée, et pas seulement par eux.'}</p>
+    ${c.geo ? `<button type="button" class="btn-voir" data-voir-quete="${c.id}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 6.5 9 4l6 2.5L21 4v13.5L15 20l-6-2.5L3 20z"/></svg>Voir où c'est · ${c.geo[0].heures} h de route</button>${c.geo.some(e => e.voyage) ? `<p class="discret">Trop loin pour une simple mission : ce sera un grand voyage de plusieurs jours, et ${esc(H(c.heros[0]).nom)} écrira depuis la route.</p>` : ''}` : ''}
+    <div class="reponses" id="reponses">${c.options.map(o => `<button data-o="${o.id}" class="${o.id === c.defaut ? 'defaut' : ''}">${esc(o.libelle)}</button>`).join('')}</div>
+    <div id="suite-carte"></div>
+    <p class="discret">${c.type === 'billet' ? 'Tu peux aussi le laisser sans réponse : personne ne t\'en voudra.' : 'Sans réponse dans les 24 heures, la réponse par défaut s\'applique.'}</p></div>`);
+  $('#reponses').onclick = e => {
+    const b = e.target.closest('button[data-o]'); if (!b || repondues[c.id]) return;
+    const o = c.options.find(x => x.id === b.dataset.o);
+    // La réponse est donnée : on la garde, et on laisse au joueur tout le temps de lire ce qu'elle a provoqué.
+    repondues[c.id] = o.id; cocher('lettre');
+    $('#reponses').querySelectorAll('button').forEach(x => { x.style.opacity = x === b ? '1' : '.35'; x.disabled = true; });
+    montrerSuite(c, o, o.consequences);
+    if (EN_LIGNE) window.GL.agir({ action: 'repondre', carte: c.id, option: o.id }).then(r => { enAttenteVue = r.vue; if (Array.isArray(r.resultat) && r.resultat.length) montrerSuite(c, o, r.resultat); })
+      .catch(err => { delete repondues[c.id]; toast(err.message); fermer(); });
+  };
+}
+let enAttenteVue = null;
+function montrerSuite(c, o, lignes) {
+    $('#suite-carte').innerHTML = `<div class="suite entre"><b style="font-size:.8rem;letter-spacing:.06em;text-transform:uppercase">Ce que ta réponse a provoqué</b>${lignes.map((t, i) => `<p class="conseq" style="--i:${i}">${annoter(t)}</p>`).join('')}</div>
+      <button type="button" class="btn-plein" id="compris" style="justify-self:stretch;width:100%;margin-top:4px">Compris</button>`;
+    document.querySelectorAll('#suite-carte .conseq').forEach((p, i) => p.animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: 380, delay: 250 + i * 420, fill: 'backwards', easing: 'ease-out' }));
+    requestAnimationFrame(() => $('#suite-carte').scrollIntoView({ block: 'start', behavior: 'smooth' }));
+    $('#compris').onclick = () => { fermer(); if (enAttenteVue) { appliquer(enAttenteVue); enAttenteVue = null; } else rafraichir(); toast(`Réponse envoyée : ${o.libelle}`); };
+    rafraichir();
+}
+
+/* ---------- Chronique ---------- */
+let filtre = 'tout';
+function chronique() {
+  const garde = e => filtre === 'tout' || (filtre === 'fort' && e.importance >= 3) || (filtre === 'histoires' && (e.arc || e.quete));
+  const jours = [...new Set(D.chronique.filter(e => !e.evt).map(e => e.jour))];
+  const lignes = D.chronique.filter(garde);
+  $('#e-chronique').innerHTML = `<h1 style="--i:0">La chronique</h1>
+  <div class="filtres" style="--i:1" role="group" aria-label="Filtrer">${[['tout', 'Tout'], ['fort', 'Moments forts'], ['histoires', 'Histoires et quêtes']].map(([k, l]) => `<button data-f="${k}" aria-pressed="${filtre === k}">${l}</button>`).join('')}</div>
+  ${jours.map((j, i) => { const ls = lignes.filter(e => e.jour === j).sort((a, b) => a.heure - b.heure); if (!ls.length) return '';
+    return `<div class="jour" style="--i:${i + 2}"><h3>${esc(j)}</h3>${ls.map(e => e.evt
+      ? `<div class="moment"><span class="icone-evt">${e.evt === 'mission' ? '⚔' : '✦'}</span><div class="bulle fort"><div class="meta">${e.heure} h</div>${annoter(e.texte)}</div></div>`
+      : `<div class="moment"><span class="tetes">${e.heros.slice(0, 2).map(id => `<img src="${av(id)}" alt="${esc(id)}">`).join('')}</span><div class="bulle ${e.importance >= 3 ? 'fort' : ''}"><div class="meta">${e.heure} h${e.arc ? ` <span class="pastille miel">${esc(e.arc)}</span>` : ''}${e.quete ? ' <span class="pastille miel">Quête</span>' : ''}</div>${annoter(e.texte)}</div></div>`).join('')}</div>`; }).join('')}`;
+  $('#e-chronique').querySelector('.filtres').onclick = e => { const b = e.target.closest('button'); if (!b) return; filtre = b.dataset.f; chronique(); };
+}
+
+/* ---------- Feuille, histoires, toast ---------- */
+const feuille = $('#feuille'), voile = $('#voile');
+function ouvrir(html) { $('#corps-feuille').innerHTML = html; feuille.scrollTop = 0; voile.hidden = false; requestAnimationFrame(() => { voile.classList.add('ouvert'); feuille.classList.add('ouvert'); }); }
+function fermer() { if (toastEnAttente) { const m = toastEnAttente; toastEnAttente = null; setTimeout(() => { if (!$('#toast').classList.contains('ouvert')) toast(m); else setTimeout(() => toast(m), 2600); }, 450); } feuille.classList.remove('ouvert'); feuille.style.transform = ''; voile.classList.remove('ouvert'); setTimeout(() => { voile.hidden = true; }, 350); }
+voile.onclick = fermer;
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { fermer(); fermerHistoire(); } });
+// Glisser la poignée vers le bas pour fermer
+let y0 = null;
+$('#poignee').addEventListener('pointerdown', e => { y0 = e.clientY; feuille.style.transition = 'none'; $('#poignee').setPointerCapture(e.pointerId); });
+$('#poignee').addEventListener('pointermove', e => { if (y0 == null) return; const d = Math.max(0, e.clientY - y0); feuille.style.transform = `translate(-50%, ${d}px)`; });
+$('#poignee').addEventListener('pointerup', e => { const d = e.clientY - y0; y0 = null; feuille.style.transition = ''; feuille.style.transform = ''; if (d > 90) fermer(); });
+
+let hi = 0, minuteur = null;
+function ouvrirHistoire(i) { hi = i; $('#histoire').classList.add('ouvert'); $('#histoire').setAttribute('aria-hidden', 'false'); montrerHistoire(); }
+function montrerHistoire() {
+  const e = forts[hi]; clearTimeout(minuteur);
+  document.querySelectorAll('.vignette')[hi]?.classList.add('vue');
+  $('#cadre').innerHTML = `<img src="${story(e.heros[0])}" alt=""><div class="barres">${forts.map((_, k) => `<i class="${k < hi ? 'fait' : k === hi ? 'encours' : ''}"></i>`).join('')}</div>
+  <button class="fermer" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  <button class="zone g" aria-label="Précédent"></button><button class="zone d" aria-label="Suivant"></button>
+  <div class="texte"><div style="display:flex;gap:8px;align-items:center">${e.heros.slice(0, 2).map(id => `<span class="avatar" style="--m:100;width:40px;height:40px"><img src="${av(id)}" alt=""></span>`).join('')}<span class="discret" style="color:#e9dcc9">${esc(e.jour)}, ${e.heure} h${e.arc ? ' · ' + esc(e.arc) : ''}</span></div><p>${annoter(e.texte)}</p></div>`;
+  $('#cadre .fermer').onclick = fermerHistoire;
+  $('#cadre .zone.g').onclick = () => { if (hi > 0) { hi--; montrerHistoire(); } };
+  $('#cadre .zone.d').onclick = suivante;
+  minuteur = setTimeout(suivante, 6000);
+}
+function suivante() { if (hi < forts.length - 1) { hi++; montrerHistoire(); } else fermerHistoire(); }
+function fermerHistoire() { clearTimeout(minuteur); $('#histoire').classList.remove('ouvert'); $('#histoire').setAttribute('aria-hidden', 'true'); }
+
+let annulerAction = null, toastMin = null;
+function toast(texte, annuler) { $('#toast-texte').textContent = texte; annulerAction = annuler; $('#annuler').hidden = !annuler; $('#toast').classList.add('ouvert'); clearTimeout(toastMin); toastMin = setTimeout(() => $('#toast').classList.remove('ouvert'), 5000); }
+$('#annuler').onclick = () => { annulerAction?.(); $('#toast').classList.remove('ouvert'); };
+
+
+/* ---------- Lexique : un toucher sur un mot du monde ouvre sa carte ---------- */
+const REGIONS_NOM = { demacia: 'Demacia', noxus: 'Noxus', freljord: 'Freljord', ionia: 'Ionia', piltover: 'Piltover', zaun: 'Zaun', bilgewater: 'Bilgewater', shurima: 'Shurima', targon: 'Targon', ixtal: 'Ixtal', bandle: 'Bandle', monde: 'Runeterra' };
+const FORMES = (D.lexique || []).flatMap(e => e.formes.map(f => ({ f, e }))).sort((a, b) => b.f.length - a.f.length);
+const lettre = c => c && /[A-Za-zÀ-ÿ-]/.test(c);
+function annoter(texte) {
+  const pris = [], vus = new Set();
+  for (const { f, e } of FORMES) { if (vus.has(e.terme)) continue; let i = texte.indexOf(f);
+    while (i >= 0) { const j = i + f.length; if (!lettre(texte[i - 1]) && !lettre(texte[j]) && !pris.some(p => i < p.fin && j > p.debut)) { pris.push({ debut: i, fin: j, e }); vus.add(e.terme); break; } i = texte.indexOf(f, i + 1); } }
+  pris.sort((a, b) => a.debut - b.debut);
+  let out = '', k = 0;
+  for (const p of pris) { out += esc(texte.slice(k, p.debut)) + `<span class="lex" role="button" tabindex="0" data-lex="${esc(p.e.terme)}">${esc(texte.slice(p.debut, p.fin))}</span>`; k = p.fin; }
+  return out + esc(texte.slice(k));
+}
+function ouvrirLex(terme) {
+  const e = D.lexique.find(x => x.terme === terme); if (!e) return;
+  $('#carte-lex').innerHTML = `<span class="reg">${esc(REGIONS_NOM[e.region] || e.region)}</span><b>${esc(e.terme)}</b><p>${esc(e.definition)}</p>`;
+  $('#voile-lex').hidden = false; clearTimeout(minuteur); requestAnimationFrame(() => $('#carte-lex').classList.add('ouvert'));
+}
+function fermerLex() { $('#carte-lex').classList.remove('ouvert'); $('#voile-lex').hidden = true; if ($('#histoire').classList.contains('ouvert')) minuteur = setTimeout(suivante, 4000); }
+$('#voile-lex').onclick = fermerLex;
+document.addEventListener('click', e => { const l = e.target.closest('[data-lex]'); if (l) { e.stopPropagation(); ouvrirLex(l.dataset.lex); } }, true);
+document.addEventListener('keydown', e => { const l = e.target.closest?.('[data-lex]'); if (l && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); ouvrirLex(l.dataset.lex); } if (e.key === 'Escape') fermerLex(); });
+
+/* ---------- Navigation ---------- */
+let ecran = 'repere';
+/* ---------- Le carnet de l'intendante : les premiers pas, pris par la main ----------
+ * Une voix du jeu (l'intendante du repère) guide le nouveau maître pas à pas. Chaque étape se coche toute seule
+ * quand le joueur l'a faite ; « Montre-moi » l'emmène au bon endroit et fait briller ce qu'il faut toucher.
+ */
+const CARNET = [
+  EN_LIGNE ? { k: 'recruter', titre: 'Accueillir un premier héros', mot: "Trois dossiers attendent dans le courrier. Lis-les, et ouvre la porte à celui ou celle qui te plaît : un repère vide, ça ne fait peur à personne.", ecran: 'courrier', cible: '[data-recruter]' }
+    : { k: 'chien', titre: 'Donner un nom au chien', mot: "Ce chien traîne ici depuis avant ton arrivée. Il lui faut un nom, et il ne le choisira pas tout seul.", ecran: 'repere', cible: '.chien' },
+  { k: 'fiche', titre: 'Faire connaissance avec un héros', mot: "Ils t'observent depuis ce matin. Ouvre la fiche de l'un d'eux : tu sauras ce qui pèse sur son moral.", ecran: 'heros', cible: '.fiche' },
+  { k: 'lettre', titre: 'Répondre à une lettre', mot: "Il y a du courrier sur ton bureau. Réponds avec soin : ils compareront.", ecran: 'courrier', cible: '.pli' },
+  { k: 'contrat', titre: 'Lire un contrat de la Chambre', mot: "Les contrats paient peu au début. Regarde quand même : la route compte autant que le travail.", ecran: 'monde', cible: '.contrat' },
+  { k: 'batir', titre: 'Construire une pièce', mot: "Le repère grandit avec ton rang. Chaque pièce a son utilité : choisis ce qui manque le plus à ta guilde.", ecran: 'repere', cible: '.lot' },
+];
+const carnet = (() => { try { return JSON.parse(localStorage.getItem('gl-carnet') || '{}'); } catch { return {}; } })();
+function cocher(k) { if (carnet[k] || !CARNET.some(x => x.k === k)) return; carnet[k] = true; try { localStorage.setItem('gl-carnet', JSON.stringify(carnet)); } catch {}
+  const reste = CARNET.filter(e => !carnet[e.k]).length;
+  const msg = reste ? `Carnet : « ${CARNET.find(e => e.k === k).titre} » ✓` : "L'intendante range son carnet : tu n'as plus besoin d'elle. Ou presque.";
+  // Pas de bandeau par-dessus une feuille ouverte : il attend qu'on la ferme, pour ne rien cacher.
+  if (feuille.classList.contains('ouvert')) toastEnAttente = msg; else setTimeout(() => toast(msg), 400); }
+let toastEnAttente = null;
+function blocCarnet() {
+  const fait = CARNET.filter(e => carnet[e.k]).length; if (fait === CARNET.length) return '';
+  const act = CARNET.find(e => !carnet[e.k]);
+  return `<div class="carnet" style="--i:1"><div class="tete"><span class="portrait">O</span><div><b>Odile, ton intendante</b><div class="discret">Premiers pas · ${fait} sur ${CARNET.length}</div></div></div>
+    <p class="mot">« ${esc(act.mot)} »</p>
+    ${CARNET.map(e => `<div class="etape-carnet ${carnet[e.k] ? 'fait' : e === act ? 'actuelle' : ''}"><span class="coche">${carnet[e.k] ? '✓' : ''}</span><b style="font-weight:700">${esc(e.titre)}</b>${e === act ? `<button type="button" class="montre" data-montre="${e.k}">Montre-moi</button>` : '<span></span>'}</div>`).join('')}</div>`;
+}
+document.addEventListener('click', e => {
+  const m = e.target.closest('[data-montre]'); if (!m) return;
+  const et = CARNET.find(x => x.k === m.dataset.montre);
+  document.querySelector(`.onglet[data-e="${et.ecran}"]`).click();
+  setTimeout(() => { const c = document.querySelector('#e-' + et.ecran + ' ' + et.cible); if (!c) return; c.scrollIntoView({ block: 'center', behavior: 'smooth' }); c.classList.add('vise-moi'); setTimeout(() => c.classList.remove('vise-moi'), 3800); }, 450);
+});
+const RENDUS = { repere, heros, monde, courrier, chronique };
+if (!EN_LIGNE) setTimeout(() => { let vu = false; try { vu = localStorage.getItem('gl-bienvenue') === '1'; } catch {} if (!vu) bienvenue(); }, 900);
+function rafraichir() { RENDUS[ecran](); $('#badge').textContent = D.cartes.filter(c => !repondues[c.id]).length || ''; $('#badge').hidden = !D.cartes.some(c => !repondues[c.id]); }
+function aller(e) {
+  ecran = e;
+  document.querySelectorAll('.onglet').forEach((b, i) => { const on = b.dataset.e === e; b.setAttribute('aria-selected', on); if (on) $('#curseur').style.transform = `translateX(${i * 100}%)`; });
+  document.querySelectorAll('.ecran').forEach(s => { const on = s.id === 'e-' + e; s.hidden = !on; s.classList.toggle('entre', on); });
+  rafraichir(); window.scrollTo({ top: 0, behavior: 'instant' });
+}
+document.querySelector('.onglets').onclick = e => { const b = e.target.closest('.onglet'); if (b) aller(b.dataset.e); };
+document.addEventListener('click', e => {
+  const f = e.target.closest('[data-fiche]'); if (f) { ficheHeros(f.dataset.fiche); return; }
+  const rp = e.target.closest('[data-rapport]'); if (rp) { ouvrirRapport(rp.dataset.rapport); return; }
+  const c = e.target.closest('[data-carte]'); if (c) { const s = c.querySelector('.sceau'); s?.classList.add('brise'); setTimeout(() => { ouvrirCarte(c.dataset.carte); s?.classList.remove('brise'); }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 300); return; }
+  const v = e.target.closest('.vignette'); if (v) ouvrirHistoire(+v.dataset.h);
+});
+rafraichir();
+</script>
+
+</body>
+</html>

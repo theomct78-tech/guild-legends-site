@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#2a1c13">
+  <title>Guild Legends · Administration</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@700;800&family=Alegreya:ital,wght@0,500;0,700;1,500&family=Alegreya+Sans:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="css/app.css">
+  <style>
+    main { max-width: 640px; margin: 0 auto; padding: 24px 16px 48px; display: grid; gap: 20px; }
+    .carte { background: var(--bois-2); border: 1px solid var(--filet); border-radius: var(--r); padding: 18px; display: grid; gap: 12px; }
+    .carte h2 { font-family: var(--titre); font-size: 22px; margin: 0; color: var(--ambre); }
+    .carte p { margin: 0; color: var(--texte-doux); line-height: 1.5; }
+    .danger { border-color: var(--cire); }
+    .danger h2 { color: #e8735f; }
+    input { width: 100%; min-height: 46px; border-radius: 10px; border: 1px solid var(--filet-clair); background: var(--bois-1); color: var(--texte); padding: 0 12px; font: inherit; box-sizing: border-box; }
+    .ligne { display: flex; gap: 8px; }
+    button { min-height: 46px; border-radius: 10px; border: 0; padding: 0 16px; font: 700 16px var(--corps); cursor: pointer; background: var(--ambre); color: var(--encre); }
+    button.rouge { background: var(--cire); color: #fff; }
+    button:disabled { opacity: .5; cursor: default; }
+    ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+    li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 10px; background: var(--bois-1); border-radius: 8px; overflow-wrap: anywhere; }
+    li button { min-height: 34px; font-size: 14px; background: var(--bois-3); color: var(--texte); }
+    .note { font-size: 14px; color: var(--texte-pale); }
+  </style>
+</head>
+<body>
+  <main id="app"><p>Chargement…</p></main>
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>
