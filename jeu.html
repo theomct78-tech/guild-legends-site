@@ -319,7 +319,19 @@ p { margin: 0; }
 <script type="module">
 /* En ligne (jeu.html), window.GL parle au serveur ; sans lui, c'est la démonstration, avec ses données intégrées. */
 const EN_LIGNE = Boolean(window.GL);
-let D = EN_LIGNE ? await window.GL.charger() : {};
+// En ligne : si le serveur ne répond pas, on le dit (au lieu d'une page vide), avec l'erreur exacte et un bouton pour réessayer.
+let D;
+if (EN_LIGNE) {
+  try { D = await window.GL.charger(); }
+  catch (e) {
+    document.body.insertAdjacentHTML('beforeend', `<div style="position:fixed;inset:0;z-index:9999;background:#1f150e;color:#f6e7cf;display:grid;place-content:center;gap:14px;padding:24px;text-align:center;font:17px/1.5 'Alegreya Sans',system-ui,sans-serif">
+      <b style="font:800 24px 'Alegreya SC',Georgia,serif;color:#f0a43a">Le repère ne répond pas</b>
+      <span>Le serveur du jeu n'a pas pu être joint. Réessaie dans un instant.</span>
+      <code style="font-size:13px;opacity:.7;overflow-wrap:anywhere">${String(e && e.message || e).replace(/[<>&]/g, '')}</code>
+      <button type="button" onclick="location.reload()" style="justify-self:center;min-height:46px;padding:0 22px;border:0;border-radius:10px;background:#f0a43a;color:#2a1c13;font-weight:700;font-size:16px">Réessayer</button></div>`);
+    throw e;
+  }
+} else D = {};
 const IMG = {};
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
