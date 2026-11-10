@@ -35,7 +35,7 @@ button:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--miel);
 h1 { font: 800 1.9rem/1.05 var(--f-titre); margin: 0; letter-spacing: .01em; text-wrap: balance; }
 h2 { font: 800 1.15rem/1.2 var(--f-titre); margin: 0; letter-spacing: .02em; }
 p { margin: 0; }
-.bloc { display: grid; gap: 12px; }
+.bloc { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); }
 .tete-bloc { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
 .discret { color: var(--cendre); font-size: .9rem; }
 .pastille { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 99px; background: var(--bois-haut); font-size: .82rem; font-weight: 700; color: var(--cendre); white-space: nowrap; }
@@ -168,6 +168,35 @@ p { margin: 0; }
 /* Plan du repère */
 .plan-cadre { position: relative; border-radius: var(--r-carte); overflow: hidden; background: #241a12; box-shadow: var(--ombre); }
 .plan-cadre svg { display: block; width: 100%; height: auto; }
+.region-carte { cursor: pointer; }
+.attente { display: flex; gap: 10px; align-items: baseline; font-size: .92rem; }
+.attente .quand { flex: none; min-width: 52px; text-align: center; padding: 2px 8px; border-radius: 99px; background: rgba(242,182,94,.14); color: var(--miel); font-weight: 800; font-size: .78rem; }
+.rail-cats { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 6px; scrollbar-width: none; }
+.rail-cats button { flex: none; padding: 7px 12px; border-radius: 99px; border: 1px solid rgba(255,255,255,.12); background: none; color: var(--cendre); font: inherit; font-size: .85rem; font-weight: 700; white-space: nowrap; }
+.rail-cats button[aria-pressed="true"] { background: var(--miel); color: #1b130e; border-color: transparent; }
+.grille-av { display: grid; grid-template-columns: repeat(auto-fill, minmax(54px, 1fr)); gap: 8px; }
+.grille-av button { padding: 0; border: 0; background: none; } .grille-av img { width: 100%; aspect-ratio: 1; border-radius: 14px; object-fit: cover; display: block; }
+.onglets-plan { display: flex; gap: 6px; }
+.onglets-plan button { flex: 1 1 auto; min-width: 0; white-space: nowrap; padding: 8px 4px; border-radius: 12px; border: 1px solid rgba(255,255,255,.08); background: rgba(255,255,255,.04); color: var(--cendre); font: inherit; font-size: .85rem; font-weight: 700; position: relative; }
+.onglets-plan button[aria-selected="true"] { background: var(--miel); color: #2a1d14; border-color: transparent; }
+.onglets-plan button b { margin-left: 6px; font-size: .75rem; padding: 1px 6px; border-radius: 99px; background: rgba(0,0,0,.25); }
+.onglets-plan button.a-chien::after { content: ''; position: absolute; top: 5px; right: 7px; width: 7px; height: 7px; border-radius: 50%; background: #c99a62; }
+.jeton { position: absolute; width: 34px; height: 34px; margin: -17px 0 0 -17px; padding: 0; border-radius: 50%; border: 2.5px solid var(--c); background: #1b130e; overflow: visible; box-shadow: 0 2px 8px rgba(0,0,0,.5); cursor: pointer; }
+.jeton img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
+.jeton:active { transform: scale(.92); }
+.pastille-brief { position: absolute; right: -3px; top: -3px; width: 11px; height: 11px; border-radius: 50%; background: var(--sauge); border: 2px solid #1b130e; }
+.chien-plan { position: absolute; width: 22px; height: 22px; margin: -11px 0 0 -11px; padding: 0; border: 0; background: none; transition: left 2.6s ease-in-out, top 2.6s ease-in-out, opacity .4s; filter: drop-shadow(0 1px 2px rgba(0,0,0,.7)); cursor: pointer; z-index: 2; }
+.chien-plan svg { width: 100%; height: 100%; display: block; }
+.chien-plan.ailleurs { opacity: 0; pointer-events: none; }
+.chien-plan.dort { opacity: .6; }
+.liste-gestes { display: grid; gap: 8px; }
+.geste { text-align: left; padding: 10px 12px; border-radius: 14px; border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.04); color: var(--lin); font: inherit; display: grid; gap: 2px; }
+.geste small { color: var(--cendre); font-size: .78rem; }
+.geste:disabled { opacity: .45; }
+.ligne-heros { display: flex; gap: 10px; align-items: center; width: 100%; text-align: left; padding: 8px; border-radius: 12px; border: 0; background: rgba(255,255,255,.04); color: var(--lin); font: inherit; margin-top: 6px; }
+.ligne-heros img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; flex: none; }
+.ligne-heros span { display: grid; } .ligne-heros small { color: var(--cendre); font-size: .8rem; }
+.lien-nom { background: none; border: 0; padding: 0; color: var(--lin); font: inherit; text-decoration: underline; text-decoration-color: rgba(255,255,255,.25); }
 .piece-plan { transition: filter .3s; }
 .lot { cursor: pointer; }
 .lot:hover rect, .lot:focus rect { stroke: var(--miel); }
@@ -252,7 +281,7 @@ p { margin: 0; }
 .guide-sec h3 { display: flex; align-items: center; gap: 10px; font-size: 1.05rem; }
 .guide-sec h3 span { font-size: 1.3rem; }
 .guide-sec h3, .guide-sec p { margin: 0; }
-.accueil .discret, .accueil .marque { white-space: nowrap; }
+.accueil .marque { white-space: nowrap; }
 .carnet { display: grid; gap: 10px; padding: 16px; border-radius: var(--r-carte); background: linear-gradient(160deg, rgba(242,182,94,.16), rgba(242,182,94,.05)); border: 1px solid rgba(242,182,94,.25); }
 .carnet .tete { display: flex; gap: 12px; align-items: center; }
 .carnet .portrait { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--miel); color: #1b130e; font: 900 1.2rem var(--f-titre, serif); flex: none; }
@@ -272,6 +301,7 @@ p { margin: 0; }
 .etapes-bienvenue div::before { counter-increment: e; content: counter(e); width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--miel); color: #1b130e; font-weight: 900; }
 .champ-nom { display: flex; gap: 8px; }
 .champ-nom input { flex: 1; min-width: 0; padding: 12px 14px; border-radius: 14px; border: 0; background: var(--bois-haut); color: var(--lin); font: inherit; font-weight: 700; }
+.btn-ligne { padding: 11px 16px; border-radius: 14px; border: 1px solid rgba(255,255,255,.14); background: none; color: var(--lin); font: inherit; font-weight: 700; }
 .btn-plein { padding: 12px 16px; border-radius: 14px; background: var(--miel); color: #1b130e; font-weight: 900; }
 .lettre.billet { font-family: 'Alegreya', serif; font-style: italic; font-size: 1.08rem; line-height: 1.55; transform: rotate(-.6deg); box-shadow: 0 10px 24px rgba(0,0,0,.35); }
 .lettre.billet .signature { display: block; text-align: right; margin-top: 8px; font-weight: 700; }
@@ -370,11 +400,13 @@ function repere() {
   const ouvertes = D.cartes.filter(c => !repondues[c.id]);
   const presents = D.heros;
   $('#e-repere').innerHTML = `
-  <div class="accueil" style="--i:0"><div><span class="marque">Guild Legends</span><span class="discret"> · ${esc(D.maintenant.jour)}, ${D.maintenant.heure} h</span><h1>Bon retour,<br>${titre}</h1></div><div class="coin"><button type="button" class="aide" data-guide="" aria-label="Comment ça marche">?</button><div class="coffre" title="Pièces d'or"><span class="piece"></span>${D.po.toLocaleString('fr-FR')} <small>PO</small></div></div></div>
+  <div class="accueil" style="--i:0"><button type="button" data-ma-guilde aria-label="L'image de ta guilde" style="padding:0;border:0;background:none;flex:none;align-self:center">${EN_LIGNE ? blasonMoi(46) : ''}</button><div style="flex:1"><span class="marque">Guild Legends</span><span class="discret"> · ${esc(D.maintenant.jour)}, ${D.maintenant.heure} h</span><h1>Bon retour,<br>${titre}</h1></div><div class="coin"><button type="button" class="aide" data-guide="" aria-label="Comment ça marche">?</button><div class="coffre" title="Pièces d'or"><span class="piece"></span>${D.po.toLocaleString('fr-FR')} <small>PO</small></div></div></div>
   ${blocCarnet()}
   ${(D.candidatures || []).length ? `<button type="button" class="pli" data-aller="courrier" style="--i:1"><span class="duo">${D.candidatures.slice(0, 3).map(c => `<img src="${av(c.cle)}" alt="">`).join('')}</span><span><b>${D.candidatures.length} candidature${D.candidatures.length > 1 ? 's' : ''} à la porte</b><small>Dans le courrier</small></span><span class="sceau">G</span></button>` : ''}
   ${(D.avis || []).length ? `<div class="bloc" style="--i:1"><h2>Les nouvelles</h2>${D.avis.slice(0, 4).map(a => `<p class="discret" style="margin:0"><b style="color:var(--lin)">${esc(a.jour)}, ${a.heure} h</b> · ${annoter(a.texte)}</p>`).join('')}</div>` : ''}
-  <div class="bloc" style="--i:1"><div class="tete-bloc"><h2>Ton repère</h2><span class="discret">${presentsRepere().length} héros présents</span></div>${planRepere()}<button type="button" class="chien" data-chien style="justify-self:start">${SVG_CHIEN}${esc(chien)}, le chien du repère</button></div>
+  ${(D.aVenir || []).length ? `<div class="bloc" style="--i:1"><div class="tete-bloc"><h2>Ce qui t'attend</h2><button type="button" class="aide" data-explique="avenir" aria-label="Ce qui t'attend">?</button></div>${D.aVenir.map(x => `<div class="attente"><span class="quand">${x.dans <= 0 ? 'bientôt' : x.dans >= 24 ? `${Math.round(x.dans / 24)} j` : `${x.dans} h`}</span><span>${esc(x.texte)}</span></div>`).join('')}</div>` : ''}
+  <div class="bloc" style="--i:1"><div class="tete-bloc"><h2>Ton repère</h2><span class="discret">${presentsRepere().length} héros présents</span></div>${planRepere()}</div>
+  ${blocActions()}
   <div class="bloc" style="--i:2"><div class="tete-bloc"><h2>Pendant ton absence</h2><span class="discret">${forts.length} moments</span></div>
     <div class="rail">${forts.map((e, i) => `<button class="vignette" data-h="${i}"><img src="${carte(e.heros[0])}" alt=""><span class="anneau"><img src="${av(e.heros[0])}" alt=""></span><span>${esc(accroche(e))}</span></button>`).join('')}</div></div>
   <div class="bloc" style="--i:2"><div class="tete-bloc"><h2>Sur ton bureau</h2>${ouvertes.length ? `<span class="pastille miel">${ouvertes.length} à traiter</span>` : ''}</div>
@@ -391,66 +423,114 @@ function pli(c) {
 
 
 /* ---------- Plan du repère ----------
- * Le repère vu d'en haut. Chaque héros présent est un point de couleur qui clignote dans la pièce où il se trouve.
+ * Le repère vu d'en haut, en trois vues. Chaque héros présent apparaît avec son portrait dans la pièce où il se trouve.
  * Les absents (mission, congés, en ville) n'apparaissent pas. Chaque pièce s'ouvre à un rang du repère, à prix fixe.
  */
 const SVG_CHIEN = '<svg viewBox="0 0 24 24" fill="#c99a62"><ellipse cx="12" cy="15" rx="5" ry="4.2"/><circle cx="6" cy="9" r="2.1"/><circle cx="10" cy="6.2" r="2.1"/><circle cx="14" cy="6.2" r="2.1"/><circle cx="18" cy="9" r="2.1"/></svg>';
 const COULEURS = ['#f2b65e', '#7fc8f8', '#ec7d63', '#b18cf2', '#95cfa5', '#f28fb1', '#5fd4c4', '#e8d36a', '#9fb4ff', '#ff9f5a'];
 const couleur = id => COULEURS[D.heros.findIndex(h => h.id === id) % COULEURS.length];
-const PIECES = {
-  salle_commune: { x: 112, y: 36, l: 136, h: 78, nom: 'Salle commune', fond: '#5b3d26' },
-  dortoirs: { x: 26, y: 36, l: 74, h: 118, nom: 'Dortoirs', fond: '#4a3424' },
-  cour: { x: 112, y: 126, l: 136, h: 104, nom: "Cour d'entraînement", fond: '#6b5a3c' },
+/* Trois vues : le rez-de-chaussée, l'étage, dehors. Six pièces en plus au maximum, une tous les 7 rangs, à prix fixe. */
+const VUES = [['rdc', 'Rez-de-chaussée'], ['etage', 'Étage'], ['dehors', 'Dehors']];
+const ZONES = {
+  salle_commune: { vue: 'rdc', x: 14, y: 14, l: 208, h: 150, nom: 'Salle commune', fond: '#5b3d26', lieux: ['salle_commune'], mot: "Le cœur du repère : on y mange, on y joue, on s'y dispute et on s'y réconcilie. C'est là que se passent les soirées." },
+  brief: { vue: 'rdc', x: 232, y: 14, l: 114, h: 150, nom: 'Salle de brief', fond: '#3d4a55', lieux: ['brief'], mot: "Un héros placé sur un contrat attend ici l'heure du départ : il étudie la carte, vérifie son sac. Tant qu'il est là, tu peux encore annuler sa place sans rien perdre." },
+  table: { vue: 'rdc', x: 14, y: 174, l: 162, h: 124, salle: 'table', fond: '#6a4a26' },
+  armes: { vue: 'rdc', x: 186, y: 174, l: 160, h: 124, salle: 'armes', fond: '#5e4a3a' },
+  hall: { vue: 'rdc', x: 14, y: 308, l: 332, h: 78, salle: 'hall', fond: '#6b2f2f' },
+  dortoirs: { vue: 'etage', x: 14, y: 14, l: 332, h: 150, nom: 'Dortoirs', fond: '#4a3424', lieux: ['dortoirs'], mot: "On y dort la nuit, on s'y repose après une mission, on s'y soigne quand il n'y a pas d'infirmerie. Un héros qui dort récupère son énergie." },
+  soins: { vue: 'etage', x: 14, y: 174, l: 162, h: 140, salle: 'soins', fond: '#3f5a66' },
+  savoir: { vue: 'etage', x: 186, y: 174, l: 160, h: 140, salle: 'savoir', fond: '#3f4d6b' },
+  remparts: { vue: 'etage', x: 14, y: 324, l: 332, h: 62, nom: 'Chemin de ronde', fond: '#5c5346', lieux: ['remparts'], mot: "Le chemin de ronde, tout en haut. On y vient pour être au calme, lire, ou regarder la route du bourg. Les oiseaux du courrier s'y posent." },
+  cour: { vue: 'dehors', x: 14, y: 14, l: 332, h: 142, nom: "Cour d'entraînement", fond: '#6b5a3c', lieux: ['cour'], mot: "Les mannequins, la poussière, le portail. S'entraîner ici fait progresser les héros, et c'est par là qu'ils partent en mission." },
+  jardin: { vue: 'dehors', x: 14, y: 166, l: 196, h: 220, nom: 'Jardin', fond: '#42583a', lieux: ['jardin'], mot: "Un vieil arbre, un bassin, un banc qu'on ne voit pas depuis la cour. On y vient pour souffler, être un peu à l'écart ou se recueillir." },
+  ecuries: { vue: 'dehors', x: 220, y: 166, l: 126, h: 150, salle: 'ecuries', fond: '#5f4a2e' },
 };
-// Chaque pièce a sa place sur le plan. Elle s'ouvre au rang voulu du repère (le niveau de la guilde), à prix fixe.
-const LOTS = {
-  cuisines: { x: 260, y: 36, l: 74, h: 60 }, infirmerie: { x: 260, y: 104, l: 74, h: 60 }, salle_armes: { x: 260, y: 172, l: 74, h: 58 },
-  taverne: { x: 26, y: 166, l: 74, h: 64 },
-  bibliotheque: { x: 26, y: 244, l: 100, h: 62 }, sanctuaire: { x: 134, y: 244, l: 100, h: 62 }, ecuries: { x: 242, y: 244, l: 92, h: 62 },
-  forge: { x: 26, y: 316, l: 100, h: 62 }, salle_cartes: { x: 134, y: 316, l: 100, h: 62 }, aile_nord: { x: 242, y: 316, l: 92, h: 62 },
-  bains: { x: 26, y: 388, l: 72, h: 54 }, galerie: { x: 104, y: 388, l: 74, h: 54 }, observatoire: { x: 184, y: 388, l: 74, h: 54 }, grand_hall: { x: 264, y: 388, l: 70, h: 54 },
-};
-const FONDS = { bains: '#3f5a66', galerie: '#6a5a2e', observatoire: '#2f3f5f', grand_hall: '#6b2f2f', cuisines: '#6a4a26', infirmerie: '#5a4f5f', salle_armes: '#5e4a3a', taverne: '#6b3a2c', bibliotheque: '#3f4d6b', sanctuaire: '#4f5d4a', ecuries: '#5f4a2e', forge: '#4a3a36', salle_cartes: '#3d5458', aile_nord: '#4a3424' };
+const FONDS = Object.fromEntries(Object.values(ZONES).filter(z => z.salle).map(z => [z.salle, z.fond]));
 const SALLE = k => D.salles.find(s => s.cle === k);
 let construites = new Set(D.salles.filter(s => s.etat === 'construite').map(s => s.cle)); // le choix vit le temps de la visite
 const etatSalle = s => construites.has(s.cle) ? 'construite' : D.niveau >= s.niveau ? 'disponible' : 'verrouillee';
-const presentsRepere = () => D.heros.filter(h => h.etat === 'present' && h.lieu && (PIECES[h.lieu] || h.lieu === 'remparts' || construites.has(h.lieu)));
+const lieuxZone = z => z.lieux || (construites.has(z.salle) ? SALLE(z.salle)?.lieux || [z.salle] : []);
+const zoneDe = h => h.etat === 'present' && h.lieu ? Object.keys(ZONES).find(k => lieuxZone(ZONES[k]).includes(h.lieu)) || null : null;
+const presentsRepere = () => D.heros.filter(h => zoneDe(h));
 function graineTxt(s) { let h = 2166136261; for (const c of s) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return (h >>> 0) / 4294967296; }
-function positionHeros(h) {
-  const p = PIECES[h.lieu] || (construites.has(h.lieu) ? LOTS[h.lieu] : null);
-  const r1 = graineTxt(h.id + '#x'), r2 = graineTxt(h.id + '#y');
-  if (p) return { x: (p.x + 12) + r1 * (p.l - 24), y: (p.y + 22) + r2 * (p.h - 32) };
-  // remparts : le long du chemin de ronde
-  const tour = r1 * 4; const s = tour % 1;
-  return tour < 1 ? { x: 20 + s * 320, y: 18 } : tour < 2 ? { x: 342, y: 18 + s * 442 } : tour < 3 ? { x: 20 + s * 320, y: 464 } : { x: 18, y: 18 + s * 442 };
+/* Chacun a sa place dans la pièce : rangés par lignes, sans jamais se chevaucher. */
+function positionsPlan() {
+  const parZone = {}, out = {};
+  for (const h of presentsRepere()) (parZone[zoneDe(h)] ||= []).push(h);
+  for (const [k, hs] of Object.entries(parZone)) { const z = ZONES[k], pas = 38, cols = Math.max(1, Math.floor((z.l - 20) / pas));
+    hs.forEach((h, i) => { out[h.id] = { vue: z.vue, zone: k, x: z.x + 26 + (i % cols) * pas, y: z.y + 50 + Math.floor(i / cols) * pas }; }); }
+  return out;
 }
+let vuePlan = null;
+const NUIT = () => D.maintenant.heure >= 22 || D.maintenant.heure < 6;
+/*
+ * Le chien se promène d'un héros à l'autre : il reste de vingt secondes à une minute et demie auprès de chacun, puis repart.
+ * La nuit, il dort devant la cheminée de la salle commune et ne bouge plus.
+ */
+function chienOu() {
+  const pos = positionsPlan(), ids = Object.keys(pos), z0 = ZONES.salle_commune;
+  if (NUIT()) return { vue: 'rdc', x: z0.x + z0.l - 30, y: z0.y + z0.h - 24, mot: `${chien} dort devant la cheminée de la salle commune.` };
+  if (!ids.length) return { vue: 'dehors', x: 300, y: 130, mot: `${chien} attend au portail que quelqu'un rentre.` };
+  const durees = [...Array(8)].map((_, i) => 20 + Math.floor(graineTxt(`${chien}#arret${i}`) * 70)), total = durees.reduce((a, b) => a + b, 0);
+  const s = Math.floor(Date.now() / 1000); let r = s % total, i = 0; while (r >= durees[i]) r -= durees[i++];
+  const id = ids[Math.floor(graineTxt(`${chien}#${Math.floor(s / total)}#${i}`) * ids.length)], p = pos[id], h = H(id);
+  const FAIT = ['est aux pieds de', 'réclame des caresses à', 'suit partout', 'regarde fixement', 's\'est couché contre les bottes de', 'apporte un bâton à'];
+  return { vue: p.vue, x: p.x + 17, y: p.y + 15, mot: `${chien} ${FAIT[Math.floor(graineTxt(id + i) * FAIT.length)]} ${h.nom}, ${LIEU_PLAN(p.zone)}.` };
+}
+const LIEU_PLAN = k => ({ salle_commune: 'dans la salle commune', brief: 'en salle de brief', dortoirs: 'aux dortoirs', remparts: 'sur le chemin de ronde', cour: 'dans la cour', jardin: 'au jardin', table: 'à la taverne', armes: 'à la salle d\'armes', hall: 'dans le grand hall', soins: 'à l\'infirmerie', savoir: 'à la bibliothèque', ecuries: 'aux écuries' }[k] || 'au repère');
+function majChien() {
+  const el = $('#chien-plan'), mot = $('#chien-mot'); if (!el) return;
+  const c = chienOu();
+  el.style.left = `${c.x / 3.6}%`; el.style.top = `${c.y / 4}%`; el.classList.toggle('ailleurs', c.vue !== vuePlan); el.classList.toggle('dort', NUIT());
+  if (mot) mot.textContent = c.mot;
+  document.querySelectorAll('[data-vue-plan]').forEach(b => b.classList.toggle('a-chien', b.dataset.vuePlan === c.vue && c.vue !== vuePlan));
+}
+setInterval(majChien, 4000);
 function planRepere() {
-  const pres = presentsRepere();
-  const absents = D.heros.filter(h => !pres.includes(h));
-  const pieces = Object.entries(PIECES).map(([k, p]) => `<g class="piece-plan"><rect x="${p.x}" y="${p.y}" width="${p.l}" height="${p.h}" rx="12" fill="${p.fond}" stroke="#2a1d14" stroke-width="2"/><text x="${p.x + 10}" y="${p.y + 16}" font-size="10" font-weight="800" fill="#f4e7d4" opacity=".85" font-family="Alegreya Sans, sans-serif" letter-spacing=".08em">${p.nom.toUpperCase()}</text></g>`).join('');
-  const txt = (x, y, t, o = '') => `<text x="${x}" y="${y}" text-anchor="middle" font-family="Alegreya Sans, sans-serif" ${o}>${t}</text>`;
-  const lots = D.salles.map(sl => { const l = LOTS[sl.cle], e = etatSalle(sl), cx = l.x + l.l / 2, cy = l.y + l.h / 2;
-    if (e === 'construite') return `<g class="piece-plan entre-bat" data-salle="${sl.cle}" tabindex="0" role="button" aria-label="${esc(sl.nom)}"><rect x="${l.x}" y="${l.y}" width="${l.l}" height="${l.h}" rx="12" fill="${FONDS[sl.cle]}" stroke="#2a1d14" stroke-width="2"/><text x="${l.x + 8}" y="${l.y + 16}" font-size="8" font-weight="800" fill="#f4e7d4" font-family="Alegreya Sans, sans-serif" letter-spacing=".03em">${esc(sl.nom.replace(/^(Les|La|Le|L')\s?/, '').toUpperCase())}</text></g>`;
-    if (e === 'disponible') return `<g class="lot" data-salle="${sl.cle}" tabindex="0" role="button" aria-label="${esc(sl.nom)} : à construire"><rect x="${l.x}" y="${l.y}" width="${l.l}" height="${l.h}" rx="12" fill="rgba(255,255,255,.04)" stroke="#c9a46a" stroke-width="1.5" stroke-dasharray="5 5"/>${txt(cx, cy - 4, '+', 'font-size="16" fill="#e0c79d"')}${txt(cx, cy + 10, esc(sl.nom.replace(/^(Les|La|Le|L')\s?/, '')), 'font-size="8.5" fill="#e0c79d"')}${txt(cx, cy + 21, sl.prix.toLocaleString('fr-FR') + ' PO', 'font-size="7.5" fill="#b8a28a"')}</g>`;
-    return `<g class="verrou" data-salle="${sl.cle}" tabindex="0" role="button" aria-label="${esc(sl.nom)} : rang ${sl.niveau}"><rect x="${l.x}" y="${l.y}" width="${l.l}" height="${l.h}" rx="12" fill="rgba(0,0,0,.22)" stroke="#5c4a39" stroke-width="1.2" stroke-dasharray="2 4"/>${txt(cx, cy - 2, '🔒', 'font-size="11" opacity=".7"')}${txt(cx, cy + 13, 'Rang ' + sl.niveau, 'font-size="8" fill="#8f7a64"')}</g>`; }).join('');
-  const points = pres.map(h => { const p = positionHeros(h), c = couleur(h.id);
-    return `<g class="point" data-point="${h.id}" tabindex="0" role="button" aria-label="${esc(h.nom)}, ${esc(h.activite)}"><circle class="halo" cx="${p.x}" cy="${p.y}" r="5" fill="${c}"/><circle class="coeur" cx="${p.x}" cy="${p.y}" r="5.5" fill="${c}" stroke="#1b130e" stroke-width="1.5"/></g>`; }).join('');
-  const pc = { x: 128 + graineTxt(chien + D.maintenant.heure) * 100, y: 200 + graineTxt(chien) * 20 };
-  const chienPlan = `<g class="point" data-chien tabindex="0" role="button" aria-label="${esc(chien)}, le chien"><circle cx="${pc.x}" cy="${pc.y}" r="7" fill="#1b130e" opacity=".35"/><text x="${pc.x}" y="${pc.y + 4}" text-anchor="middle" font-size="11">🐾</text></g>`;
-  return `<div class="plan-cadre" id="plan"><svg viewBox="0 0 360 484" role="img" aria-label="Plan du repère">
-    <defs><pattern id="paves" width="12" height="12" patternUnits="userSpaceOnUse"><rect width="12" height="12" fill="#3a2b1e"/><path d="M0 6h12M6 0v6M0 12h12" stroke="#2f2318" stroke-width="1"/></pattern></defs>
-    <rect x="8" y="8" width="344" height="462" rx="20" fill="url(#paves)" stroke="#8a7155" stroke-width="7"/>
-    ${[...Array(15)].map((_, i) => `<rect x="${18 + i * 22}" y="2" width="10" height="9" rx="2" fill="#8a7155"/>`).join('')}
-    <rect x="152" y="460" width="56" height="16" rx="4" fill="#241a12"/><text x="180" y="482" text-anchor="middle" font-size="8.5" fill="#b8a28a" font-family="Alegreya Sans, sans-serif">Vers ${esc(D.repere.bourg)}</text>
-    ${pieces}${lots}${chienPlan}${points}</svg></div>
-    <div class="legende">${pres.map(h => `<span><i style="background:${couleur(h.id)}"></i>${esc(h.nom)}</span>`).join('')}${absents.length ? `<span style="margin-left:auto">Hors du repère : ${absents.map(h => esc(h.nom)).join(', ')}</span>` : ''}</div>`;
+  const pos = positionsPlan(), pres = presentsRepere(), absents = D.heros.filter(h => !pres.includes(h));
+  const compte = v => Object.values(pos).filter(p => p.vue === v).length;
+  vuePlan ||= VUES.map(v => v[0]).sort((a, b) => compte(b) - compte(a))[0];
+  const T = (x, y, t, o = '') => `<text x="${x}" y="${y}" font-family="Alegreya Sans, sans-serif" ${o}>${t}</text>`;
+  const cadenas = (x, y) => `<g transform="translate(${x - 7},${y - 9})" fill="none" stroke="#8f7a64" stroke-width="1.6"><rect x="1" y="7" width="12" height="9" rx="2" fill="#8f7a64" fill-opacity=".25"/><path d="M4 7V4.5a3 3 0 0 1 6 0V7"/></g>`;
+  const zones = Object.entries(ZONES).filter(([, z]) => z.vue === vuePlan).map(([k, z]) => {
+    const sl = z.salle ? SALLE(z.salle) : null; if (z.salle && !sl) return '';
+    const e = sl ? etatSalle(sl) : 'construite', nom = sl ? sl.nom : z.nom, cx = z.x + z.l / 2, cy = z.y + z.h / 2;
+    if (e === 'construite') return `<g class="piece-plan" ${sl ? `data-salle="${sl.cle}"` : `data-zone="${k}"`} tabindex="0" role="button" aria-label="${esc(nom)}"><rect x="${z.x}" y="${z.y}" width="${z.l}" height="${z.h}" rx="14" fill="${z.fond}" stroke="#2a1d14" stroke-width="2"/><rect x="${z.x + 5}" y="${z.y + 5}" width="${z.l - 10}" height="${z.h - 10}" rx="10" fill="none" stroke="rgba(255,255,255,.07)"/>${T(z.x + 12, z.y + 22, esc(nom.toUpperCase()), 'font-size="10.5" font-weight="800" fill="#f4e7d4" opacity=".9" letter-spacing=".07em"')}</g>`;
+    if (e === 'disponible') return `<g class="lot" data-salle="${sl.cle}" tabindex="0" role="button" aria-label="${esc(nom)} : à construire"><rect x="${z.x}" y="${z.y}" width="${z.l}" height="${z.h}" rx="14" fill="rgba(255,255,255,.05)" stroke="#e0b866" stroke-width="1.8" stroke-dasharray="6 5"/>${T(cx, cy - 12, '+', 'text-anchor="middle" font-size="22" fill="#e0c79d"')}${T(cx, cy + 6, esc(nom), 'text-anchor="middle" font-size="10.5" font-weight="700" fill="#e0c79d"')}${T(cx, cy + 21, sl.prix.toLocaleString('fr-FR') + ' PO', 'text-anchor="middle" font-size="10" fill="#b8a28a"')}</g>`;
+    return `<g class="verrou" data-salle="${sl.cle}" tabindex="0" role="button" aria-label="${esc(nom)} : rang ${sl.niveau}"><rect x="${z.x}" y="${z.y}" width="${z.l}" height="${z.h}" rx="14" fill="rgba(0,0,0,.24)" stroke="#5c4a39" stroke-width="1.2" stroke-dasharray="2 5"/>${cadenas(cx, cy - 14)}${T(cx, cy + 8, esc(nom), 'text-anchor="middle" font-size="10" fill="#a08a72"')}${T(cx, cy + 22, 'Rang ' + sl.niveau, 'text-anchor="middle" font-size="9.5" fill="#8f7a64"')}</g>`; }).join('');
+  const decor = vuePlan === 'dehors' ? `<rect x="220" y="326" width="126" height="60" rx="14" fill="#241a12" stroke="#8a7155" stroke-width="2"/>${T(283, 352, 'PORTAIL', 'text-anchor="middle" font-size="10" font-weight="800" fill="#b8a28a" letter-spacing=".08em"')}${T(283, 368, 'vers ' + esc(D.repere.bourg), 'text-anchor="middle" font-size="9.5" fill="#8f7a64"')}<circle cx="60" cy="330" r="26" fill="#2f4a2a"/><circle cx="60" cy="330" r="16" fill="#3d5f36"/><ellipse cx="150" cy="340" rx="30" ry="18" fill="#3f6470" opacity=".8"/>`
+    : vuePlan === 'rdc' ? `<rect x="${ZONES.salle_commune.x + ZONES.salle_commune.l - 34}" y="${ZONES.salle_commune.y + 8}" width="24" height="12" rx="3" fill="#e08a3c" opacity=".85"/>` : '';
+  const jetons = pres.filter(h => pos[h.id].vue === vuePlan).map(h => { const p = pos[h.id];
+    return `<button type="button" class="jeton" data-point="${h.id}" style="left:${p.x / 3.6}%;top:${p.y / 4}%;--c:${couleur(h.id)}" aria-label="${esc(h.nom)}, ${esc(h.activite)}"><img src="${av(h.id)}" alt="">${h.reserve ? '<i class="pastille-brief"></i>' : ''}</button>`; }).join('');
+  return `<div class="onglets-plan" role="tablist">${VUES.map(([k, n]) => `<button type="button" role="tab" aria-selected="${k === vuePlan}" data-vue-plan="${k}">${n}${compte(k) ? `<b>${compte(k)}</b>` : ''}</button>`).join('')}</div>
+    <div class="plan-cadre" id="plan"><svg viewBox="0 0 360 400" role="img" aria-label="Plan du repère : ${esc(VUES.find(v => v[0] === vuePlan)[1])}">
+    <defs><pattern id="paves" width="12" height="12" patternUnits="userSpaceOnUse"><rect width="12" height="12" fill="${vuePlan === 'dehors' ? '#33402a' : '#3a2b1e'}"/><path d="M0 6h12M6 0v6M0 12h12" stroke="${vuePlan === 'dehors' ? '#2b3723' : '#2f2318'}" stroke-width="1"/></pattern></defs>
+    <rect x="4" y="4" width="352" height="392" rx="20" fill="url(#paves)" stroke="#8a7155" stroke-width="5"/>${decor}${zones}</svg>
+    ${jetons}<button type="button" class="chien-plan" id="chien-plan" data-chien aria-label="${esc(chien)}, le chien">${SVG_CHIEN}</button></div>
+    <p class="discret" id="chien-mot" style="margin:0"></p>
+    ${absents.length ? `<p class="discret" style="margin:0">Hors du repère : ${absents.map(h => `<button type="button" class="lien-nom" data-fiche="${h.id}">${esc(h.nom)}</button>`).join(', ')}</p>` : ''}`;
 }
-document.addEventListener('click', e => {
-  const pt = e.target.closest('[data-point]');
-  if (pt) { const h = H(pt.dataset.point), box = $('#plan').getBoundingClientRect(), r = pt.getBoundingClientRect();
-    $('#plan').querySelector('.bulle-plan')?.remove();
-    $('#plan').insertAdjacentHTML('beforeend', `<div class="bulle-plan" style="left:${r.left - box.left + r.width / 2}px;top:${r.top - box.top}px"><img src="${av(h.id)}" alt="">${esc(h.nom)} · ${esc(h.activite)}</div>`);
-    clearTimeout(window.__bulle); window.__bulle = setTimeout(() => $('#plan')?.querySelector('.bulle-plan')?.remove(), 2600); return; }
+/* Toucher un héros sur le plan : ce qu'il fait là, et ce que tu peux lui proposer à cet endroit. */
+function ficheMoment(id) {
+  const h = H(id), z = zoneDe(h), gestes = h.gestes || [];
+  ouvrir(`<div class="contenu-feuille" style="margin-top:6px"><div style="display:flex;gap:12px;align-items:center"><img src="${av(h.id)}" alt="" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid ${couleur(h.id)}"><div><h2 style="font-size:1.35rem;margin:0">${esc(h.nom)}</h2><span class="discret">${esc(h.activite || 'Au repère')} · ${esc(LIEU_PLAN(z))}</span></div></div>
+    ${h.fait ? `<p style="font-style:italic">${esc(h.fait)}</p>` : ''}
+    ${gestes.length ? `<h3 style="margin:.4rem 0 0">Passer un moment ensemble</h3><p class="discret" style="margin:0">Ce que tu peux proposer change selon l'endroit où se trouve ${esc(h.nom)}.${gestes[0].attente ? ` Tu viens de le faire : laisse passer ${gestes[0].attente} h.` : ''}</p>
+      <div class="liste-gestes">${gestes.map(g => `<button type="button" class="geste" data-geste="${h.id}|${g.id}" ${g.attente ? 'disabled' : ''}><b>${esc(g.libelle)}</b><small>${g.apporte.map(esc).join(' · ')}</small></button>`).join('')}</div>`
+      : `<p class="discret">${h.activite === 'Dort' ? `${esc(h.nom)} dort : on verra demain.` : 'Rien à proposer ici pour le moment.'}</p>`}
+    <button type="button" class="btn-ligne" data-fiche="${h.id}" style="width:100%">Voir sa fiche complète</button></div>`);
+}
+document.addEventListener('click', async e => {
+  const vp = e.target.closest('[data-vue-plan]'); if (vp) { vuePlan = vp.dataset.vuePlan; rafraichir(); return; }
+  const ge = e.target.closest('[data-geste]');
+  if (ge) { const [heros, id] = ge.dataset.geste.split('|');
+    if (!EN_LIGNE) { toast('Dans la démonstration, les moments passés ensemble ne sont pas joués.'); return; }
+    const r = await agir('geste', { heros, id }); if (r) { fermer(); toast(r.texte); } return; }
+  const pt = e.target.closest('[data-point]'); if (pt) { ficheMoment(pt.dataset.point); return; }
+  const zo = e.target.closest('[data-zone]');
+  if (zo) { const z = ZONES[zo.dataset.zone], la = presentsRepere().filter(h => zoneDe(h) === zo.dataset.zone);
+    ouvrir(`<div class="contenu-feuille" style="margin-top:6px"><div style="display:flex;gap:12px;align-items:center"><span class="ico" style="width:42px;height:42px;border-radius:12px;flex:none;background:${z.fond}"></span><h2 style="font-size:1.35rem">${esc(z.nom)}</h2></div><p>${esc(z.mot)}</p>
+      ${la.length ? `<p class="discret" style="margin:0">En ce moment :</p>${la.map(h => `<button type="button" class="ligne-heros" data-point="${h.id}"><img src="${av(h.id)}" alt=""><span><b>${esc(h.nom)}</b><small>${esc(h.fait || h.activite)}</small></span></button>`).join('')}` : '<p class="discret">Personne ici pour l\'instant.</p>'}</div>`); return; }
   const piece = e.target.closest('[data-salle]');
   if (piece) { const sl = SALLE(piece.dataset.salle), etat = etatSalle(sl), net = D.economie.revenu.net, manque = sl.prix - D.po, sem = Math.max(1, Math.ceil(manque / net));
     const suivante = D.salles.filter(x => etatSalle(x) === 'verrouillee').sort((a, b) => a.niveau - b.niveau)[0];
@@ -476,17 +556,19 @@ document.addEventListener('click', e => {
 const CARTE_IMG = 'img/carte.webp';
 const REG_CARTE = {
   freljord: { nom: 'Freljord', i: [425, 113] }, noxus: { nom: 'Noxus', i: [678, 226] }, demacia: { nom: 'Demacia', i: [372, 308] },
-  ionia: { nom: 'Ionia', i: [1152, 183] }, piltover: { nom: 'Piltover', i: [860, 420] }, zaun: { nom: 'Zaun', i: [860, 485] },
-  bilgewater: { nom: 'Bilgewater', i: [1200, 503] }, shurima: { nom: 'Shurima', i: [845, 620] }, ixtal: { nom: 'Ixtal', i: [980, 602] },
+  ionia: { nom: 'Ionia', i: [1152, 183] }, piltover: { nom: 'Piltover', i: [860, 405], t: [46, 4, 'start'] }, zaun: { nom: 'Zaun', i: [860, 485], t: [46, 26, 'start'] },
+  bilgewater: { nom: 'Bilgewater', i: [1200, 503] }, shurima: { nom: 'Shurima', i: [800, 640] }, ixtal: { nom: 'Ixtal', i: [1010, 610] },
   targon: { nom: 'Targon', i: [555, 683] }, iles: { nom: 'Îles obscures', i: [1252, 688] },
 };
 const POS_REPERE = Object.fromEntries(Object.entries(REG_CARTE).map(([k, r]) => [k, r.i]));
 POS_REPERE.bandle = [1380, 330];
 const ANCRE_REPERE = { demacia: [455, 300], noxus: [760, 250], freljord: [500, 140], ionia: [1080, 150], piltover: [930, 400], zaun: [930, 500], bilgewater: [1140, 470], shurima: [760, 600], targon: [600, 650], ixtal: [1030, 640], bandle: [1380, 330] };
 function svgMonde({ routes = [], epingles = [] } = {}) {
-  const badges = Object.entries(REG_CARTE).map(([k, r]) => `<g><circle cx="${r.i[0]}" cy="${r.i[1]}" r="27" fill="#0f2733" stroke="#c9a46a" stroke-width="2.5"/><text x="${r.i[0]}" y="${r.i[1] + 9}" text-anchor="middle" style="font: 800 26px Alegreya SC, serif; fill: #e7c88f">${r.nom[0]}</text>
-    <text class="nom-region" x="${r.i[0]}" y="${r.i[1] + 56}" text-anchor="middle" style="font-size:24px">${r.nom}</text></g>`).join('');
-  const bandle = `<g><circle cx="1380" cy="330" r="20" fill="none" stroke="#b18cf2" stroke-width="3" stroke-dasharray="5 5"><animateTransform attributeName="transform" type="rotate" from="0 1380 330" to="360 1380 330" dur="18s" repeatCount="indefinite"/></circle><text class="nom-mer" x="1380" y="372" text-anchor="middle" style="font-size:20px">Portails de Bandle</text></g>`;
+  // Chaque nom a sa place, choisie pour ne toucher ni un autre nom ni une autre pastille (Piltover et Zaun sont voisines).
+  const badges = Object.entries(REG_CARTE).map(([k, r]) => { const [dx, dy, anc] = r.t || [0, 76, 'middle'], moi = D.regions?.[k]?.detenteur === D.guilde?.id;
+    return `<g class="region-carte" data-region="${k}" tabindex="0" role="button" aria-label="${r.nom}"><circle cx="${r.i[0]}" cy="${r.i[1]}" r="58" fill="transparent"/><circle cx="${r.i[0]}" cy="${r.i[1]}" r="30" fill="${moi ? '#5a3c12' : '#0f2733'}" stroke="${moi ? '#f2b65e' : '#c9a46a'}" stroke-width="${moi ? 5 : 3}"/><text x="${r.i[0]}" y="${r.i[1] + 10}" text-anchor="middle" style="font: 800 30px Alegreya SC, serif; fill: #e7c88f">${r.nom[0]}</text>
+    <text class="nom-region" x="${r.i[0] + dx}" y="${r.i[1] + dy}" text-anchor="${anc}" style="font-size:44px !important;paint-order:stroke;stroke:#0b1a22;stroke-width:9px;stroke-linejoin:round">${r.nom}</text></g>`; }).join('');
+  const bandle = `<g><circle cx="1380" cy="330" r="20" fill="none" stroke="#b18cf2" stroke-width="3" stroke-dasharray="5 5"><animateTransform attributeName="transform" type="rotate" from="0 1380 330" to="360 1380 330" dur="18s" repeatCount="indefinite"/></circle><text class="nom-mer" x="1380" y="382" text-anchor="middle" style="font-size:28px;paint-order:stroke;stroke:#0b1a22;stroke-width:6px">Bandle</text></g>`;
   const rep = ANCRE_REPERE[D.repere.region];
   const rts = routes.map((r, i) => { const a = rep, b = r.vers, mx = (a[0] + b[0]) / 2, my = Math.min(a[1], b[1]) - 120;
     const d = `M${a[0]},${a[1]} Q${mx},${my} ${b[0]},${b[1]}`;
@@ -495,13 +577,13 @@ function svgMonde({ routes = [], epingles = [] } = {}) {
   return `<svg viewBox="0 0 1500 996" role="img" aria-label="Carte de Runeterra">
     <image href="${CARTE_IMG}" x="0" y="0" width="1500" height="996" preserveAspectRatio="xMidYMid slice"/>
     ${badges}${bandle}${rts}
-    <g class="epingle-repere"><path d="M${rep[0]},${rep[1]} l-16,-36 a18,18 0 1 1 32,0 z" fill="#f2b65e" stroke="#1b130e" stroke-width="3"/><circle cx="${rep[0]}" cy="${rep[1] - 43}" r="7" fill="#1b130e"/><text x="${rep[0]}" y="${rep[1] + 26}" text-anchor="middle" class="nom-region" style="font-size:18px;fill:#ffe7bd">Ton repère</text></g>
+    <g class="epingle-repere"><path d="M${rep[0]},${rep[1]} l-16,-36 a18,18 0 1 1 32,0 z" fill="#f2b65e" stroke="#1b130e" stroke-width="3"/><circle cx="${rep[0]}" cy="${rep[1] - 43}" r="7" fill="#1b130e"/></g>
     ${eps}</svg>`;
 }
-function barreCal(c, repos = 0) {
-  const tot = c.total + repos, w = x => (x / tot * 100).toFixed(1) + '%';
-  return `<div class="calendrier" aria-hidden="true"><i class="route" style="width:${w(c.aller)}"></i><i class="place" style="width:${w(c.surPlace)}"></i><i class="route" style="width:${w(c.retour)}"></i>${repos ? `<i class="repos" style="width:${w(repos)}"></i>` : ''}</div>
-  <div class="cal-legende"><span>Aller <b>${c.aller} h</b></span><span>Sur place <b>${c.surPlace} h</b></span><span>Retour <b>${c.retour} h</b></span><span>Total <b>${c.total} h</b></span>${repos ? `<span>Repos ensuite <b>~${repos} h</b></span>` : ''}</div>`;
+// La durée du travail sur place n'est jamais annoncée (demande de Théo, 9 nov. 2026) : on ne montre que la route.
+function barreCal(c) {
+  return `<div class="cal-legende"><span>Route à l'aller <b>${c.aller} h</b></span><span>Sur place <b>durée inconnue</b></span><span>Retour <b>~${c.aller} h</b></span></div>
+  <p class="discret" style="margin:4px 0 0">La Chambre ne dit jamais combien de temps durera le travail : tes héros le découvriront sur place. Le correspondant t'écrira à leur arrivée, puis à la fin.</p>`;
 }
 // Repos estimé (même formule que le serveur : missions.js, reposApresMission), pour une mission réussie sans blessure
 const reposEstime = (total, risque) => Math.min(72, Math.ceil((6 + total * 0.3 * (1 + (risque ? 0.75 : 0))) / 2) * 2);
@@ -511,13 +593,16 @@ function monde() {
   const eps = ms.flatMap(m => m.heros.map((id, k) => ({ x: POS_REPERE[m.region][0] + 40 + k * 30, y: POS_REPERE[m.region][1] - 30, couleur: couleur(id) })));
   $('#e-monde').innerHTML = `<div class="tete-bloc" style="--i:0"><h1>Runeterra</h1><span class="discret">Ton repère : ${esc(REG_CARTE[D.repere.region].nom)}</span></div>
   <div class="monde-cadre" style="--i:1">${svgMonde({ routes, epingles: eps })}</div>
-  <div class="bloc" style="--i:2"><h2>En mission</h2>${ms.length ? ms.map(m => { const reste = m.total - m.ecoule;
-    return `<div class="mission-carte"><span class="duo">${m.heros.map(id => `<img src="${av(id)}" alt="" style="outline:2px solid ${couleur(id)}" data-fiche="${id}">`).join('')}${(m.allies || []).map(a => `<img class="allie" src="${av(a.id)}" alt="${esc(a.id)}" data-etranger="${a.id}" style="outline:2px solid ${GUILDE(a.guilde).couleur};cursor:pointer">`).join('')}</span><div style="min-width:0"><b>${esc(m.titre)}</b><div class="discret">${esc(m.heros.map(NOM).join(' et '))}${(m.allies || []).length ? `, avec ${m.allies.map(a => `<button type="button" data-etranger="${a.id}" style="color:var(--lin);font-weight:800;text-decoration:underline dotted">${esc(NOM(a.id))}</button> (${esc(GUILDE(a.guilde).nom)})`).join(', ')}` : ''} · ${esc(m.lieu)}, ${esc(REG_CARTE[m.region].nom)}</div><div class="discret">${m.ecoule < m.trajet ? `En route : arrivée dans ${m.trajet - m.ecoule} h` : 'Sur place'} · retour dans ${reste} h</div><div class="progression"><i style="width:${Math.round(m.ecoule / m.total * 100)}%"></i></div></div></div>`; }).join('') : '<div class="vide">Personne sur les routes. Le repère est au complet.</div>'}</div>
+  <div class="bloc" style="--i:2"><div class="tete-bloc"><h2>En mission</h2><button type="button" class="aide" data-guide="missions" aria-label="Les missions">?</button></div>${ms.length ? ms.map(m => {
+    const etat = m.phase === 'route' ? `En route : arrivée sur place dans ${m.arrivee} h` : m.phase === 'surPlace' ? `Sur place depuis ${m.surPlaceDepuis} h · fin du travail inconnue` : `Sur le chemin du retour : au repère dans ${m.retourDans} h`;
+    const prog = m.phase === 'route' ? Math.min(100, Math.round(m.ecoule / Math.max(1, m.trajet) * 100)) : m.phase === 'surPlace' ? 100 : 100;
+    return `<div class="mission-carte"><span class="duo">${m.heros.map(id => `<img src="${av(id)}" alt="" style="outline:2px solid ${couleur(id)}" data-fiche="${id}">`).join('')}${(m.allies || []).map(a => `<img class="allie" src="${av(a.id)}" alt="${esc(a.id)}" data-etranger="${a.id}" style="outline:2px solid ${GUILDE(a.guilde).couleur};cursor:pointer">`).join('')}</span><div style="min-width:0"><b>${esc(m.titre)}</b><div class="discret">${esc(m.heros.map(NOM).join(' et '))}${(m.allies || []).length ? `, avec ${m.allies.map(a => `<button type="button" data-etranger="${a.id}" style="color:var(--lin);font-weight:800;text-decoration:underline dotted">${esc(NOM(a.id))}</button> (${esc(GUILDE(a.guilde).nom)})`).join(', ')}` : ''} · ${esc(m.lieu)}, ${esc(REG_CARTE[m.region].nom)}</div><div class="discret">${etat}</div><div class="progression"><i style="width:${prog}%"></i></div>
+    ${EN_LIGNE && m.rappel ? m.rappel.possible ? m.heros.map(id => `<button type="button" class="btn-voir" style="margin-top:6px" data-retirer="${m.id}|${id}">Rappeler ${esc(NOM(id))} (oiseau : ${m.rappel.vol} h, retour vers ${m.rappel.retour} h)</button>`).join('') : '<p class="discret" style="margin:4px 0 0">Trop tard pour un rappel : l\'oiseau arriverait après eux.</p>' : ''}</div></div>`; }).join('') : '<div class="vide">Personne sur les routes. Le repère est au complet.</div>'}</div>
   <div class="bloc" style="--i:3"><div class="tete-bloc"><h2>Contrats de la Chambre</h2><button type="button" class="aide" data-guide="missions" aria-label="Les missions">?</button></div>
     ${D.contrats.map(c => `<div class="contrat" data-contrat="${c.id}" role="button" tabindex="0"><div class="haut"><b>${esc(c.titre)}</b><span class="po">${c.po} PO</span></div>
       <div class="discret"><span class="pastille rang">Rang ${esc(c.rang)}</span> ${esc(c.lieu)} · ${esc(c.postes.join(', '))}${c.risque ? ' · <span class="pastille risque">À risque</span>' : ''}</div>
-      <p style="font-style:italic">${annoter(c.accroche)}</p>${barreCal(c.cal, reposEstime(c.cal.total, c.risque))}
-      ${c.detailPostes?.some(p => p.tenu?.moi) ? `<div class="discret"><b style="color:var(--sauge)">Tes héros : ${c.detailPostes.filter(p => p.tenu?.moi).map(p => esc(p.tenu.nom)).join(', ')}</b>${c.chance != null ? ` · chances ${c.chance} %` : ''}${c.ferme != null ? ` · départ dans ${Math.max(0, c.ferme)} h` : ''}</div>` : c.ferme != null ? `<div class="discret">Recrutement ouvert encore ${Math.max(0, c.ferme)} h</div>` : ''}</div>`).join('') || '<div class="vide">Pas de contrat ouvert pour l\'instant. La Chambre publie les nouveaux contrats chaque matin à 6 h.</div>'}
+      <p style="font-style:italic">${annoter(c.accroche)}</p>${barreCal(c.cal)}
+      ${(c.briefing || []).length ? `<div class="discret"><b style="color:var(--sauge)">En salle de brief : ${c.briefing.map(b => `${esc(b.nom)}, ${b.depart > 0 ? `départ dans ${b.depart} h` : 'sur le départ'}`).join(' · ')}</b>${c.chance != null ? ` · chances ${c.chance} %` : ''}</div>` : (c.enRoute || []).length ? `<div class="discret"><b style="color:var(--sauge)">Tes héros sont en route : suis-les dans « En mission »</b></div>` : c.ferme != null ? `<div class="discret">Tu peux encore envoyer quelqu'un pendant ${Math.max(0, c.ferme)} h</div>` : ''}</div>`).join('') || '<div class="vide">Pas de contrat ouvert pour l\'instant. La Chambre publie les nouveaux contrats chaque matin à 6 h.</div>'}
     <p class="discret">Au début, les contrats rapportent peu. Ceux marqués « à risque » paient beaucoup mieux, et blessent plus souvent.</p></div>
   ${D.territoires ? `<div class="bloc" style="--i:4"><div class="tete-bloc"><h2>Les territoires</h2><button type="button" class="aide" data-guide="territoires" aria-label="Les territoires">?</button></div>
     <div class="chips">${Object.keys(REG_CARTE).map(r => { const d = D.territoires.detenteurs[r]; return `<span class="chip ${d === D.guilde.id ? 'plus' : ''}">${esc(REG_CARTE[r].nom)} · ${d ? esc(d === D.guilde.id ? 'à toi' : GUILDE(d)?.nom || '?') : 'libre'}${D.territoires.influences[r]?.[D.guilde.id] ? ` (${D.territoires.influences[r][D.guilde.id]})` : ''}</span>`; }).join('')}</div>
@@ -528,7 +613,7 @@ function monde() {
     <button type="button" class="btn-voir" data-tournoi>${D.tournoi.monEquipe ? 'Changer l\'équipe' : 'Inscrire trois héros'}</button>
     ${D.tournoi.dernier ? `<p class="discret">Dernier vainqueur : ${esc(GUILDE(D.tournoi.dernier.classement[0])?.nom || (D.tournoi.dernier.classement[0] === D.guilde.id ? 'ta guilde' : '?'))}.</p>` : ''}</div>` : ''}
   <div class="bloc" style="--i:4"><div class="tete-bloc"><h2>Les autres guildes</h2><button type="button" class="aide" data-guide="guildes" aria-label="Les autres guildes">?</button></div>
-    ${D.guildes.map(gd => `<button type="button" class="guilde-ligne" data-guilde="${gd.id}"><span class="blason" style="background:${gd.couleur}">${esc(gd.nom.split(' ').pop()[0])}</span><span><b>${esc(gd.nom)}</b><br><span class="discret">${esc(gd.maitre)} · ${esc(REGIONS_NOM[gd.region])} · niveau ${gd.niveau}</span></span><span class="duo">${gd.heros.slice(0, 3).map(h => `<img src="${av(h)}" alt="">`).join('')}</span></button>`).join('') || '<div class="vide">Aucune autre guilde pour l\'instant.</div>'}</div>
+    ${D.guildes.map(gd => `<button type="button" class="guilde-ligne" data-guilde="${gd.id}">${blasonDe(gd, 40)}<span><b>${esc(gd.nom)}</b><br><span class="discret">${esc(gd.maitre)} · ${esc(REGIONS_NOM[gd.region])} · niveau ${gd.niveau}</span></span><span class="duo">${gd.heros.slice(0, 3).map(h => `<img src="${av(h)}" alt="">`).join('')}</span></button>`).join('') || '<div class="vide">Aucune autre guilde pour l\'instant.</div>'}</div>
   ${(D.registre || []).length ? `<div class="bloc" style="--i:5"><div class="tete-bloc"><h2>Le Registre</h2><button type="button" class="aide" data-guide="registre" aria-label="Le Registre">?</button></div>${D.registre.map(r => `<div class="cand ok"><img src="${av(r.cle)}" alt=""><span style="flex:1"><b>${esc(r.nom)}</b><br><span class="discret">${esc(ROLES[r.role] || r.role)}${r.interessee ? ` · tu es ${r.interessee}${r.interessee === 1 ? 're' : 'e'} sur la liste` : r.perdu ? ' · a quitté ta guilde' : ''}</span></span>${EN_LIGNE && !r.interessee && !r.perdu ? `<button type="button" class="btn-voir" data-registre="${esc(r.cle)}">Intéressé</button>` : ''}</div>`).join('')}</div>` : ''}`;
 }
 function apercuQuete(c) {
@@ -547,10 +632,22 @@ document.addEventListener('click', e => {
 
 /* ---------- Héros ---------- */
 function heros() {
-  $('#e-heros').innerHTML = `<div class="tete-bloc" style="--i:0"><h1>Tes héros</h1><span class="pastille">${D.heros.length} / ${D.capacite || 9}</span></div>
-  <div class="grille">${D.heros.map((h, i) => `<button class="fiche" data-fiche="${h.id}" style="--i:${i + 1}"><img src="${carte(h.id)}" alt=""><span class="moralette mini" style="--m:${h.moral};--teinte:${teinte(h.moral)}"><span>${h.moral}</span></span><span class="bas"><b>${esc(h.nom)}</b><span class="discret">${h.etat === 'mission' ? 'En mission' : h.repos ? `Au repos · ${h.repos} h` : esc(ROLES[h.role] || h.role)}${h.quete ? ' · quête' : ''}</span></span></button>`).join('') || '<div class="vide">Personne encore. Les candidatures arrivent dans le courrier.</div>'}</div>
+  $('#e-heros').innerHTML = `<div class="tete-bloc" style="--i:0"><h1>Tes héros</h1><span class="pastille" data-explique="places">${D.heros.length} / ${D.capacite || 9}</span></div>
+  ${D.heros.length ? '<p class="discret" style="margin:0">Le chiffre dans le cercle, c\'est le moral du héros, sur 100. Touche-le pour savoir ce qui pèse dessus.</p>' : ''}
+  <div class="grille">${D.heros.map((h, i) => `<button class="fiche" data-fiche="${h.id}" style="--i:${i + 1}"><img src="${carte(h.id)}" alt=""><span class="moralette mini" data-explique="moral:${h.id}" role="button" aria-label="Moral ${h.moral} sur 100" style="--m:${h.moral};--teinte:${teinte(h.moral)}"><span>${h.moral}</span></span><span class="bas"><b>${esc(h.nom)}</b><span class="discret" data-explique="etat:${h.id}">${ETAT_HEROS(h)}${h.quete ? ' · quête' : ''}</span></span></button>`).join('') || '<div class="vide">Personne encore. Les candidatures arrivent dans le courrier.</div>'}</div>
   ${(D.inventaire || []).length ? `<div class="bloc" style="--i:2"><div class="tete-bloc"><h2>L'inventaire</h2><button type="button" class="aide" data-guide="equipement" aria-label="L'équipement">?</button></div>${D.inventaire.map(o => `<div class="arc" style="display:block"><b>${esc(o.nom)}</b>${o.recharge ? ` <span class="pastille">recharge ${o.recharge} h</span>` : ''}<p class="discret" style="margin:2px 0 0">${esc(o.texte)}</p></div>`).join('')}<p class="discret">Ouvre la fiche d'un héros pour lui donner un objet.</p></div>` : ''}
   ${(D.pantheon || []).length ? `<div class="bloc" style="--i:3"><h2>Le Panthéon</h2>${D.pantheon.map(m => `<div class="arc" style="display:block"><b>${esc(m.nom)}</b><p class="discret" style="margin:2px 0 0">${esc(m.souvenir)}</p></div>`).join('')}</div>` : ''}`;
+}
+// L'état d'un héros, en mots. Chaque état s'explique au toucher (EXPLIQUE, plus bas).
+function ETAT_HEROS(h) {
+  if (h.etat === 'mission') return 'En mission';
+  if (h.etat === 'rappel') return 'Rappelé, sur le retour';
+  if (h.etat === 'voyage') return 'En voyage';
+  if (h.etat === 'conges') return 'En congés';
+  if (h.reserve) return 'En salle de brief';
+  if (h.blesse) return 'Blessure, en soins';
+  if (h.repos) return `Au repos · ${h.repos} h`;
+  return esc(ROLES[h.role] || h.role);
 }
 function ficheHeros(id) {
   const h = H(id); cocher('fiche');
@@ -558,15 +655,21 @@ function ficheHeros(id) {
   const besoins = [['energie', 'Énergie'], ['social', 'Compagnie'], ['elan', 'Progrès'], ['loisir', 'Détente']];
   ouvrir(`<div class="banniere"><img src="${ban(id)}" alt="" style="object-position:${pos(id)}"></div>
   <div class="contenu-feuille">
-    <div class="grand-moral"><span class="mini" style="--m:${h.moral};--teinte:${teinte(h.moral)}"><span>${h.moral}</span></span><div><h1 style="font-size:1.7rem">${esc(h.nom)}</h1><span class="discret">${h.apparence ? `${esc(h.apparence)} · ` : ''}${esc(ROLES[h.role] || h.role)} · ${esc(MOT[h.motivation])}</span></div></div>
+    <div class="grand-moral"><span class="mini" data-explique="moral:${h.id}" role="button" aria-label="Moral ${h.moral} sur 100" style="--m:${h.moral};--teinte:${teinte(h.moral)}"><span>${h.moral}</span></span><div><h1 style="font-size:1.7rem">${esc(h.nom)}</h1><span class="discret">${h.apparence ? `${esc(h.apparence)} · ` : ''}${esc(ROLES[h.role] || h.role)} · ${esc(MOT[h.motivation])}</span></div></div>
     ${h.presentation ? `<p class="qui">${annoter(h.presentation)}</p>` : ''}
     ${h.repos ? `<div class="suite" style="background:rgba(127,200,248,.1)"><b>Au repos encore ${h.repos} h</b><p class="discret">${h.blesse ? 'Blessure à soigner, en plus de la fatigue. ' : ''}Reste au repère, mais ne peut pas repartir en mission avant d'avoir récupéré. <button type="button" class="aide" data-guide="repos" aria-label="Le repos" style="width:22px;height:22px;vertical-align:-5px">?</button></p></div>` : ''}
     <div class="vues" id="vues"><span class="glisse"></span><button type="button" data-v="vie" aria-pressed="true">Au quotidien</button><button type="button" data-v="combat" aria-pressed="false">Au combat</button></div>
     <div id="v-combat" class="bloc" hidden>${combat(h)}</div>
     <div id="v-vie" class="bloc" style="gap:18px">
-    <div class="chips">${h.traits.map(t => `<span class="chip">${esc(t)}</span>`).join('')}</div>
-    <div class="bloc"><h2>Ce qui pèse</h2><div class="chips">${h.raisons.map(r => `<span class="chip ${r.valeur > 0 ? 'plus' : 'moins'}">${r.valeur > 0 ? '+' : '−'}${Math.abs(r.valeur)} ${esc(r.libelle)}</span>`).join('') || '<span class="discret">Rien de particulier.</span>'}</div></div>
-    <div class="jauges">${besoins.map(([k, l]) => `<div class="jauge"><svg viewBox="0 0 54 54"><circle class="fond" cx="27" cy="27" r="${R}"/><circle class="val ${h.besoins[k] < 35 ? 'bas' : ''}" cx="27" cy="27" r="${R}" data-v="${C * (1 - h.besoins[k] / 100)}"/></svg>${l}</div>`).join('')}</div>
+    <div class="chips">${h.traits.map(t => `<span class="chip" role="button" data-explique="trait:${esc(t)}">${esc(t)}</span>`).join('')}<span class="chip" role="button" data-explique="etat:${h.id}">${ETAT_HEROS(h)}</span>${h.regard ? `<span class="chip ${h.regard.niveau === 'griefs' ? 'moins' : h.regard.niveau === 'estime' ? 'plus' : ''}" role="button" data-explique="regard:${h.id}">${esc(h.regard.mot)}</span>` : ''}</div>
+    ${EN_LIGNE && h.salaire != null ? `<div class="bloc"><h2>Tes gestes</h2>
+      <div class="arc" style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span role="button" data-explique="texte:La solde|Ce que tu verses à ${esc(h.nom)} chaque lundi. Sous ses attentes, son moral en souffre ; au-dessus, il remonte. Une baisse est mal vue, par ce héros et par les autres.">Solde : <b>${h.salaire} PO</b> par semaine${h.attente ? ` <span class="discret">(attend ${h.attente})</span>` : ''}</span>
+        <span style="display:flex;gap:6px"><button type="button" class="btn-voir" data-solde="${h.id}|-1" aria-label="Baisser la solde">−</button><button type="button" class="btn-voir" data-solde="${h.id}|1" aria-label="Augmenter la solde">+</button></span></div>
+      ${h.etat === 'present' && !h.reserve ? `<div class="chips"><span class="discret" style="align-self:center">Congés :</span>${[1, 2, 3].map(j => `<button type="button" class="chip" data-conges="${h.id}|${j}">${j} jour${j > 1 ? 's' : ''}</button>`).join('')}</div>` : ''}</div>` : ''}
+    <div class="bloc"><h2>Ce qui pèse</h2><div class="chips">${h.raisons.map((r, i) => `<span class="chip ${r.valeur > 0 ? 'plus' : 'moins'}" role="button" data-explique="raison:${h.id}#${i}">${r.valeur > 0 ? '+' : '−'}${Math.abs(r.valeur)} ${esc(r.libelle)}</span>`).join('') || '<span class="discret">Rien de particulier.</span>'}</div></div>
+    <div class="jauges">${besoins.map(([k, l]) => `<div class="jauge" role="button" data-explique="besoin:${k}"><svg viewBox="0 0 54 54"><circle class="fond" cx="27" cy="27" r="${R}"/><circle class="val ${h.besoins[k] < 35 ? 'bas' : ''}" cx="27" cy="27" r="${R}" data-v="${C * (1 - h.besoins[k] / 100)}"/></svg>${l}</div>`).join('')}</div>
+    ${(h.ententes || []).length ? `<div class="bloc"><h2>Ses ententes de mission</h2>${h.ententes.map((e, i) => `<button type="button" class="arc" data-explique="entente:${h.id}#${i}" style="display:block;width:100%;text-align:left;border:0;color:inherit;font:inherit"><b style="color:${e.v > 0 ? 'var(--sauge)' : 'var(--braise)'}">${e.v > 0 ? '+' : '−'}${Math.abs(e.v)} %</b> avec <b>${esc(e.avec)}</b><p class="discret" style="margin:2px 0 0">Depuis « ${esc(e.mission)} »</p></button>`).join('')}</div>` : ''}
+    ${h.fait ? `<p style="font-style:italic;margin:0">${esc(h.fait)}</p>` : ''}
     <div class="bloc"><h2>Ses liens</h2><div class="liens">${h.relations.map(r => `<button class="lien" data-fiche="${r.id}"><span class="avatar" style="--m:${Math.abs(r.aff)};--teinte:${r.aff >= 0 ? 'var(--sauge)' : 'var(--braise)'}"><img src="${av(r.id)}" alt=""></span><b style="color:var(--lin)">${esc(NOM(r.id))}</b>${esc(r.type ? LIEN[r.type] : r.aff >= 0 ? 'Bonne entente' : 'Tensions')}</button>`).join('')}</div></div>
     ${h.quete ? `<div class="suite"><b>Quête${h.quete.titre ? ` : ${esc(h.quete.titre)}` : ''}</b><p>${{ demandee: 'La demande attend ta réponse sur le bureau.', ouverte: h.quete.enCours ? 'En route pour l\'étape en cours.' : `Prête pour l'étape ${(h.quete.etape || 0) + 1}.`, accomplie: 'Accomplie.', attente: 'En attente.', refusee: 'Refusée.' }[h.quete.etat] || ''}</p>
       ${EN_LIGNE && h.quete.etat === 'ouverte' && !h.quete.enCours && h.etat === 'present' && !h.repos ? `<label class="discret">Compagnon (facultatif) <select id="compagnon"><option value="">Seul</option>${D.heros.filter(x => x.id !== h.id && x.etat === 'present' && !x.repos && !x.reserve).map(x => `<option value="${esc(x.id)}">${esc(x.nom)}</option>`).join('')}</select></label><button type="button" class="btn-plein" data-lancer-quete="${esc(h.id)}" style="width:100%;margin-top:6px">Lancer l'étape</button>` : ''}</div>` : ''}
@@ -592,7 +695,7 @@ function ficheEtranger(id) {
     <div><h1 style="font-size:1.7rem">${esc(h.nom)}</h1><span class="discret">${h.apparence ? `${esc(h.apparence)} · ` : ''}${esc(ROLES[h.role] || h.role)} · ${esc(MOT[h.motivation])}</span></div>
     <button type="button" class="guilde-ligne" data-guilde="${gd.id}"><span class="blason" style="background:${gd.couleur}">${esc(gd.nom.split(' ').pop()[0])}</span><span><b>${esc(gd.nom)}</b><br><span class="discret">Maître : ${esc(gd.maitre)} · ${esc(REGIONS_NOM[gd.region])}</span></span><span class="discret">›</span></button>
     ${h.presentation ? `<p class="qui">${annoter(h.presentation)}</p>` : ''}
-    <div class="chips">${h.traits.map(t => `<span class="chip">${esc(t)}</span>`).join('')}</div>
+    <div class="chips">${h.traits.map(t => `<span class="chip" role="button" data-explique="trait:${esc(t)}">${esc(t)}</span>`).join('')}<span class="chip" role="button" data-explique="etat:${h.id}">${ETAT_HEROS(h)}</span>${h.regard ? `<span class="chip ${h.regard.niveau === 'griefs' ? 'moins' : h.regard.niveau === 'estime' ? 'plus' : ''}" role="button" data-explique="regard:${h.id}">${esc(h.regard.mot)}</span>` : ''}</div>
     <div class="bloc">${combat(h)}</div>
     <p class="discret">Fiche publique : son moral, ses liens et la vie de sa guilde restent l'affaire de son maître.</p>
   </div>`);
@@ -601,13 +704,16 @@ function ficheEtranger(id) {
 function ficheGuilde(id) {
   const gd = GUILDE(id);
   ouvrir(`<div class="contenu-feuille" style="margin-top:6px">
-    <div style="display:flex;gap:14px;align-items:center"><span class="blason" style="background:${gd.couleur};width:60px;height:60px;font-size:1.6rem">${esc(gd.nom.split(' ').pop()[0])}</span><div><h2 style="font-size:1.35rem">${esc(gd.nom)}</h2><span class="discret">Maître : ${esc(gd.maitre)}</span></div></div>
+    <div style="display:flex;gap:14px;align-items:center">${blasonDe(gd, 60)}<div><h2 style="font-size:1.35rem">${esc(gd.nom)}</h2><span class="discret">Maître : ${esc(gd.maitre)}</span></div></div>
     <p class="lettre" style="font-size:1rem">« ${esc(gd.devise)} »</p>
     <div class="chips"><span class="chip">${esc(REGIONS_NOM[gd.region])}</span><span class="chip">Niveau ${gd.niveau}</span><span class="chip">Réputation ${esc(gd.palier)}</span><span class="chip">${gd.missions} missions</span></div>
     ${EN_LIGNE && D.alliances ? `<div class="bloc"><h2>Alliance</h2>${gd.allie ? `<p class="discret">Vos guildes sont alliées : vos héros qui se croisent en mission s'entendent mieux.</p><button type="button" class="btn-voir" data-alliance="rompre|${esc(gd.id)}">Rompre l'alliance (48 h de préavis)</button>`
       : D.alliances.recues.some(i => i.de === gd.id) ? `<button type="button" class="btn-plein" data-alliance="accepter|${esc(D.alliances.recues.find(i => i.de === gd.id).cle)}">Accepter leur proposition d'alliance</button>`
       : D.alliances.envoyees.includes(gd.id) ? '<p class="discret">Proposition envoyée, en attente de leur réponse.</p>'
       : `<button type="button" class="btn-voir" data-alliance="proposer|${esc(gd.id)}">Proposer une alliance</button><p class="discret">${D.alliances.allies.length} / ${D.alliances.max} alliances à ton palier.</p>`}<button type="button" class="aide" data-guide="alliances" aria-label="Les alliances">?</button></div>` : ''}
+    ${EN_LIGNE && D.missives ? `<div class="bloc"><div class="tete-bloc"><h2>Écrire à ce repère</h2><button type="button" class="aide" data-explique="missive" aria-label="Les missives">?</button></div>
+      <form data-missive="${esc(gd.id)}" style="display:grid;gap:8px"><textarea maxlength="400" rows="3" placeholder="Ton message. L'oiseau mettra ${gd.vol} h à arriver." style="width:100%;border-radius:12px;padding:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--lin);font:inherit;resize:vertical"></textarea><button class="btn-plein">Lâcher l'oiseau · ${gd.vol} h de vol</button></form>
+      ${D.missives.filter(m => m.guilde === gd.id).slice(0, 8).map(m => `<div class="arc" style="display:block"><small class="discret">${m.sens === 'recue' ? 'Reçue' : m.enVol ? `En vol : arrive dans ${m.enVol} h` : 'Arrivée'}</small><p style="margin:2px 0 0">« ${esc(m.texte)} »</p></div>`).join('')}</div>` : ''}
     <div class="bloc"><h2>Ses héros</h2><div class="grille">${gd.heros.map(hid => `<button class="fiche" data-etranger="${hid}"><img src="${carte(hid)}" alt=""><span class="bas"><b>${esc(NOM(hid))}</b><span class="discret">${esc(ROLES[D.etrangers[hid].role])}${D.etrangers[hid].rang ? ` · ${esc(D.etrangers[hid].rang)}` : ''}</span></span></button>`).join('')}</div></div>
   </div>`);
 }
@@ -621,6 +727,72 @@ document.addEventListener('click', e => {
   const ar = e.target.closest('[data-role-annonce]'); if (ar && EN_LIGNE) { agir('annonce', { role: ar.dataset.roleAnnonce }).then(r => { if (r) { fermer(); toast(`Annonce affichée à la Chambre : ${ar.dataset.roleAnnonce}`); } }); return; }
   if (ar) { const prix = D.recrutement.prixAnnonce; D.po -= prix; D.annonce = ar.dataset.roleAnnonce; fermer(); rafraichir();
     toast(`Annonce affichée à la Chambre : ${ar.dataset.roleAnnonce}`, () => { D.po += prix; D.annonce = null; rafraichir(); }); return; }
+});
+
+/* ---------- La carte : toucher une région ---------- */
+function ficheRegion(k) {
+  const r = D.regions?.[k], nom = r?.nom || REG_CARTE[k]?.nom || k;
+  if (!r) { ouvrir(`<div class="contenu-feuille" style="margin-top:6px"><h2 style="font-size:1.35rem">${esc(nom)}</h2><p>La Chambre des Bannières n'y publie aucun contrat pour l'instant. Personne n'y envoie ses héros.</p></div>`); return; }
+  const jours = h => h >= 24 ? `${Math.round(h / 24 * 10) / 10} jours`.replace('.', ',') : `${h} h`;
+  ouvrir(`<div class="contenu-feuille" style="margin-top:6px"><h2 style="font-size:1.35rem">${esc(nom)}</h2>
+    <div class="chips">${r.ici ? '<span class="chip">Ton repère est ici</span>' : r.route != null ? `<span class="chip" data-explique="route">À ${jours(r.route)} de route</span>` : '<span class="chip">Hors de portée</span>'}<span class="chip" data-explique="influence">Ton influence : ${r.influence}</span></div>
+    <p>${r.detenteur === D.guilde.id ? 'Ta guilde tient cette région : les contrats y paient mieux, et tu en reçois un de plus chaque jour.' : r.detenteurNom ? `La région est tenue par ${esc(r.detenteurNom)}. Pour la reprendre, il faut y gagner plus de réputation qu'eux en quatre semaines.` : 'Personne ne tient cette région. La première guilde qui y réussit des contrats la prendra, lundi midi.'}</p>
+    ${r.contrats.length ? `<div class="bloc"><h2>Contrats ouverts ici</h2>${r.contrats.map(t => `<p class="discret" style="margin:0">· ${esc(t)}</p>`).join('')}</div>` : '<p class="discret">Aucun contrat ouvert ici aujourd\'hui. La Chambre en publie de nouveaux chaque matin à 6 h.</p>'}
+    ${r.aiment.length ? `<p class="discret">S'y sentent chez eux : <b style="color:var(--sauge)">${r.aiment.map(esc).join(', ')}</b>. Un héros envoyé dans une région qu'il aime y gagne du moral.</p>` : ''}
+    ${r.detestent.length ? `<p class="discret">N'aiment pas y mettre les pieds : <b style="color:var(--braise)">${r.detestent.map(esc).join(', ')}</b>.</p>` : ''}
+    ${r.guildes.length ? `<p class="discret">Guildes installées ici : ${r.guildes.map(esc).join(', ')}.</p>` : ''}</div>`);
+}
+
+/* ---------- Les actions de guilde ---------- */
+const delaiTxt = h => !h ? 'tout de suite' : h >= 48 ? `dans ${Math.round(h / 24)} jours` : h >= 24 ? 'demain' : `dans ${h} h`;
+function blocActions() {
+  if (!D.actions) return '';
+  const p = D.actions.prevues;
+  return `<div class="bloc" style="--i:2"><div class="tete-bloc"><h2>La vie de la guilde</h2><button type="button" class="aide" data-explique="actions" aria-label="Les actions de guilde">?</button></div>
+    ${p.length ? p.map(a => `<div class="arc" style="display:block"><b>${esc(a.titre)}</b><p class="discret" style="margin:2px 0 0">En préparation : ${a.dans ? `ce sera prêt ${delaiTxt(a.dans)}` : 'ça commence'}.</p></div>`).join('') : '<p class="discret" style="margin:0">Un banquet, un tournoi de dés, une sortie à la foire : c\'est toi qui décides de ce qui se passe ici.</p>'}
+    <button type="button" class="btn-plein" data-actions="" style="width:100%">Organiser quelque chose</button></div>`;
+}
+function feuilleActions(cat) {
+  const A = D.actions, cats = Object.entries(A.categories); cat ||= cats[0][0];
+  const liste = A.liste.filter(a => a.cat === cat).sort((a, b) => a.cout - b.cout || a.prepa - b.prepa);
+  ouvrir(`<div class="contenu-feuille" style="margin-top:6px"><h2 style="font-size:1.35rem">Organiser quelque chose</h2>
+    <p class="discret" style="margin:0">Tout le repère en profite, et chacun juge ton geste selon son caractère. ${A.prevues.length}/${A.max} en préparation · ${D.po.toLocaleString('fr-FR')} PO en caisse.</p>
+    <div class="rail-cats">${cats.map(([k, n]) => `<button type="button" data-actions="${k}" aria-pressed="${k === cat}">${esc(n)}</button>`).join('')}</div>
+    <div class="liste-gestes">${liste.map(a => `<button type="button" class="geste" data-lancer="${a.id}|${cat}" ${a.possible && A.prevues.length < A.max ? '' : 'disabled'}>
+      <b>${esc(a.titre)}</b><small>${a.cout ? `${a.cout.toLocaleString('fr-FR')} PO` : 'Gratuit'} · ${a.prepa ? `prêt ${delaiTxt(a.prepa)}` : 'tout de suite'}${a.apporte.length ? ` · ${a.apporte.map(esc).join(', ')}` : ''}</small>
+      ${a.enCours ? '<small style="color:var(--sauge)">En préparation</small>' : a.attente ? `<small>Déjà fait cette semaine : à refaire dans ${Math.ceil(a.attente / 24)} j</small>` : D.po < a.cout ? `<small style="color:var(--braise)">Il manque ${(a.cout - D.po).toLocaleString('fr-FR')} PO</small>` : ''}</button>`).join('')}</div></div>`);
+}
+
+/* ---------- L'image de la guilde ---------- */
+const blasonMoi = (t = 46) => D.guilde.image ? `<img src="${D.guilde.image}" alt="" style="width:${t}px;height:${t}px;border-radius:14px;object-fit:cover">` : `<span class="blason" style="background:var(--miel);color:#1b130e;width:${t}px;height:${t}px;font-size:${t / 38}rem">${esc(D.guilde.nom.split(' ').pop()[0].toUpperCase())}</span>`;
+const blasonDe = (gd, t = 46) => gd.image ? `<img src="${gd.image}" alt="" style="width:${t}px;height:${t}px;border-radius:14px;object-fit:cover;flex:none">` : `<span class="blason" style="background:${gd.couleur};width:${t}px;height:${t}px;font-size:${t / 38}rem">${esc(gd.nom.split(' ').pop()[0])}</span>`;
+function feuilleImage() {
+  ouvrir(`<div class="contenu-feuille" style="margin-top:6px"><div style="display:flex;gap:14px;align-items:center">${blasonMoi(60)}<div><h2 style="font-size:1.35rem;margin:0">${esc(D.guilde.nom)}</h2><span class="discret">L'image que les autres guildes voient</span></div></div>
+    <label class="btn-plein" style="display:block;text-align:center;cursor:pointer">Choisir une photo<input type="file" id="photo-guilde" accept="image/*" hidden></label>
+    <p class="discret" style="margin:0">Ou le portrait d'un de tes héros :</p>
+    <div class="grille-av">${D.heros.map(h => `<button type="button" data-image="${esc(h.cle)}" aria-label="${esc(h.nom)}"><img src="${av(h.id)}" alt=""></button>`).join('')}</div>
+    ${D.guilde.image ? '<button type="button" class="btn-ligne" data-image="" style="width:100%">Revenir à la lettre de la guilde</button>' : ''}</div>`);
+  $('#photo-guilde').onchange = ev => { const f = ev.target.files[0]; if (!f) return; const img = new Image();
+    img.onload = async () => { const c = document.createElement('canvas'), s = Math.min(img.width, img.height); c.width = c.height = 160;
+      c.getContext('2d').drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, 160, 160); URL.revokeObjectURL(img.src);
+      if (!EN_LIGNE) { toast('Dans la démonstration, l\'image n\'est pas enregistrée.'); return; }
+      if (await agir('image', { photo: c.toDataURL('image/jpeg', 0.72) })) { fermer(); toast('Nouvelle image de guilde.'); } };
+    img.onerror = () => toast('Impossible de lire cette image.'); img.src = URL.createObjectURL(f); };
+}
+document.addEventListener('click', async e => {
+  const rg = e.target.closest('[data-region]'); if (rg) { ficheRegion(rg.dataset.region); return; }
+  const ac = e.target.closest('[data-actions]'); if (ac) { feuilleActions(ac.dataset.actions); return; }
+  const la = e.target.closest('[data-lancer]');
+  if (la) { const [id, cat] = la.dataset.lancer.split('|'); if (!EN_LIGNE) { toast('Dans la démonstration, les actions de guilde ne sont pas jouées.'); return; }
+    const r = await agir('action', { id }); if (r) { if (r.prepa) { feuilleActions(cat); toast(`C'est noté au tableau : ce sera prêt ${delaiTxt(r.prepa)}.`); } else { fermer(); toast(r.recit || 'C\'est fait.'); } } return; }
+  const im = e.target.closest('[data-image]'); if (im && !im.closest('label')) { if (!EN_LIGNE) return; if (await agir('image', { cle: im.dataset.image || null })) { fermer(); toast('Image de guilde changée.'); } return; }
+  if (e.target.closest('[data-ma-guilde]')) { feuilleImage(); return; }
+});
+document.addEventListener('submit', async e => {
+  const f = e.target.closest('[data-missive]'); if (!f) return; e.preventDefault();
+  const texte = f.querySelector('textarea').value.trim(); if (!texte) return;
+  if (!EN_LIGNE) { toast('Dans la démonstration, les oiseaux restent au perchoir.'); return; }
+  const r = await agir('missive', { guilde: f.dataset.missive, texte }); if (r) { ficheGuilde(f.dataset.missive); toast(`L'oiseau est parti : il arrivera dans ${r.vol} h.`); }
 });
 
 /* ---------- Les actions du jeu en ligne ---------- */
@@ -645,7 +817,7 @@ document.addEventListener('click', async e => {
   if (!EN_LIGNE) return;
   const pl = e.target.closest('[data-placer]'); if (pl) { const [contrat, poste, heros] = pl.dataset.placer.split('|'); pl.disabled = true;
     const r = await agir('placer', { contrat, poste: +poste, heros }); if (r) { cocher('contrat'); ficheContrat(contrat); toast(r.evince ? `${NOM(heros)} reprend le poste : son rang est meilleur.` : `${NOM(heros)} est engagé sur le contrat.`); } else pl.disabled = false; return; }
-  const rt = e.target.closest('[data-retirer]'); if (rt) { const [contrat, heros] = rt.dataset.retirer.split('|'); if (await agir('retirer', { contrat, heros })) ficheContrat(contrat); return; }
+  const rt = e.target.closest('[data-retirer]'); if (rt) { const [contrat, heros] = rt.dataset.retirer.split('|'); const r = await agir('retirer', { contrat, heros }); if (r) { if (r.rappel === 'route') { toast(`L'oiseau est parti. ${NOM(heros)} sera de retour dans ${r.retour} h environ.`); fermer(); } else { toast(`${NOM(heros)} quitte la salle de brief et reste au repère.`); if (D.contrats.some(x => x.id === contrat)) ficheContrat(contrat); else fermer(); } } return; }
   const rc = e.target.closest('[data-recruter]'); if (rc) { if ((D.effectif ?? D.heros.length) >= D.capacite) { choisirRemplacant(rc.dataset.recruter); return; }
     if (await agir('recruter', { cle: rc.dataset.recruter })) { cocher('recruter'); toast('Bienvenue au repère !'); } return; }
   const rm = e.target.closest('[data-remplacer]'); if (rm) { const [cle, remplacer] = rm.dataset.remplacer.split('|'); if (await agir('recruter', { cle, remplacer })) { fermer(); toast('Bienvenue au repère !'); } return; }
@@ -654,6 +826,8 @@ document.addEventListener('click', async e => {
   const dq = e.target.closest('[data-desequiper]'); if (dq) { const [heros, objet] = dq.dataset.desequiper.split('|'); if (await agir('desequiper', { heros, objet })) ficheHeros(heros); return; }
   const lq = e.target.closest('[data-lancer-quete]'); if (lq) { const heros = lq.dataset.lancerQuete, compagnon = $('#compagnon')?.value || null;
     const r = await agir('quete', { heros, compagnon }); if (r) { fermer(); toast(r.mode === 'voyage' ? `${NOM(heros)} part en voyage. Des lettres arriveront en route.` : `${NOM(heros)} part pour son étape de quête.`); } return; }
+  const so = e.target.closest('[data-solde]'); if (so) { const [heros, sens] = so.dataset.solde.split('|'); const r = await agir('solde', { heros, sens: +sens }); if (r) { ficheHeros(heros); toast(`Solde de ${NOM(heros)} : ${r.salaire} PO par semaine.${(r.lignes || []).length ? ' ' + r.lignes[0] : ''}`); } return; }
+  const cg = e.target.closest('[data-conges]'); if (cg) { const [heros, jours] = cg.dataset.conges.split('|'); const r = await agir('conges', { heros, jours: +jours }); if (r) { fermer(); toast(`${NOM(heros)} part en congés pour ${r.jours} jour${r.jours > 1 ? 's' : ''}.`); } return; }
   const to = e.target.closest('[data-tournoi]'); if (to) { choisirEquipeTournoi(); return; }
   const rg = e.target.closest('[data-registre]'); if (rg) { const r = await agir('registre', { cle: rg.dataset.registre }); if (r) toast(`Tu es ${r}${r === 1 ? 're' : 'e'} sur la liste : il te sera proposé à une prochaine montée de niveau.`); return; }
   const an = e.target.closest('[data-alliance]'); if (an) { const [quoi, x] = an.dataset.alliance.split('|');
@@ -668,8 +842,7 @@ function ficheContrat(id) {
   ouvrir(`<div class="contenu-feuille" style="margin-top:6px"><div class="haut" style="display:flex;justify-content:space-between;gap:10px"><h2 style="font-size:1.35rem">${esc(c.titre)}</h2><span class="po" style="font-size:1.2rem">${c.po} PO</span></div>
     <p class="discret">${esc(cap(c.demandeur))} · ${esc(c.lieu)}${c.risque ? ' · <span class="pastille risque">À risque</span>' : ''}</p>
     <div class="lettre">${annoter(c.accroche)}</div>
-    <div class="bloc" style="gap:4px"><h2>Le temps que ça prend</h2>${barreCal(c.cal, reposEstime(c.cal.total, c.risque))}
-    <p class="discret">Le repos dépend aussi de l'issue : plus long après un échec ou une blessure.</p></div>
+    <div class="bloc" style="gap:4px"><h2>Le voyage</h2>${barreCal(c.cal)}</div>
     <div class="bloc"><div class="tete-bloc"><h2>Contrat de rang ${esc(c.rang)}</h2><button type="button" class="aide" data-guide="rangs" aria-label="Les rangs">?</button></div>
       <p class="discret">Chaque poste attend un héros de rang ${esc(c.rang)}. En dessous, ce n'est pas interdit : c'est plus difficile, et le poste peut être repris par une autre guilde qui envoie mieux.</p>
       ${c.detailPostes.map((p, i) => { const sousRang = p.tenu && RG_IDX(p.tenu.rang) < RG_IDX(c.rang);
@@ -711,7 +884,7 @@ const GUIDE = [
   ['tournoi', '🏆', 'Le tournoi', "Un tournoi par mois, le premier samedi à 18 h. Chaque guilde inscrit trois héros et paie des frais selon son palier ; la Chambre ajoute sa part à la cagnotte. Jusqu'à six équipes, tout le monde se rencontre ; au-delà, élimination directe. Un match se joue en trois manches : un combat, une épreuve tirée au hasard, un combat. Gains : 60 % de la cagnotte au vainqueur, 30 % au deuxième, 10 % au troisième, et de la réputation."],
   ['alliances', '🤝', 'Les alliances', "Deux guildes peuvent s'allier : une au palier Inconnue, deux ensuite, trois à la Renommée. Des héros de guildes alliées qui se croisent en mission s'entendent mieux, ce qui aide l'équipe. Une alliance se rompt avec 48 h de préavis, puis il faut attendre deux semaines pour se réallier."],
   ['registre', '📜', 'Le Registre', "Les héros qui quittent une guilde vont au Registre. Si l'un d'eux t'intéresse, inscris-toi sur sa liste : il te sera proposé, en priorité, à une prochaine montée de niveau. Un héros qui a quitté ta guilde ne reviendra pas chez toi."],
-  ['repere', '⌂', 'Le repère', "Le repère grandit avec la réputation de ta guilde. Chaque rang ouvre une nouvelle pièce, à prix fixe : les cuisines au rang 2, l'infirmerie au rang 4, la salle d'armes au rang 6, et ainsi de suite jusqu'à l'aile nord. Chaque pièce a un vrai effet : un bon repas qui remonte le moral, des blessures qui guérissent plus vite, des trajets plus courts… Touche une pièce sur le plan pour voir ce qu'elle apporte."],
+  ['repere', '⌂', 'Le repère', "Le repère a trois niveaux : le rez-de-chaussée, l'étage et l'extérieur, avec la cour et le jardin. Tes héros y apparaissent là où ils sont : touche un portrait pour voir ce qu'il fait et passer un moment avec lui. Six pièces peuvent s'ajouter, une tous les 7 rangs (7, 14, 21, 28, 35, 42), à prix fixe. Chacune est grande et change vraiment la vie de la guilde : touche-la pour lire son effet."],
   ['recrutement', '✉', 'Le recrutement', "À chaque montée de niveau, 3 à 10 héros postulent, au hasard : rien ne garantit le rôle qui te manque. Entre-temps, une candidature spontanée peut arriver (une chance sur dix par jour). Plus ta guilde est réputée et ancienne, plus les grands noms se présentent. Contre des PO, une annonce à la Chambre augmente tes chances d'attirer le rôle voulu à la prochaine montée de niveau."],
   ['guildes', '⚑', 'Les autres guildes', "Tes amis dirigent leurs propres guildes. Vous vous croisez sur les contrats ouverts à tous : chaque poste va au premier qui le prend. Touche un héros allié ou une guilde pour voir sa fiche publique. Son moral et ses secrets restent l'affaire de son maître."],
 ];
@@ -724,7 +897,7 @@ function guide(cle) {
 function bienvenue() {
   ouvrir(`<div class="contenu-feuille" style="margin-top:6px"><h2 style="font-size:1.45rem">Bienvenue dans ton repère</h2>
     <div class="etapes-bienvenue">
-      <div><p><b>Regarde le plan.</b> Chaque point qui clignote est un héros présent. Touche-le pour savoir ce qu'il fait.</p></div>
+      <div><p><b>Regarde le plan.</b> Chaque portrait est un héros présent, là où il se trouve. Touche-le pour voir ce qu'il fait et passer un moment avec lui.</p></div>
       <div><p><b>Ouvre le courrier.</b> Tes héros te demandent des choses. Ta réponse change ce qu'ils pensent de toi.</p></div>
       <div><p><b>Envoie-les en mission</b> depuis le Monde. Ils reviennent avec des PO, des histoires… et parfois des blessures.</p></div>
     </div>
@@ -887,6 +1060,78 @@ function ouvrirLex(terme) {
 function fermerLex() { $('#carte-lex').classList.remove('ouvert'); $('#voile-lex').hidden = true; if ($('#histoire').classList.contains('ouvert')) minuteur = setTimeout(suivante, 4000); }
 $('#voile-lex').onclick = fermerLex;
 document.addEventListener('click', e => { const l = e.target.closest('[data-lex]'); if (l) { e.stopPropagation(); ouvrirLex(l.dataset.lex); } }, true);
+
+/* ---------- Tout s'explique au toucher (demande de Théo, 9 nov. 2026) ----------
+ * Un chiffre, un état, une jauge, un trait, une raison de moral : on touche, et le jeu explique ce que c'est, d'où ça vient,
+ * et ce qu'on peut y faire. Même carte que le lexique. */
+const RAISONS_TXT = [
+  [/^Épuisement/, 'Son énergie est presque vide : trop de missions, d\'entraînement ou de nuits courtes. Évite de l\'envoyer en mission, et laisse-lui du repos.'],
+  [/^Solitude/, 'Personne avec qui parler ces derniers temps. Une soirée au repère, un ami présent, une mission à deux : tout ça aide.'],
+  [/^L'impression de stagner/, 'Rien ne le fait progresser en ce moment. Une mission, ou de l\'entraînement, lui redonnent de l\'élan.'],
+  [/^L'ennui/, 'Trop de routine. Une sortie en ville, une soirée ou des jeux à la taverne lui changent les idées.'],
+  [/^Bien dans son quotidien/, 'Ses besoins sont comblés : repos, compagnie, progrès et détente. Continue comme ça.'],
+  [/^Un salaire en dessous/, 'Sa solde est en dessous de ses attentes. Tu peux l\'augmenter depuis sa fiche ; les héros qui aiment l\'or y sont deux fois plus sensibles.'],
+  [/^Un bon salaire/, 'Sa solde dépasse ses attentes : ça se voit sur son humeur.'],
+  [/proches? au repère/, 'Ses amis sont là. Les liens se tissent à force de vivre, de rire et de combattre ensemble.'],
+  [/^Vivre avec/, 'Une relation tendue avec quelqu\'un du repère. Les séparer en mission, ou les réconcilier quand une lettre te le propose, peut arranger les choses.'],
+];
+const BESOINS_TXT = { energie: 'L\'énergie : elle baisse avec les missions et l\'entraînement, remonte avec le sommeil, les siestes et les bains.', social: 'La compagnie : elle monte avec les discussions, les repas, les soirées. Un héros isolé déprime.', elan: 'Le progrès : l\'envie d\'avancer. Les missions, l\'entraînement et la lecture la nourrissent.', loisir: 'La détente : jeux, ville, musique, jardin. Sans elle, l\'ennui s\'installe.' };
+function expliquer(cle, arg) {
+  let titre = '', html = '';
+  const h = arg ? H(arg.split('#')[0]) : null;
+  if (cle === 'moral' && h) {
+    titre = `Le moral de ${h.nom} : ${h.moral} sur 100`;
+    html = `<p>Le chiffre dans le cercle, c'est le moral. Au-dessus de 70, tout va bien et ça se sent en mission. Entre 45 et 70, c'est correct. En dessous de 45, les chances en mission baissent, et l'envie de partir grandit.</p>
+      <p><b>Ce qui pèse en ce moment :</b></p>${(h.raisons || []).map(r => `<p>${r.valeur > 0 ? '+' : '−'}${Math.abs(r.valeur)} · <b>${esc(r.libelle)}</b><br><span class="discret">${esc(raisonTxt(h, r.libelle))}</span></p>`).join('') || '<p class="discret">Rien de particulier.</p>'}`;
+  } else if (cle === 'raison' && h) {
+    const [, i] = arg.split('#'); const r = h.raisons[+i];
+    titre = r.libelle; html = `<p>${esc(raisonTxt(h, r.libelle))}</p>`;
+    if (/maître|maîtresse/.test(r.libelle) && h.regard) html += regardTxt(h);
+  } else if (cle === 'regard' && h) { titre = `Ce que ${h.nom} pense de toi`; html = regardTxt(h); }
+  else if (cle === 'etat' && h) { titre = ETAT_HEROS(h).replace(/<[^>]+>/g, ''); html = `<p>${etatTxt(h)}</p>`; }
+  else if (cle === 'besoin') { titre = { energie: 'Énergie', social: 'Compagnie', elan: 'Progrès', loisir: 'Détente' }[arg] || ''; html = `<p>${BESOINS_TXT[arg] || ''}</p>`; }
+  else if (cle === 'trait') { titre = arg; html = `<p>Un trait de caractère. Il décide de ce que le héros aime faire au repère, de sa façon de juger tes décisions, et de ses réactions en mission ou dans les lettres. Les traits ne changent pas : on fait avec.</p>`; }
+  else if (EXPLI_FIXES[cle]) { [titre, html] = EXPLI_FIXES[cle]; html = `<p>${html}</p>`; }
+  else if (cle === 'entente' && h) { const e = (h.ententes || [])[+arg.split('#')[1]]; if (e) { titre = `${h.nom} et ${e.avec}`;
+    html = `<p>Pendant « ${esc(e.mission)} », ces deux-là se sont ${e.v > 0 ? (e.v >= 4 ? 'très bien' : 'bien') : (e.v <= -4 ? 'très mal' : 'mal')} entendus.</p><p>La prochaine fois qu'ils feront un contrat ensemble, les chances de réussite ${e.v > 0 ? 'monteront' : 'baisseront'} de <b>${Math.abs(e.v)} %</b>. Ça dépend de leurs caractères et de la façon dont le contrat s'est terminé, et ça se rejoue à chaque contrat commun.</p>`; } }
+  else if (cle === 'texte') { const [t, ...x] = arg.split('|'); titre = t; html = `<p>${esc(x.join('|'))}</p>`; }
+  if (!titre && !html) return;
+  $('#carte-lex').innerHTML = `<b>${esc(titre)}</b>${html}`;
+  $('#voile-lex').hidden = false; clearTimeout(minuteur); requestAnimationFrame(() => $('#carte-lex').classList.add('ouvert'));
+}
+const EXPLI_FIXES = {
+  places: ['Les places du repère', "À gauche, le nombre de héros dans ta guilde. À droite, le nombre de lits. Le repère gagne des places quand la guilde monte de rang. Quand il est plein, recruter quelqu'un oblige à laisser partir quelqu'un d'autre."],
+  actions: ['La vie de la guilde', "Tu peux organiser plus de cent choses : repas, jeux, concours, sorties, fêtes, travaux, coups de main au bourg. Certaines sont gratuites et immédiates, d'autres coûtent cher ou se préparent plusieurs jours à l'avance. Tous les héros présents en profitent (moral, liens, détente, envie de progresser), et chacun juge ton geste selon son caractère. Deux préparations à la fois au maximum, et pas deux fois la même dans la semaine."],
+  missive: ['Les missives', "Ton message part par la voie des airs. L'oiseau met plus ou moins longtemps selon la distance entre vos deux repères : l'autre maître ne le lira qu'à son arrivée. Tu as trois oiseaux : quand ils sont tous en vol, il faut attendre."],
+  avenir: ["Ce qui t'attend", "Les prochains rendez-vous de ta guilde, du plus proche au plus lointain : les oiseaux en vol, les départs, les retours, ce que tu as organisé. Le monde avance toutes les deux heures, même quand tu n'es pas là. Reviens à ces moments-là : il y aura quelque chose à lire."],
+  route: ['La route', "Le temps qu'il faut à tes héros pour aller de ton repère jusqu'à cette région. Il faut compter autant pour le retour. Les lettres, elles, voyagent par les airs, environ trois fois plus vite."],
+  influence: ['Ton influence', "La réputation que ta guilde a gagnée dans cette région en mission, sur les quatre dernières semaines. Chaque lundi midi, la guilde la plus influente prend la région."],
+};
+function raisonTxt(h, libelle) {
+  const t = RAISONS_TXT.find(([rx]) => rx.test(libelle));
+  if (t) return t[1];
+  if (/maître|maîtresse/.test(libelle)) return libelle.startsWith('Ses griefs') ? `${h.regard?.depart || ''} Ses griefs pèsent sur son moral et sur sa fidélité, tant que tes décisions ne lui font pas changer d'avis.` : 'Ce que tu fais lui plaît. Son estime soutient son moral et sa fidélité.';
+  return 'Un souvenir récent, bon ou mauvais. Il pèse moins de jour en jour, puis s\'efface.';
+}
+function regardTxt(h) {
+  const r = h.regard; if (!r) return '';
+  return `<p><b>${esc(r.mot)}.</b> ${esc(r.depart)}</p>
+    ${r.aime?.length ? `<p>Pour gagner son estime : <b>${esc(r.aime.join(', '))}</b>, quand tu réponds aux lettres et aux demandes.</p>` : ''}
+    ${r.deteste?.length ? `<p>Ce qui lui déplaît : <b>${esc(r.deteste.join(', '))}</b>.</p>` : ''}
+    ${(r.marques || []).length ? `<p>Ce qui a compté : ${r.marques.map(m => esc(m.texte)).join(' ; ')}.</p>` : ''}
+    <p class="discret">Tes décisions sont aussi jugées par les témoins : une même réponse peut plaire aux uns et déplaire aux autres.</p>`;
+}
+function etatTxt(h) {
+  if (h.etat === 'mission') return 'En mission pour un contrat. Le correspondant de la Chambre t\'écrit à l\'arrivée puis à la fin ; suis la route dans l\'onglet Monde.';
+  if (h.etat === 'rappel') return 'Rappel envoyé : un oiseau a rattrapé la route, et c\'est le demi-tour. Retour au repère bientôt.';
+  if (h.etat === 'voyage') return 'En voyage pour sa quête personnelle. Des lettres arrivent en route.';
+  if (h.etat === 'conges') return 'En congés. Retour au repère à la date prévue, reposé.';
+  if (h.reserve) return 'En salle de brief : ce héros tient un poste sur un contrat et prépare le départ (cartes, équipement, consignes). Le départ se fait tout seul à l\'heure dite. Tu peux encore annuler depuis le contrat.';
+  if (h.blesse) return 'Blessure à soigner. Pas de mission tant que ce n\'est pas guéri ; l\'infirmerie accélère les soins.';
+  if (h.repos) return `Au repos encore ${h.repos} h après sa dernière mission. Reste au repère, mais ne peut pas repartir avant d'avoir récupéré.`;
+  return 'Disponible : au repère, prêt pour un contrat ou une quête.';
+}
+document.addEventListener('click', e => { const x = e.target.closest('[data-explique]'); if (x) { e.stopPropagation(); e.preventDefault(); const [cle, ...a] = x.dataset.explique.split(':'); expliquer(cle, a.join(':')); } }, true);
 document.addEventListener('keydown', e => { const l = e.target.closest?.('[data-lex]'); if (l && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); ouvrirLex(l.dataset.lex); } if (e.key === 'Escape') fermerLex(); });
 
 /* ---------- Navigation ---------- */
@@ -925,7 +1170,7 @@ document.addEventListener('click', e => {
 });
 const RENDUS = { repere, heros, monde, courrier, chronique };
 if (!EN_LIGNE) setTimeout(() => { let vu = false; try { vu = localStorage.getItem('gl-bienvenue') === '1'; } catch {} if (!vu) bienvenue(); }, 900);
-function rafraichir() { RENDUS[ecran](); $('#badge').textContent = D.cartes.filter(c => !repondues[c.id]).length || ''; $('#badge').hidden = !D.cartes.some(c => !repondues[c.id]); }
+function rafraichir() { RENDUS[ecran](); majChien(); $('#badge').textContent = D.cartes.filter(c => !repondues[c.id]).length || ''; $('#badge').hidden = !D.cartes.some(c => !repondues[c.id]); }
 function aller(e) {
   ecran = e;
   document.querySelectorAll('.onglet').forEach((b, i) => { const on = b.dataset.e === e; b.setAttribute('aria-selected', on); if (on) $('#curseur').style.transform = `translateX(${i * 100}%)`; });
