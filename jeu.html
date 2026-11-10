@@ -169,6 +169,14 @@ p { margin: 0; }
 .plan-cadre { position: relative; border-radius: var(--r-carte); overflow: hidden; background: #241a12; box-shadow: var(--ombre); }
 .plan-cadre svg { display: block; width: 100%; height: auto; }
 .region-carte { cursor: pointer; }
+.bulle.papier { background: linear-gradient(180deg, #f3e6cc, #e9d8b6); color: #2b1d10; border: 0; box-shadow: 0 2px 10px rgba(0,0,0,.35); font-family: var(--f-plume); line-height: 1.5; }
+.bulle.papier .meta { color: #7a5f3c; }
+.bulle.papier [data-lex] { color: inherit; text-decoration-color: rgba(60,40,20,.4); }
+@keyframes pose { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.jeton { animation: pose .45s cubic-bezier(.2,1.4,.4,1) both; }
+@keyframes vol { 0%,100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-3px) rotate(4deg); } }
+.attente.oiseau .quand { animation: vol 1.6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .jeton, .attente.oiseau .quand { animation: none; } .chien-plan { transition: none; } }
 .attente { display: flex; gap: 10px; align-items: baseline; font-size: .92rem; }
 .attente .quand { flex: none; min-width: 52px; text-align: center; padding: 2px 8px; border-radius: 99px; background: rgba(242,182,94,.14); color: var(--miel); font-weight: 800; font-size: .78rem; }
 .rail-cats { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 6px; scrollbar-width: none; }
@@ -400,11 +408,11 @@ function repere() {
   const ouvertes = D.cartes.filter(c => !repondues[c.id]);
   const presents = D.heros;
   $('#e-repere').innerHTML = `
-  <div class="accueil" style="--i:0"><button type="button" data-ma-guilde aria-label="L'image de ta guilde" style="padding:0;border:0;background:none;flex:none;align-self:center">${EN_LIGNE ? blasonMoi(46) : ''}</button><div style="flex:1"><span class="marque">Guild Legends</span><span class="discret"> · ${esc(D.maintenant.jour)}, ${D.maintenant.heure} h</span><h1>Bon retour,<br>${titre}</h1></div><div class="coin"><button type="button" class="aide" data-guide="" aria-label="Comment ça marche">?</button><div class="coffre" title="Pièces d'or"><span class="piece"></span>${D.po.toLocaleString('fr-FR')} <small>PO</small></div></div></div>
+  <div class="accueil" style="--i:0"><div style="flex:1;min-width:0">${EN_LIGNE ? `<button type="button" data-ma-guilde aria-label="L'image de ta guilde" style="padding:0;border:0;background:none;vertical-align:middle;margin-right:8px">${blasonMoi(30)}</button>` : ''}<span class="marque">Guild Legends</span><span class="discret"> · ${esc(D.maintenant.jour)}, ${D.maintenant.heure} h</span><h1>Bon retour,<br>${titre}</h1></div><div class="coin"><button type="button" class="aide" data-guide="" aria-label="Comment ça marche">?</button><div class="coffre" title="Pièces d'or"><span class="piece"></span>${D.po.toLocaleString('fr-FR')} <small>PO</small></div></div></div>
   ${blocCarnet()}
   ${(D.candidatures || []).length ? `<button type="button" class="pli" data-aller="courrier" style="--i:1"><span class="duo">${D.candidatures.slice(0, 3).map(c => `<img src="${av(c.cle)}" alt="">`).join('')}</span><span><b>${D.candidatures.length} candidature${D.candidatures.length > 1 ? 's' : ''} à la porte</b><small>Dans le courrier</small></span><span class="sceau">G</span></button>` : ''}
   ${(D.avis || []).length ? `<div class="bloc" style="--i:1"><h2>Les nouvelles</h2>${D.avis.slice(0, 4).map(a => `<p class="discret" style="margin:0"><b style="color:var(--lin)">${esc(a.jour)}, ${a.heure} h</b> · ${annoter(a.texte)}</p>`).join('')}</div>` : ''}
-  ${(D.aVenir || []).length ? `<div class="bloc" style="--i:1"><div class="tete-bloc"><h2>Ce qui t'attend</h2><button type="button" class="aide" data-explique="avenir" aria-label="Ce qui t'attend">?</button></div>${D.aVenir.map(x => `<div class="attente"><span class="quand">${x.dans <= 0 ? 'bientôt' : x.dans >= 24 ? `${Math.round(x.dans / 24)} j` : `${x.dans} h`}</span><span>${esc(x.texte)}</span></div>`).join('')}</div>` : ''}
+  ${(D.aVenir || []).length ? `<div class="bloc" style="--i:1"><div class="tete-bloc"><h2>Ce qui t'attend</h2><button type="button" class="aide" data-explique="avenir" aria-label="Ce qui t'attend">?</button></div>${D.aVenir.map(x => `<div class="attente ${x.type}"><span class="quand">${x.dans <= 0 ? 'bientôt' : x.dans >= 24 ? `${Math.round(x.dans / 24)} j` : `${x.dans} h`}</span><span>${esc(x.texte)}</span></div>`).join('')}</div>` : ''}
   <div class="bloc" style="--i:1"><div class="tete-bloc"><h2>Ton repère</h2><span class="discret">${presentsRepere().length} héros présents</span></div>${planRepere()}</div>
   ${blocActions()}
   <div class="bloc" style="--i:2"><div class="tete-bloc"><h2>Pendant ton absence</h2><span class="discret">${forts.length} moments</span></div>
@@ -497,7 +505,7 @@ function planRepere() {
     const e = sl ? etatSalle(sl) : 'construite', nom = sl ? sl.nom : z.nom, cx = z.x + z.l / 2, cy = z.y + z.h / 2;
     if (e === 'construite') return `<g class="piece-plan" ${sl ? `data-salle="${sl.cle}"` : `data-zone="${k}"`} tabindex="0" role="button" aria-label="${esc(nom)}"><rect x="${z.x}" y="${z.y}" width="${z.l}" height="${z.h}" rx="14" fill="${z.fond}" stroke="#2a1d14" stroke-width="2"/><rect x="${z.x + 5}" y="${z.y + 5}" width="${z.l - 10}" height="${z.h - 10}" rx="10" fill="none" stroke="rgba(255,255,255,.07)"/>${T(z.x + 12, z.y + 22, esc(nom.toUpperCase()), 'font-size="10.5" font-weight="800" fill="#f4e7d4" opacity=".9" letter-spacing=".07em"')}</g>`;
     if (e === 'disponible') return `<g class="lot" data-salle="${sl.cle}" tabindex="0" role="button" aria-label="${esc(nom)} : à construire"><rect x="${z.x}" y="${z.y}" width="${z.l}" height="${z.h}" rx="14" fill="rgba(255,255,255,.05)" stroke="#e0b866" stroke-width="1.8" stroke-dasharray="6 5"/>${T(cx, cy - 12, '+', 'text-anchor="middle" font-size="22" fill="#e0c79d"')}${T(cx, cy + 6, esc(nom), 'text-anchor="middle" font-size="10.5" font-weight="700" fill="#e0c79d"')}${T(cx, cy + 21, sl.prix.toLocaleString('fr-FR') + ' PO', 'text-anchor="middle" font-size="10" fill="#b8a28a"')}</g>`;
-    return `<g class="verrou" data-salle="${sl.cle}" tabindex="0" role="button" aria-label="${esc(nom)} : rang ${sl.niveau}"><rect x="${z.x}" y="${z.y}" width="${z.l}" height="${z.h}" rx="14" fill="rgba(0,0,0,.24)" stroke="#5c4a39" stroke-width="1.2" stroke-dasharray="2 5"/>${cadenas(cx, cy - 14)}${T(cx, cy + 8, esc(nom), 'text-anchor="middle" font-size="10" fill="#a08a72"')}${T(cx, cy + 22, 'Rang ' + sl.niveau, 'text-anchor="middle" font-size="9.5" fill="#8f7a64"')}</g>`; }).join('');
+    return `<g class="verrou" data-salle="${sl.cle}" tabindex="0" role="button" aria-label="${esc(nom)} : rang ${sl.niveau}"><rect x="${z.x}" y="${z.y}" width="${z.l}" height="${z.h}" rx="14" fill="rgba(0,0,0,.24)" stroke="#5c4a39" stroke-width="1.2" stroke-dasharray="2 5"/>${cadenas(cx, cy - 14)}${T(cx, cy + 8, esc(nom), `text-anchor="middle" font-size="${nom.length > 30 ? 8.5 : 10}" fill="#a08a72"`)}${T(cx, cy + 22, 'Rang ' + sl.niveau, 'text-anchor="middle" font-size="9.5" fill="#8f7a64"')}</g>`; }).join('');
   const decor = vuePlan === 'dehors' ? `<rect x="220" y="326" width="126" height="60" rx="14" fill="#241a12" stroke="#8a7155" stroke-width="2"/>${T(283, 352, 'PORTAIL', 'text-anchor="middle" font-size="10" font-weight="800" fill="#b8a28a" letter-spacing=".08em"')}${T(283, 368, 'vers ' + esc(D.repere.bourg), 'text-anchor="middle" font-size="9.5" fill="#8f7a64"')}<circle cx="60" cy="330" r="26" fill="#2f4a2a"/><circle cx="60" cy="330" r="16" fill="#3d5f36"/><ellipse cx="150" cy="340" rx="30" ry="18" fill="#3f6470" opacity=".8"/>`
     : vuePlan === 'rdc' ? `<rect x="${ZONES.salle_commune.x + ZONES.salle_commune.l - 34}" y="${ZONES.salle_commune.y + 8}" width="24" height="12" rx="3" fill="#e08a3c" opacity=".85"/>` : '';
   const jetons = pres.filter(h => pos[h.id].vue === vuePlan).map(h => { const p = pos[h.id];
@@ -705,7 +713,7 @@ function ficheGuilde(id) {
   const gd = GUILDE(id);
   ouvrir(`<div class="contenu-feuille" style="margin-top:6px">
     <div style="display:flex;gap:14px;align-items:center">${blasonDe(gd, 60)}<div><h2 style="font-size:1.35rem">${esc(gd.nom)}</h2><span class="discret">Maître : ${esc(gd.maitre)}</span></div></div>
-    <p class="lettre" style="font-size:1rem">« ${esc(gd.devise)} »</p>
+    ${gd.devise ? `<p class="lettre" style="font-size:1rem">« ${esc(gd.devise)} »</p>` : ''}
     <div class="chips"><span class="chip">${esc(REGIONS_NOM[gd.region])}</span><span class="chip">Niveau ${gd.niveau}</span><span class="chip">Réputation ${esc(gd.palier)}</span><span class="chip">${gd.missions} missions</span></div>
     ${EN_LIGNE && D.alliances ? `<div class="bloc"><h2>Alliance</h2>${gd.allie ? `<p class="discret">Vos guildes sont alliées : vos héros qui se croisent en mission s'entendent mieux.</p><button type="button" class="btn-voir" data-alliance="rompre|${esc(gd.id)}">Rompre l'alliance (48 h de préavis)</button>`
       : D.alliances.recues.some(i => i.de === gd.id) ? `<button type="button" class="btn-plein" data-alliance="accepter|${esc(D.alliances.recues.find(i => i.de === gd.id).cle)}">Accepter leur proposition d'alliance</button>`
@@ -992,16 +1000,18 @@ function montrerSuite(c, o, lignes) {
 
 /* ---------- Chronique ---------- */
 let filtre = 'tout';
+// Une lettre reçue (correspondant, habitant, héros en voyage, autre guilde) se lit sur du papier, pas dans une bulle.
+const LETTRE = e => ['courrier', 'voyage'].includes(e.dec);
 function chronique() {
-  const garde = e => filtre === 'tout' || (filtre === 'fort' && e.importance >= 3) || (filtre === 'histoires' && (e.arc || e.quete));
+  const garde = e => filtre === 'tout' || (filtre === 'fort' && e.importance >= 3) || (filtre === 'histoires' && (e.arc || e.quete)) || (filtre === 'courrier' && LETTRE(e));
   const jours = [...new Set(D.chronique.filter(e => !e.evt).map(e => e.jour))];
   const lignes = D.chronique.filter(garde);
   $('#e-chronique').innerHTML = `<h1 style="--i:0">La chronique</h1>
-  <div class="filtres" style="--i:1" role="group" aria-label="Filtrer">${[['tout', 'Tout'], ['fort', 'Moments forts'], ['histoires', 'Histoires et quêtes']].map(([k, l]) => `<button data-f="${k}" aria-pressed="${filtre === k}">${l}</button>`).join('')}</div>
+  <div class="filtres" style="--i:1" role="group" aria-label="Filtrer">${[['tout', 'Tout'], ['fort', 'Moments forts'], ['courrier', 'Courrier'], ['histoires', 'Histoires']].map(([k, l]) => `<button data-f="${k}" aria-pressed="${filtre === k}">${l}</button>`).join('')}</div>
   ${jours.map((j, i) => { const ls = lignes.filter(e => e.jour === j).sort((a, b) => a.heure - b.heure); if (!ls.length) return '';
     return `<div class="jour" style="--i:${i + 2}"><h3>${esc(j)}</h3>${ls.map(e => e.evt
       ? `<div class="moment"><span class="icone-evt">${e.evt === 'mission' ? '⚔' : '✦'}</span><div class="bulle fort"><div class="meta">${e.heure} h</div>${annoter(e.texte)}</div></div>`
-      : `<div class="moment"><span class="tetes">${e.heros.slice(0, 2).map(id => `<img src="${av(id)}" alt="${esc(id)}">`).join('')}</span><div class="bulle ${e.importance >= 3 ? 'fort' : ''}"><div class="meta">${e.heure} h${e.arc ? ` <span class="pastille miel">${esc(e.arc)}</span>` : ''}${e.quete ? ' <span class="pastille miel">Quête</span>' : ''}</div>${annoter(e.texte)}</div></div>`).join('')}</div>`; }).join('')}`;
+      : `<div class="moment"><span class="tetes">${e.heros.slice(0, 2).map(id => `<img src="${av(id)}" alt="${esc(id)}">`).join('')}</span><div class="bulle ${LETTRE(e) ? 'papier' : e.importance >= 3 ? 'fort' : ''}"><div class="meta">${e.heure} h${LETTRE(e) ? ' · au courrier' : ''}${e.arc ? ` <span class="pastille miel">${esc(e.arc)}</span>` : ''}${e.quete ? ' <span class="pastille miel">Quête</span>' : ''}</div>${annoter(e.texte)}</div></div>`).join('')}</div>`; }).join('')}`;
   $('#e-chronique').querySelector('.filtres').onclick = e => { const b = e.target.closest('button'); if (!b) return; filtre = b.dataset.f; chronique(); };
 }
 
