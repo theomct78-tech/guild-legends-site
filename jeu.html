@@ -48,14 +48,6 @@ p { margin: 0; }
 /* Histoires (stories) */
 .rail { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; margin-inline: -16px; padding: 4px 16px 10px; scrollbar-width: none; }
 .rail::-webkit-scrollbar { display: none; }
-.vignette { flex: 0 0 150px; height: 210px; border-radius: var(--r-carte); overflow: hidden; position: relative; scroll-snap-align: start; box-shadow: var(--ombre); transition: transform .4s var(--ressort); background: var(--bois); text-align: left; }
-.vignette:active { transform: scale(.96); }
-.vignette > img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; }
-.vignette::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 35%, rgba(12,8,5,.92)); }
-.vignette span { position: absolute; z-index: 1; left: 12px; right: 12px; bottom: 12px; font-weight: 800; font-size: .95rem; line-height: 1.2; }
-.vignette .anneau { position: absolute; z-index: 1; top: 10px; left: 10px; width: 34px; height: 34px; border-radius: 50%; padding: 2px; background: conic-gradient(var(--miel), var(--braise), var(--miel)); }
-.vignette .anneau img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; border: 2px solid var(--nuit); }
-.vignette.vue .anneau { background: var(--bois-clair); }
 /* Plis */
 .pli { position: relative; display: grid; grid-template-columns: 56px 1fr auto; gap: 14px; align-items: center; padding: 14px; border-radius: var(--r-carte); background: linear-gradient(160deg, var(--bois-haut), var(--bois)); box-shadow: var(--ombre); text-align: left; transition: transform .4s var(--ressort); width: 100%; }
 .pli:active { transform: scale(.98); }
@@ -181,6 +173,15 @@ p { margin: 0; }
 @keyframes voile-in { from { opacity: 0; } } @keyframes voile-out { to { opacity: 0; } }
 .sans-mouvement *, .sans-mouvement { animation: none !important; }
 .region-carte { cursor: pointer; }
+/* Le fil : les héros écrivent eux-mêmes, comme dans une conversation de groupe. */
+.bulle.fil { border-radius: 4px 18px 18px 18px; }
+.bulle.fil .qui { display: block; font-weight: 800; font-size: .82rem; color: var(--miel); margin-bottom: 1px; }
+.bulle.fil .ctx { display: block; font-size: .76rem; color: var(--cendre); margin-bottom: 3px; }
+.moment.moi { grid-template-columns: 1fr; justify-items: end; }
+.moment.moi .bulle { max-width: 82%; border-radius: 18px 4px 18px 18px; background: var(--miel-doux); color: var(--lin); }
+.bulle.fil .geste-fil { color: var(--cendre); } /* les héros qui ne parlent pas (Sona, Bard, Rek'Sai…) : leur geste, en italique */
+.repondre-fil { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.repondre-fil button { padding: 6px 12px; border-radius: 99px; background: var(--bois-clair); font-size: .82rem; font-weight: 800; color: var(--lin); }
 .bulle.papier { background: linear-gradient(180deg, #f3e6cc, #e9d8b6); color: #2b1d10; border: 0; box-shadow: 0 2px 10px rgba(0,0,0,.35); font-family: var(--f-plume); line-height: 1.5; }
 .bulle.papier .meta { color: #7a5f3c; }
 .bulle.papier [data-lex] { color: inherit; text-decoration-color: rgba(60,40,20,.4); }
@@ -252,14 +253,31 @@ p { margin: 0; }
 .histoire { position: fixed; inset: 0; z-index: 50; background: #000; display: grid; opacity: 0; pointer-events: none; transition: opacity .3s var(--doux); }
 .histoire.ouvert { opacity: 1; pointer-events: auto; }
 .histoire .cadre { position: relative; width: min(440px, 100%); height: 100%; margin: 0 auto; overflow: hidden; }
-.histoire .cadre > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; animation: zoom 6s linear both; }
-@keyframes zoom { from { transform: scale(1.12); } to { transform: scale(1); } }
-.histoire .cadre::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.55) 0%, transparent 22%, transparent 45%, rgba(10,6,4,.95) 85%); }
+.histoire .cadre > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* Une story : la photo telle qu'elle a été postée, entière, sans zoom ; derrière, la même photo floutée remplit l'écran. */
+.histoire .cadre > img.fond { filter: blur(28px) brightness(.55) saturate(1.2); transform: scale(1.15); }
+.histoire .cadre > img.photo { object-fit: contain; object-position: 50% 42%; }
+.histoire .entete { position: absolute; z-index: 2; top: calc(24px + env(safe-area-inset-top, 0px)); left: 14px; right: 60px; display: flex; gap: 10px; align-items: center; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.6); }
+.histoire .entete img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 1.5px solid rgba(255,255,255,.85); }
+.histoire .entete b { font-size: .92rem; } .histoire .entete span { font-size: .82rem; opacity: .8; }
+.histoire .legende { position: absolute; z-index: 2; left: 22px; right: 22px; bottom: calc(64px + env(safe-area-inset-bottom, 0px)); display: grid; justify-items: center; gap: 8px; text-align: center; }
+.histoire .legende p { margin: 0; padding: 8px 12px; border-radius: 10px; background: rgba(12,8,5,.72); font: 600 1.08rem/1.4 var(--f-ui); color: #fff; text-wrap: pretty; box-decoration-break: clone; }
+.histoire .legende small { padding: 3px 9px; border-radius: 99px; background: rgba(255,255,255,.16); color: #f1e6d4; font-size: .78rem; font-weight: 700; }
+/* Le rail des stories, en haut du repère : une bulle par héros, cerclée tant qu'elle n'a pas été vue. */
+.stories { display: flex; gap: 14px; overflow-x: auto; padding: 2px 2px 6px; scrollbar-width: none; scroll-snap-type: x proximity; }
+.stories::-webkit-scrollbar { display: none; }
+.story-bulle { flex: 0 0 66px; display: grid; justify-items: center; gap: 5px; scroll-snap-align: start; }
+.story-bulle .anneau { width: 64px; height: 64px; border-radius: 50%; padding: 2.5px; background: conic-gradient(from 200deg, var(--miel), var(--braise), #d9566e, var(--miel)); }
+.story-bulle.vue .anneau { background: var(--bois-clair); }
+.story-bulle .anneau img { display: block; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid var(--nuit); }
+.story-bulle span { max-width: 66px; font-size: .74rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--lin); }
+.story-bulle.vue span { color: var(--cendre); }
+.histoire .cadre::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(0,0,0,.45) 0%, transparent 16%, transparent 78%, rgba(0,0,0,.35) 100%); }
 .barres { position: absolute; z-index: 2; top: calc(12px + env(safe-area-inset-top, 0px)); left: 12px; right: 12px; display: flex; gap: 4px; }
 .barres i { flex: 1; height: 3px; border-radius: 3px; background: rgba(255,255,255,.3); overflow: hidden; }
 .barres i::after { content: ""; display: block; height: 100%; width: 0; background: #fff; }
 .barres i.fait::after { width: 100%; }
-.barres i.encours::after { animation: barre 6s linear forwards; }
+.barres i.encours::after { animation: barre var(--d, 6s) linear forwards; }
 @keyframes barre { to { width: 100%; } }
 .histoire .texte { position: absolute; z-index: 2; left: 22px; right: 22px; bottom: calc(46px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 10px; animation: monte .6s var(--doux) both .1s; }
 .histoire .texte p { font: 500 1.25rem/1.4 var(--f-ui); text-wrap: pretty; }
@@ -395,7 +413,7 @@ const fichier = (id, type) => H(id)?.img?.[type] || '';
 const av = id => IMG[id]?.av || fichier(id, 'av');
 const ban = id => IMG[id]?.ban || fichier(id, 'carte');
 const carte = id => IMG[id]?.carte || ban(id);
-const story = id => IMG[id]?.story || ban(id);
+const story = id => IMG[id]?.story || fichier(id, 'story') || ban(id);
 const pos = id => IMG[id]?.pos || '50% 30%';
 const teinte = m => m >= 62 ? 'var(--sauge)' : m >= 45 ? 'var(--miel)' : 'var(--braise)';
 const ROLES = { Tank: 'Tank', Combattant: 'Combattant', Mage: 'Mage', Tireur: 'Tireur', Assassin: 'Assassin', Support: 'Support' };
@@ -415,30 +433,40 @@ if (EN_LIGNE) setInterval(async () => { if (document.hidden || !$('#voile').hidd
 const Titre = () => titre[0].toUpperCase() + titre.slice(1);
 
 /* ---------- Repère ---------- */
-const forts = D.chronique.filter(e => (e.importance >= 3 || e.arc || ['recit_mission', 'arrivee'].includes(e.dec)) && !e.evt && e.heros.length).slice(0, 10);
+/* Les stories : une par héros de la guilde (fil.js), la plus récente d'abord. Vue = vue aujourd'hui sur cet appareil. */
+const STORIES = () => (D.stories || []).filter(x => H(x.heros));
+const cleVues = () => `gl-stories-${EN_LIGNE ? D.guilde.id : 'demo'}-${Math.floor((D.maintenant.t || 0) / 24)}`;
+let storiesVues = new Set();
+try { storiesVues = new Set(JSON.parse(localStorage.getItem(cleVues()) || '[]')); } catch {}
+const storyVue = x => storiesVues.has(`${x.heros}@${x.derniere}`);
+function marquerStory(x) { storiesVues.add(`${x.heros}@${x.derniere}`); try { localStorage.setItem(cleVues(), JSON.stringify([...storiesVues])); } catch {} }
+function railStories() {
+  const st = STORIES(); if (!st.length) return '';
+  // Celles qu'on n'a pas encore vues d'abord, comme sur Instagram.
+  const ordre = [...st.filter(x => !storyVue(x)), ...st.filter(storyVue)];
+  return `<div class="stories" style="--i:1" role="list" aria-label="Les stories de la guilde">${ordre.map(x => `<button type="button" role="listitem" class="story-bulle ${storyVue(x) ? 'vue' : ''}" data-story="${esc(x.heros)}"><span class="anneau"><img src="${av(x.heros)}" alt=""></span><span>${esc(NOM(x.heros).split(' ')[0])}</span></button>`).join('')}</div>`;
+}
 function repere() {
   const ouvertes = D.cartes.filter(c => !repondues[c.id]);
   const presents = D.heros;
   $('#e-repere').innerHTML = `
   <div class="accueil" style="--i:0"><div style="flex:1;min-width:0">${EN_LIGNE ? `<button type="button" data-ma-guilde aria-label="L'image de ta guilde" style="padding:0;border:0;background:none;vertical-align:middle;margin-right:8px">${blasonMoi(30)}</button>` : ''}<span class="marque">Guild Legends</span><span class="discret"> · ${esc(D.maintenant.jour)}, ${D.maintenant.heure} h</span><h1>Bon retour,<br>${titre}</h1></div><div class="coin"><button type="button" class="aide" data-guide="" aria-label="Comment ça marche">?</button><div class="coffre" title="Pièces d'or"><span class="piece"></span>${D.po.toLocaleString('fr-FR')} <small>PO</small></div></div></div>
+  ${railStories()}
   ${blocCarnet()}
   ${(D.candidatures || []).length ? `<button type="button" class="pli" data-aller="courrier" style="--i:1"><span class="duo">${D.candidatures.slice(0, 3).map(c => `<img src="${av(c.cle)}" alt="">`).join('')}</span><span><b>${D.candidatures.length} candidature${D.candidatures.length > 1 ? 's' : ''} à la porte</b><small>Dans le courrier</small></span><span class="sceau">G</span></button>` : ''}
   ${(D.avis || []).length ? `<div class="bloc" style="--i:1"><h2>Les nouvelles</h2>${D.avis.slice(0, 4).map(a => `<p class="discret" style="margin:0"><b style="color:var(--lin)">${esc(a.jour)}, ${a.heure} h</b> · ${annoter(a.texte)}</p>`).join('')}</div>` : ''}
   ${(D.aVenir || []).length ? `<div class="bloc" style="--i:1"><div class="tete-bloc"><h2>Ce qui t'attend</h2><button type="button" class="aide" data-explique="avenir" aria-label="Ce qui t'attend">?</button></div>${D.aVenir.map(x => `<div class="attente ${x.type}"><span class="quand">${x.dans <= 0 ? 'bientôt' : x.dans >= 24 ? `${Math.round(x.dans / 24)} j` : `${x.dans} h`}</span><span>${esc(x.texte)}</span></div>`).join('')}</div>` : ''}
-  <div class="bloc" style="--i:1"><div class="tete-bloc"><h2>Ton repère</h2><span class="discret">${presentsRepere().length} héros présents</span></div>${planRepere()}</div>
+  <div class="bloc" style="--i:1"><div class="tete-bloc"><h2>Ton repère</h2><span class="discret">${presentsRepere().length > 1 ? `${presentsRepere().length} héros présents` : presentsRepere().length ? 'un héros présent' : 'personne'}</span></div>${planRepere()}</div>
   ${blocActions()}
-  <div class="bloc" style="--i:2"><div class="tete-bloc"><h2>Pendant ton absence</h2><span class="discret">${forts.length} moments</span></div>
-    <div class="rail">${forts.map((e, i) => `<button class="vignette" data-h="${i}"><img src="${carte(e.heros[0])}" alt=""><span class="anneau"><img src="${av(e.heros[0])}" alt=""></span><span>${esc(accroche(e))}</span></button>`).join('')}</div></div>
   <div class="bloc" style="--i:2"><div class="tete-bloc"><h2>Sur ton bureau</h2>${ouvertes.length ? `<span class="pastille miel">${ouvertes.length} à traiter</span>` : ''}</div>
     ${ouvertes.length ? ouvertes.map(pli).join('') : '<div class="vide">Rien à signer. Profite du calme.</div>'}</div>
   ${D.arcs.length ? `<div class="bloc" style="--i:4"><h2>Histoires en cours</h2>${D.arcs.map(a => `<div class="arc"><span class="duo"><img src="${av(a.a)}" alt=""><img src="${av(a.b)}" alt=""></span><div style="min-width:0"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><b>${esc(a.titre)}</b><span class="pastille miel">À suivre</span></div><div class="discret">${esc(NOM(a.a))} et ${esc(NOM(a.b))}</div>${a.dernier && a.total ? `<p class="discret" style="margin-top:6px;font-style:italic">« ${annoter(a.dernier.length > 120 ? a.dernier.slice(0, 118).replace(/\s\S*$/, '') + '…' : a.dernier)} »</p>` : ''}<div class="points">${Array.from({ length: (a.total || a.etape) + 1 }, (_, k) => `<i class="${k < a.etape ? 'fait' : ''}"></i>`).join('')}</div></div></div>`).join('')}</div>` : ''}
-  ${D.soiree ? `<div class="bloc" style="--i:5"><div class="tete-bloc"><h2>La soirée de ${esc(D.soiree.jour)}</h2><span class="discret">${D.soiree.venus.length} présents</span></div>
+  ${D.soiree ? `<div class="bloc" style="--i:5"><div class="tete-bloc"><h2>La soirée de ${esc(D.soiree.jour)}</h2><span class="discret">${D.soiree.venus.length > 1 ? `${D.soiree.venus.length} présents` : D.soiree.venus.length ? 'un présent' : 'personne pour l\'instant'}</span></div>
     <div class="arc" style="display:grid;gap:12px"><div class="presents" style="margin:0;padding:0">${D.soiree.venus.map(id => `<span class="avatar" style="--m:100;width:44px;height:44px"><img src="${av(id)}" alt="${esc(id)}"></span>`).join('')}</div>
     <div class="chips">${D.soiree.absents.map(a => `<span class="chip"><img src="${av(a.id)}" alt="" style="width:18px;height:18px;border-radius:50%;vertical-align:-4px;margin-right:6px">${esc(NOM(a.id))} · ${esc(a.raison)}</span>`).join('')}</div></div></div>` : ''}`;
 }
-function accroche(e) { const t = e.texte.split(/(?<=[.!?»])\s/)[0]; return t.length > 70 ? t.slice(0, 68).replace(/\s\S*$/, '') + '…' : t; }
 function pli(c) {
-  return `<button class="pli" data-carte="${c.id}"><span class="duo">${c.heros.map(id => `<img src="${av(id)}" alt="">`).join('')}</span><span><b>${esc(c.titre.replace(/ : « .* »$/, ''))}</b><small>${esc({ billet: 'Un billet, glissé sous la porte', quete: 'Une quête personnelle', conflit: 'Un conflit à arbitrer', conges: 'Une demande de congés', augmentation: 'Une question de salaire', soiree: 'Une fête', depart: 'Une lettre de départ' }[c.type] || '')}</small></span><span class="sceau">G</span></button>`;
+  return `<button class="pli" data-carte="${c.id}"><span class="duo">${c.heros.map(id => `<img src="${av(id)}" alt="">`).join('')}</span><span><b>${esc(c.titre.replace(/ : « .* »$/, ''))}</b><small>${esc({ billet: 'Un billet, glissé sous la porte', quete: 'Une quête personnelle', conflit: 'Un conflit à arbitrer', conges: 'Une demande de congés', augmentation: 'Une question de salaire', soiree: 'Une fête', depart: 'Une lettre de départ', facture: 'Une note du bourg, à régler' }[c.type] || '')}</small></span><span class="sceau">G</span></button>`;
 }
 
 
@@ -859,7 +887,7 @@ document.addEventListener('click', async e => {
   const al = e.target.closest('[data-aller]'); if (al) { aller(al.dataset.aller); return; }
   if (!EN_LIGNE) return;
   const pl = e.target.closest('[data-placer]'); if (pl) { const [contrat, poste, heros] = pl.dataset.placer.split('|'); pl.disabled = true;
-    const r = await agir('placer', { contrat, poste: +poste, heros }); if (r) { cocher('contrat'); ficheContrat(contrat); toast(r.evince ? `${NOM(heros)} reprend le poste : son rang est meilleur.` : `${NOM(heros)} est engagé sur le contrat.`); } else pl.disabled = false; return; }
+    const r = await agir('placer', { contrat, poste: +poste, heros }); if (r) { cocher('contrat'); ficheContrat(contrat); toast(r.evince ? `${NOM(heros)} reprend le poste : son rang est meilleur.` : `${NOM(heros)} prend le poste.`); } else pl.disabled = false; return; }
   const rt = e.target.closest('[data-retirer]'); if (rt) { const [contrat, heros] = rt.dataset.retirer.split('|'); const r = await agir('retirer', { contrat, heros }); if (r) { if (r.rappel === 'route') { toast(`L'oiseau est parti. ${NOM(heros)} sera de retour dans ${r.retour} h environ.`); fermer(); } else { toast(`${NOM(heros)} quitte la salle de brief et reste au repère.`); if (D.contrats.some(x => x.id === contrat)) ficheContrat(contrat); else fermer(); } } return; }
   const rc = e.target.closest('[data-recruter]'); if (rc) { if ((D.effectif ?? D.heros.length) >= D.capacite) { choisirRemplacant(rc.dataset.recruter); return; }
     if (await agir('recruter', { cle: rc.dataset.recruter })) { cocher('recruter'); toast('Bienvenue au repère !'); } return; }
@@ -878,6 +906,20 @@ document.addEventListener('click', async e => {
     if (r) { fermer(); toast(quoi === 'proposer' ? 'Proposition d\'alliance envoyée.' : quoi === 'accepter' ? 'Alliance conclue.' : 'Rupture annoncée : l\'alliance tient encore 48 h.'); } return; }
 });
 
+/* L'équipe conseillée : pour chaque poste libre, le héros disponible qui donne les meilleures chances, sans prendre deux fois le même. */
+function conseil(c) {
+  const pris = new Set(), out = [];
+  c.detailPostes.forEach((p, i) => { if (p.tenu) return;
+    const x = (p.candidats || []).filter(k => k.dispo && !pris.has(k.id)).sort((a, b) => (b.chance ?? 0) - (a.chance ?? 0) || a.ecart - b.ecart)[0];
+    if (x) { pris.add(x.id); out.push({ poste: i, heros: x.id }); } });
+  return out;
+}
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-conseil]'); if (!b || !EN_LIGNE) return; b.disabled = true;
+  const c = D.contrats.find(x => x.id === b.dataset.conseil), choix = conseil(c);
+  for (const x of choix) if (!(await agir('placer', { contrat: c.id, poste: x.poste, heros: x.heros }))) break;
+  cocher('contrat'); ficheContrat(c.id); toast(`${choix.map(x => NOM(x.heros)).join(', ')} ${choix.length > 1 ? 'prennent' : 'prend'} le contrat.`);
+});
 const RANGS_TXT = ['E', 'D', 'C-', 'C', 'C+', 'B-', 'B', 'B+', 'A-', 'A', 'A+', 'S-', 'S', 'S+', 'G'], RG_IDX = r => RANGS_TXT.indexOf(r);
 function ficheContrat(id) {
   const c = D.contrats.find(x => x.id === id); cocher('contrat');
@@ -886,6 +928,8 @@ function ficheContrat(id) {
     <p class="discret">${esc(cap(c.demandeur))} · ${esc(c.lieu)}${c.risque ? ' · <span class="pastille risque">À risque</span>' : ''}</p>
     <div class="lettre">${annoter(c.accroche)}</div>
     <div class="bloc" style="gap:4px"><h2>Le voyage</h2>${barreCal(c.cal)}</div>
+    ${EN_LIGNE && conseil(c).length ? `<button type="button" class="btn-plein" data-conseil="${esc(c.id)}" style="width:100%">Équipe conseillée : ${conseil(c).map(x => esc(NOM(x.heros))).join(', ')}</button>
+      <p class="discret" style="margin:-6px 0 0">Les héros libres qui donnent les meilleures chances, poste par poste.${c.detailPostes.filter(p => !p.tenu).length > conseil(c).length ? ` Il restera ${c.detailPostes.filter(p => !p.tenu).length - conseil(c).length} poste${c.detailPostes.filter(p => !p.tenu).length - conseil(c).length > 1 ? 's' : ''} vide${c.detailPostes.filter(p => !p.tenu).length - conseil(c).length > 1 ? 's' : ''} : un poste vide fait nettement baisser les chances.` : ''}</p>` : ''}
     <div class="bloc"><div class="tete-bloc"><h2>Contrat de rang ${esc(c.rang)}</h2><button type="button" class="aide" data-guide="rangs" aria-label="Les rangs">?</button></div>
       <p class="discret">Chaque poste attend un héros de rang ${esc(c.rang)}. En dessous, ce n'est pas interdit : c'est plus difficile, et le poste peut être repris par une autre guilde qui envoie mieux.</p>
       ${c.detailPostes.map((p, i) => { const sousRang = p.tenu && RG_IDX(p.tenu.rang) < RG_IDX(c.rang);
@@ -1043,12 +1087,32 @@ function chronique() {
   const lignes = D.chronique.filter(garde);
   $('#e-chronique').innerHTML = `<h1 style="--i:0">La chronique</h1>
   <div class="filtres" style="--i:1" role="group" aria-label="Filtrer">${[['tout', 'Tout'], ['fort', 'Moments forts'], ['courrier', 'Courrier'], ['histoires', 'Histoires']].map(([k, l]) => `<button data-f="${k}" aria-pressed="${filtre === k}">${l}</button>`).join('')}</div>
-  ${jours.map((j, i) => { const ls = lignes.filter(e => e.jour === j).sort((a, b) => a.heure - b.heure); if (!ls.length) return '';
+  ${jours.map((j, i) => { const ls = enFil(lignes.filter(e => e.jour === j).sort((a, b) => a.heure - b.heure)); if (!ls.length) return '';
     return `<div class="jour" style="--i:${i + 2}"><h3>${esc(j)}</h3>${ls.map(e => e.evt
       ? `<div class="moment"><span class="icone-evt">${e.evt === 'mission' ? '⚔' : '✦'}</span><div class="bulle fort"><div class="meta">${e.heure} h</div>${annoter(e.texte)}</div></div>`
+      : e.dec === 'fil' ? momentFil(e)
       : `<div class="moment"><span class="tetes">${e.heros.slice(0, 2).map(id => `<img src="${av(id)}" alt="${esc(id)}">`).join('')}</span><div class="bulle ${LETTRE(e) ? 'papier' : e.importance >= 3 ? 'fort' : ''}"><div class="meta">${e.heure} h${LETTRE(e) ? ' · au courrier' : ''}${e.arc ? ` <span class="pastille miel">${esc(e.arc)}</span>` : ''}${e.quete ? ' <span class="pastille miel">Quête</span>' : ''}</div>${annoter(e.texte)}</div></div>`).join('')}</div>`; }).join('')}`;
   $('#e-chronique').querySelector('.filtres').onclick = e => { const b = e.target.closest('button'); if (!b) return; filtre = b.dataset.f; chronique(); };
 }
+
+/* Un message du fil : le héros parle lui-même, avec son nom au-dessus ; les réponses du maître s'alignent à droite. */
+// Ta réponse s'affiche juste sous le message auquel elle répond, comme dans une conversation.
+function enFil(ls) {
+  const rep = ls.filter(e => e.enReponseA && ls.some(x => x.id === e.enReponseA)), out = [];
+  for (const e of ls) { if (rep.includes(e)) continue; out.push(e); if (e.id) out.push(...rep.filter(r => r.enReponseA === e.id)); }
+  return out;
+}
+const REPONSES_FIL = [['encourager', 'Encourager'], ['taquiner', 'Taquiner'], ['recadrer', 'Recadrer']];
+function momentFil(e) {
+  if (e.auteur === 'maitre') return `<div class="moment moi"><div class="bulle fil"><div class="meta">${e.heure} h · Toi</div>${esc(e.texte)}</div></div>`;
+  return `<div class="moment"><span class="tetes"><img src="${av(e.auteur)}" alt=""></span><div class="bulle fil ${e.importance >= 3 ? 'fort' : ''}"><span class="qui">${esc(NOM(e.auteur))} <span class="discret" style="font-weight:700">· ${e.heure} h</span></span>${e.contexte ? `<span class="ctx">${esc(e.contexte)}</span>` : ''}${/^\(.*\)$/.test(e.texte) ? `<i class="geste-fil">${annoter(e.texte.slice(1, -1))}</i>` : annoter(e.texte)}${e.attend && EN_LIGNE ? `<div class="repondre-fil" data-fil="${esc(e.id)}">${REPONSES_FIL.map(([k, l]) => `<button type="button" data-choix="${k}">${l}</button>`).join('')}</div>` : ''}</div></div>`;
+}
+document.addEventListener('click', async ev => {
+  const b = ev.target.closest('.repondre-fil button'); if (!b) return;
+  const zone = b.closest('.repondre-fil'); zone.querySelectorAll('button').forEach(x => { x.disabled = true; x.style.opacity = x === b ? '1' : '.35'; });
+  const r = await agir('fil', { id: zone.dataset.fil, choix: b.dataset.choix });
+  if (r && Array.isArray(r.lignes) && r.lignes.length) toast(r.lignes[0].replace(/<[^>]+>/g, ''));
+});
 
 /* ---------- Feuille, histoires, toast ---------- */
 const feuille = $('#feuille'), voile = $('#voile');
@@ -1062,22 +1126,34 @@ $('#poignee').addEventListener('pointerdown', e => { y0 = e.clientY; feuille.sty
 $('#poignee').addEventListener('pointermove', e => { if (y0 == null) return; const d = Math.max(0, e.clientY - y0); feuille.style.transform = `translate(-50%, ${d}px)`; });
 $('#poignee').addEventListener('pointerup', e => { const d = e.clientY - y0; y0 = null; feuille.style.transition = ''; feuille.style.transform = ''; if (d > 90) fermer(); });
 
-let hi = 0, minuteur = null;
-function ouvrirHistoire(i) { hi = i; $('#histoire').classList.add('ouvert'); $('#histoire').setAttribute('aria-hidden', 'false'); montrerHistoire(); }
+/* Le visionneur de stories : on passe d'une photo à l'autre, puis d'un héros au suivant, comme sur Instagram. */
+let file = [], hi = 0, si = 0, minuteur = null;
+const ilYa = t => { const d = Math.max(0, (D.maintenant.t || 0) - t); return d < 1 ? 'à l\'instant' : d < 24 ? `il y a ${Math.round(d)} h` : 'hier'; };
+function ouvrirHistoire(id) {
+  const st = STORIES(); file = [...st.filter(x => !storyVue(x)), ...st.filter(storyVue)];
+  hi = Math.max(0, file.findIndex(x => x.heros === id)); si = 0;
+  $('#histoire').classList.add('ouvert'); $('#histoire').setAttribute('aria-hidden', 'false'); montrerHistoire();
+}
 function montrerHistoire() {
-  const e = forts[hi]; clearTimeout(minuteur);
-  document.querySelectorAll('.vignette')[hi]?.classList.add('vue');
-  $('#cadre').innerHTML = `<img src="${story(e.heros[0])}" alt=""><div class="barres">${forts.map((_, k) => `<i class="${k < hi ? 'fait' : k === hi ? 'encours' : ''}"></i>`).join('')}</div>
+  const x = file[hi], sl = x.slides[si]; clearTimeout(minuteur);
+  marquerStory(x); document.querySelector(`.story-bulle[data-story="${CSS.escape(x.heros)}"]`)?.classList.add('vue');
+  // Une photo par message : la story en hauteur, puis la grande image du héros pour le message suivant.
+  const img = si % 2 ? carte(x.heros) : story(x.heros);
+  const duree = Math.min(9000, 4000 + sl.texte.length * 45);
+  $('#cadre').innerHTML = `<img class="fond" src="${img}" alt=""><img class="photo" src="${img}" alt="">
+  <div class="barres">${x.slides.map((_, k) => `<i class="${k < si ? 'fait' : k === si ? 'encours' : ''}" style="--d:${duree}ms"></i>`).join('')}</div>
+  <div class="entete"><img src="${av(x.heros)}" alt=""><b>${esc(NOM(x.heros))}</b><span>${ilYa(sl.t)}</span></div>
   <button class="fermer" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
   <button class="zone g" aria-label="Précédent"></button><button class="zone d" aria-label="Suivant"></button>
-  <div class="texte"><div style="display:flex;gap:8px;align-items:center">${e.heros.slice(0, 2).map(id => `<span class="avatar" style="--m:100;width:40px;height:40px"><img src="${av(id)}" alt=""></span>`).join('')}<span class="discret" style="color:#e9dcc9">${esc(e.jour)}, ${e.heure} h${e.arc ? ' · ' + esc(e.arc) : ''}</span></div><p>${annoter(e.texte)}</p></div>`;
+  <div class="legende">${sl.contexte ? `<small>${esc(sl.contexte)}</small>` : ''}<p>${esc(sl.texte)}</p></div>`;
   $('#cadre .fermer').onclick = fermerHistoire;
-  $('#cadre .zone.g').onclick = () => { if (hi > 0) { hi--; montrerHistoire(); } };
+  $('#cadre .zone.g').onclick = precedente;
   $('#cadre .zone.d').onclick = suivante;
-  minuteur = setTimeout(suivante, 6000);
+  minuteur = setTimeout(suivante, duree);
 }
-function suivante() { if (hi < forts.length - 1) { hi++; montrerHistoire(); } else fermerHistoire(); }
-function fermerHistoire() { clearTimeout(minuteur); $('#histoire').classList.remove('ouvert'); $('#histoire').setAttribute('aria-hidden', 'true'); }
+function suivante() { const x = file[hi]; if (si < x.slides.length - 1) si++; else if (hi < file.length - 1) { hi++; si = 0; } else return fermerHistoire(); montrerHistoire(); }
+function precedente() { if (si > 0) si--; else if (hi > 0) { hi--; si = file[hi].slides.length - 1; } montrerHistoire(); }
+function fermerHistoire() { clearTimeout(minuteur); $('#histoire').classList.remove('ouvert'); $('#histoire').setAttribute('aria-hidden', 'true'); if ($('#e-repere') && !$('#e-repere').hidden) repere(); }
 
 let annulerAction = null, toastMin = null;
 function toast(texte, annuler) { $('#toast-texte').textContent = texte; annulerAction = annuler; $('#annuler').hidden = !annuler; $('#toast').classList.add('ouvert'); clearTimeout(toastMin); toastMin = setTimeout(() => $('#toast').classList.remove('ouvert'), 5000); }
@@ -1227,7 +1303,7 @@ document.addEventListener('click', e => {
   const f = e.target.closest('[data-fiche]'); if (f) { ficheHeros(f.dataset.fiche); return; }
   const rp = e.target.closest('[data-rapport]'); if (rp) { ouvrirRapport(rp.dataset.rapport); return; }
   const c = e.target.closest('[data-carte]'); if (c) { const s = c.querySelector('.sceau'); s?.classList.add('brise'); setTimeout(() => { ouvrirCarte(c.dataset.carte); s?.classList.remove('brise'); }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 300); return; }
-  const v = e.target.closest('.vignette'); if (v) ouvrirHistoire(+v.dataset.h);
+  const v = e.target.closest('[data-story]'); if (v) ouvrirHistoire(v.dataset.story);
 });
 rafraichir();
 setTimeout(nouveautes, 700);
