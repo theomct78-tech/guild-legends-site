@@ -186,7 +186,6 @@ p { margin: 0; }
 .bulle.papier .meta { color: #7a5f3c; }
 .bulle.papier [data-lex] { color: inherit; text-decoration-color: rgba(60,40,20,.4); }
 @keyframes pose { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-.jeton { animation: pose .45s cubic-bezier(.2,1.4,.4,1) both; }
 @keyframes vol { 0%,100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-3px) rotate(4deg); } }
 .attente.oiseau .quand { animation: vol 1.6s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .jeton, .attente.oiseau .quand { animation: none; } .chien-plan { transition: none; } }
@@ -205,10 +204,60 @@ p { margin: 0; }
 .jeton { position: absolute; width: 34px; height: 34px; margin: -17px 0 0 -17px; padding: 0; border-radius: 50%; border: 2.5px solid var(--c); background: #1b130e; overflow: visible; box-shadow: 0 2px 8px rgba(0,0,0,.5); cursor: pointer; }
 .jeton img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
 .jeton:active { transform: scale(.92); }
+/* Le plan vivant (11 nov. 2026) */
+.jeton { transition: left 1.8s cubic-bezier(.45,.05,.3,1), top 1.8s cubic-bezier(.45,.05,.3,1); z-index: 1; }
+.jeton.flane { animation: pose .45s cubic-bezier(.2,1.4,.4,1) both, flane var(--d) ease-in-out var(--r) infinite alternate; }
+.jeton.en-route { animation: none; z-index: 3; }
+.jeton.dort { animation: pose .45s both, souffle 3.6s ease-in-out infinite; }
+.jeton.dort img { filter: brightness(.65) saturate(.7); }
+@keyframes flane { 0% { translate: 0 0; } 35% { translate: 2px -1px; } 70% { translate: -2px 1px; } 100% { translate: 1px 2px; } }
+@keyframes souffle { 50% { scale: 1.05; } }
+.jeton .act { position: absolute; right: -6px; bottom: -4px; width: 17px; height: 17px; padding: 2px; border-radius: 50%; background: #2a1d14; border: 1.5px solid var(--c); }
+.jeton.dort .act text { animation: zzz 2.4s ease-in-out infinite; }
+@keyframes zzz { 50% { opacity: .35; } }
+.nom-jeton { position: absolute; left: 50%; top: calc(100% + 1px); translate: -50% 0; font-size: 9.5px; font-weight: 800; color: #f4e7d4; text-shadow: 0 1px 2px #000, 0 0 4px #000; white-space: nowrap; pointer-events: none; }
+.pastille-evt { position: absolute; left: -5px; top: -5px; width: 16px; height: 16px; border-radius: 50%; background: var(--miel); color: #2a1d14; font: 900 11px/16px var(--f-ui); font-style: normal; text-align: center; border: 2px solid #1b130e; animation: pouls 1.6s ease-in-out infinite; }
+.pastille-evt.blesse { background: #b03a2e; color: #fff; animation: none; }
+.plan-cadre.nuit .jeton:not(.dort) img { filter: brightness(.8) saturate(.85); }
+.piece-plan.neuve { animation: neuve 1.6s ease-out both; transform-box: fill-box; transform-origin: center; }
+@keyframes neuve { 0% { opacity: 0; transform: scale(.9); filter: brightness(2.2); } 60% { opacity: 1; filter: brightness(1.4); } 100% { transform: none; filter: none; } }
+.piece-plan .feu { animation: feu 1.3s ease-in-out infinite alternate; }
+.piece-plan .flamme, [data-zone-portail] .flamme { animation: feu .9s ease-in-out infinite alternate; }
+@keyframes feu { to { opacity: .6; } }
+.piece-plan .eau { animation: eau 4s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: center; }
+@keyframes eau { to { transform: scale(1.15, .85); opacity: .35; } }
+.puce-meteo { position: absolute; right: 10px; top: 10px; z-index: 2; padding: 3px 9px; border-radius: 99px; background: rgba(20,14,10,.72); color: #f1e6d4; font-size: .74rem; font-weight: 700; pointer-events: none; }
+.meteo { position: absolute; pointer-events: none; overflow: hidden; border-radius: 16px; z-index: 2; }
+.meteo i { position: absolute; top: -10%; display: block; }
+.meteo.pluie i, .meteo.orage i { width: 1.2px; height: 14px; background: linear-gradient(transparent, rgba(190,210,240,.75)); animation: tombe linear infinite; }
+.meteo.neige i { width: 4px; height: 4px; border-radius: 50%; background: rgba(255,255,255,.9); animation: neige linear infinite; }
+.meteo.vent i { top: auto; width: 26px; height: 1.5px; background: rgba(255,255,255,.35); border-radius: 2px; animation: souffle-vent linear infinite; }
+@keyframes tombe { to { transform: translate(-14px, 520px); } }
+@keyframes neige { 25% { transform: translate(6px, 130px); } 50% { transform: translate(-6px, 260px); } 100% { transform: translate(4px, 520px); } }
+@keyframes souffle-vent { from { transform: translate(-60px, 0); opacity: 0; } 30% { opacity: 1; } to { transform: translate(420px, -20px); opacity: 0; } }
+.meteo.vent i:nth-child(odd) { margin-top: 30%; } .meteo.vent i:nth-child(3n) { margin-top: 60%; } .meteo.vent i:nth-child(4n) { margin-top: 85%; }
+.meteo.orage::after { content: ""; position: absolute; inset: 0; background: #e8ecff; opacity: 0; animation: eclair 7s infinite; }
+@keyframes eclair { 0%, 90%, 94%, 100% { opacity: 0; } 91%, 95% { opacity: .5; } }
+.meteo.brume { background: linear-gradient(100deg, transparent 10%, rgba(220,220,225,.28) 35%, transparent 55%, rgba(220,220,225,.22) 80%, transparent); background-size: 200% 100%; animation: brume 18s linear infinite; }
+@keyframes brume { to { background-position: -200% 0; } }
+.meteo.soleil { background: radial-gradient(ellipse at 85% 0%, rgba(255,214,140,.32), transparent 60%); }
+.meteo.chaleur { background: radial-gradient(ellipse at 50% 0%, rgba(255,190,110,.35), rgba(255,170,90,.08) 70%); }
+.meteo.gel { box-shadow: inset 0 0 40px rgba(220,235,255,.55); background: rgba(200,220,240,.08); }
+.plan-cadre.nuit .meteo.soleil, .plan-cadre.nuit .meteo.chaleur { display: none; }
+.dit-plan { position: absolute; z-index: 4; width: max-content; max-width: 210px; white-space: normal; overflow-wrap: break-word; text-align: left; translate: -14px calc(-100% - 26px); padding: 7px 10px; border-radius: 12px 12px 12px 3px; background: #f4ead8; color: #2a1d14; font-size: .8rem; line-height: 1.3; box-shadow: 0 3px 10px rgba(0,0,0,.45); pointer-events: none; }
+.dit-plan.a-gauche { translate: calc(-100% + 14px) calc(-100% - 26px); border-radius: 12px 12px 3px 12px; }
+.dit-plan.dessous { translate: -14px 30px; border-radius: 3px 12px 12px 12px; }
+.dit-plan.a-gauche.dessous { translate: calc(-100% + 14px) 30px; border-radius: 12px 3px 12px 12px; }
+.dit-plan.pop { animation: bulle 5.2s ease both; }
+@keyframes bulle { 0% { opacity: 0; transform: translateY(6px) scale(.9); } 8%, 88% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+.au-bourg { position: absolute; z-index: 2; translate: -50% -50%; display: flex; align-items: center; gap: 0; padding: 3px 8px 3px 3px; border-radius: 99px; background: rgba(20,14,10,.8); border: 1px solid #8a7155; color: #f1e6d4; font-size: .72rem; font-weight: 800; }
+.au-bourg img { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; margin-right: -6px; border: 1.5px solid #1b130e; }
+.au-bourg span { margin-left: 10px; }
+@media (prefers-reduced-motion: reduce) { .jeton, .jeton.flane, .jeton.dort, .meteo i, .meteo, .meteo::after, .piece-plan .feu, .piece-plan .eau, .flamme, .dit-plan.pop, .piece-plan.neuve { animation: none !important; transition: none !important; } .meteo i { display: none; } }
 .pastille-brief { position: absolute; right: -3px; top: -3px; width: 11px; height: 11px; border-radius: 50%; background: var(--sauge); border: 2px solid #1b130e; }
 .chien-plan { position: absolute; width: 22px; height: 22px; margin: -11px 0 0 -11px; padding: 0; border: 0; background: none; transition: left 2.6s ease-in-out, top 2.6s ease-in-out, opacity .4s; filter: drop-shadow(0 1px 2px rgba(0,0,0,.7)); cursor: pointer; z-index: 2; }
 .chien-plan svg { width: 100%; height: 100%; display: block; }
-.chien-plan.ailleurs { opacity: 0; pointer-events: none; }
+.chien-plan.ailleurs { opacity: 0 !important; pointer-events: none; }
 .chien-plan.dort { opacity: .6; }
 .liste-gestes { display: grid; gap: 8px; }
 .geste { text-align: left; padding: 10px 12px; border-radius: 14px; border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.04); color: var(--lin); font: inherit; display: grid; gap: 2px; }
@@ -477,86 +526,217 @@ function pli(c) {
 const SVG_CHIEN = '<svg viewBox="0 0 24 24" fill="#c99a62"><ellipse cx="12" cy="15" rx="5" ry="4.2"/><circle cx="6" cy="9" r="2.1"/><circle cx="10" cy="6.2" r="2.1"/><circle cx="14" cy="6.2" r="2.1"/><circle cx="18" cy="9" r="2.1"/></svg>';
 const COULEURS = ['#f2b65e', '#7fc8f8', '#ec7d63', '#b18cf2', '#95cfa5', '#f28fb1', '#5fd4c4', '#e8d36a', '#9fb4ff', '#ff9f5a'];
 const couleur = id => COULEURS[D.heros.findIndex(h => h.id === id) % COULEURS.length];
-/* Trois vues : le rez-de-chaussée, l'étage, dehors. Six pièces en plus au maximum, une tous les 7 rangs, à prix fixe. */
+/* Trois vues : le rez-de-chaussée, l'étage, dehors. Six pièces en plus au maximum, une tous les 7 rangs, à prix fixe.
+ * 11 nov. 2026 : le plan vit. Chaque pièce a ses meubles, le jour tombe et se lève, il pleut ou il neige dehors, les
+ * pièces pas encore construites sont des chantiers, et chaque héros se tient là où il fait ce qu'il fait. */
 const VUES = [['rdc', 'Rez-de-chaussée'], ['etage', 'Étage'], ['dehors', 'Dehors']];
 const ZONES = {
-  salle_commune: { vue: 'rdc', x: 14, y: 14, l: 208, h: 150, nom: 'Salle commune', fond: '#5b3d26', lieux: ['salle_commune'], mot: "Le cœur du repère : on y mange, on y joue, on s'y dispute et on s'y réconcilie. C'est là que se passent les soirées." },
+  salle_commune: { vue: 'rdc', x: 14, y: 14, l: 208, h: 150, nom: 'Salle commune', fond: '#5b3d26', lieux: ['salle_commune'], cat: 'table', mot: "Le cœur du repère : on y mange, on y joue, on s'y dispute et on s'y réconcilie. C'est là que se passent les soirées." },
   brief: { vue: 'rdc', x: 232, y: 14, l: 114, h: 150, nom: 'Salle de brief', fond: '#3d4a55', lieux: ['brief'], mot: "Un héros placé sur un contrat attend ici l'heure du départ : il étudie la carte, vérifie son sac. Tant qu'il est là, tu peux encore annuler sa place sans rien perdre." },
-  table: { vue: 'rdc', x: 14, y: 174, l: 162, h: 124, salle: 'table', fond: '#6a4a26' },
-  armes: { vue: 'rdc', x: 186, y: 174, l: 160, h: 124, salle: 'armes', fond: '#5e4a3a' },
-  hall: { vue: 'rdc', x: 14, y: 308, l: 332, h: 78, salle: 'hall', fond: '#6b2f2f' },
+  table: { vue: 'rdc', x: 14, y: 174, l: 162, h: 124, salle: 'table', fond: '#6a4a26', cat: 'table' },
+  armes: { vue: 'rdc', x: 186, y: 174, l: 160, h: 124, salle: 'armes', fond: '#5e4a3a', cat: 'travail' },
+  hall: { vue: 'rdc', x: 14, y: 308, l: 332, h: 78, salle: 'hall', fond: '#6b2f2f', cat: 'fete' },
   dortoirs: { vue: 'etage', x: 14, y: 14, l: 332, h: 150, nom: 'Dortoirs', fond: '#4a3424', lieux: ['dortoirs'], mot: "On y dort la nuit, on s'y repose après une mission, on s'y soigne quand il n'y a pas d'infirmerie. Un héros qui dort récupère son énergie." },
-  soins: { vue: 'etage', x: 14, y: 174, l: 162, h: 140, salle: 'soins', fond: '#3f5a66' },
-  savoir: { vue: 'etage', x: 186, y: 174, l: 160, h: 140, salle: 'savoir', fond: '#3f4d6b' },
-  remparts: { vue: 'etage', x: 14, y: 324, l: 332, h: 62, nom: 'Chemin de ronde', fond: '#5c5346', lieux: ['remparts'], mot: "Le chemin de ronde, tout en haut. On y vient pour être au calme, lire, ou regarder la route du bourg. Les oiseaux du courrier s'y posent." },
-  cour: { vue: 'dehors', x: 14, y: 14, l: 332, h: 142, nom: "Cour d'entraînement", fond: '#6b5a3c', lieux: ['cour'], mot: "Les mannequins, la poussière, le portail. S'entraîner ici fait progresser les héros, et c'est par là qu'ils partent en mission." },
-  jardin: { vue: 'dehors', x: 14, y: 166, l: 196, h: 220, nom: 'Jardin', fond: '#42583a', lieux: ['jardin'], mot: "Un vieil arbre, un bassin, un banc qu'on ne voit pas depuis la cour. On y vient pour souffler, être un peu à l'écart ou se recueillir." },
-  ecuries: { vue: 'dehors', x: 220, y: 166, l: 126, h: 150, salle: 'ecuries', fond: '#5f4a2e' },
+  soins: { vue: 'etage', x: 14, y: 174, l: 162, h: 140, salle: 'soins', fond: '#3f5a66', cat: 'calme' },
+  savoir: { vue: 'etage', x: 186, y: 174, l: 160, h: 140, salle: 'savoir', fond: '#3f4d6b', cat: 'calme' },
+  remparts: { vue: 'etage', x: 14, y: 324, l: 332, h: 62, nom: 'Chemin de ronde', fond: '#5c5346', lieux: ['remparts'], cat: 'calme', mot: "Le chemin de ronde, tout en haut. On y vient pour être au calme, lire, ou regarder la route du bourg. Les oiseaux du courrier s'y posent." },
+  cour: { vue: 'dehors', x: 14, y: 14, l: 332, h: 142, nom: "Cour d'entraînement", fond: '#6b5a3c', lieux: ['cour'], cat: 'concours', mot: "Les mannequins, la poussière, le portail. S'entraîner ici fait progresser les héros, et c'est par là qu'ils partent en mission." },
+  jardin: { vue: 'dehors', x: 14, y: 166, l: 196, h: 220, nom: 'Jardin', fond: '#42583a', lieux: ['jardin'], cat: 'calme', mot: "Un vieil arbre, un bassin, un banc qu'on ne voit pas depuis la cour. On y vient pour souffler, être un peu à l'écart ou se recueillir." },
+  ecuries: { vue: 'dehors', x: 220, y: 166, l: 126, h: 150, salle: 'ecuries', fond: '#5f4a2e', cat: 'sortie' },
+};
+/* Où se tient un héros selon ce qu'il fait : des places précises dans chaque pièce, puis des places libres. */
+const PLACES = {
+  salle_commune: { '*': [[60, 54], [104, 54], [148, 54], [60, 124], [104, 124], [148, 124], [196, 134], [196, 92]], lecture: [[196, 134], [196, 92]], repos: [[196, 134]] },
+  brief: { '*': [[262, 82], [316, 82], [262, 146], [316, 146], [289, 146]] },
+  table: { '*': [[52, 238], [86, 262], [132, 238], [150, 278], [40, 280], [96, 210]] },
+  armes: { '*': [[220, 242], [262, 262], [306, 242], [326, 278], [214, 284], [292, 206]], entrainement: [[220, 242], [306, 242], [262, 262]] },
+  hall: { '*': [[60, 352], [110, 352], [160, 352], [210, 352], [260, 352], [310, 352]], recueillement: [[310, 352], [262, 352]] },
+  dortoirs: { '*': [[46, 60], [100, 60], [154, 60], [208, 60], [262, 60], [316, 60], [46, 128], [100, 128], [154, 128], [208, 128], [262, 128], [316, 128]] },
+  soins: { '*': [[42, 222], [96, 222], [150, 222], [130, 282], [30, 290]], soins: [[42, 222], [96, 222], [150, 222]] },
+  savoir: { '*': [[214, 236], [256, 266], [300, 236], [328, 288], [220, 292]] },
+  remparts: { '*': [[48, 360], [100, 360], [152, 360], [204, 360], [256, 360], [308, 360]] },
+  cour: { '*': [[54, 108], [104, 108], [154, 108], [210, 70], [262, 120], [316, 120], [230, 130], [60, 140]], entrainement: [[54, 108], [104, 108], [154, 108], [210, 70]] },
+  jardin: { '*': [[84, 194], [126, 194], [118, 300], [178, 300], [40, 246], [150, 248], [40, 372], [190, 372]], solitude: [[118, 300], [178, 300], [84, 194]], recueillement: [[118, 300], [40, 246]] },
+  ecuries: { '*': [[246, 222], [300, 222], [246, 290], [300, 290]] },
 };
 const FONDS = Object.fromEntries(Object.values(ZONES).filter(z => z.salle).map(z => [z.salle, z.fond]));
 const SALLE = k => D.salles.find(s => s.cle === k);
 let construites = new Set(D.salles.filter(s => s.etat === 'construite').map(s => s.cle)); // le choix vit le temps de la visite
+let justeConstruite = null;
 const etatSalle = s => construites.has(s.cle) ? 'construite' : D.niveau >= s.niveau ? 'disponible' : 'verrouillee';
 const lieuxZone = z => z.lieux || (construites.has(z.salle) ? SALLE(z.salle)?.lieux || [z.salle] : []);
 const zoneDe = h => h.etat === 'present' && h.lieu ? Object.keys(ZONES).find(k => lieuxZone(ZONES[k]).includes(h.lieu)) || null : null;
 const presentsRepere = () => D.heros.filter(h => zoneDe(h));
+const auBourg = () => D.heros.filter(h => h.etat === 'present' && h.lieu === 'ville');
+const hasard = (i, k = 0) => { const x = Math.sin(i * 12.9898 + k * 78.233) * 43758.5453; return x - Math.floor(x); };
 function graineTxt(s) { let h = 2166136261; for (const c of s) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return (h >>> 0) / 4294967296; }
-/* Chacun a sa place dans la pièce : rangés par lignes, sans jamais se chevaucher. */
+/* Chacun à sa place : d'abord les places de son activité, puis celles de la pièce, puis une grille, sans chevauchement. */
 function positionsPlan() {
   const parZone = {}, out = {};
   for (const h of presentsRepere()) (parZone[zoneDe(h)] ||= []).push(h);
-  for (const [k, hs] of Object.entries(parZone)) { const z = ZONES[k], pas = 38, cols = Math.max(1, Math.floor((z.l - 20) / pas));
-    hs.forEach((h, i) => { out[h.id] = { vue: z.vue, zone: k, x: z.x + 26 + (i % cols) * pas, y: z.y + 50 + Math.floor(i / cols) * pas }; }); }
+  for (const [k, hs] of Object.entries(parZone)) {
+    const z = ZONES[k], P = PLACES[k] || {}, prises = new Set();
+    const grille = []; for (let y = z.y + 46; y < z.y + z.h - 14; y += 40) for (let x = z.x + 26; x < z.x + z.l - 14; x += 42) grille.push([x, y]);
+    for (const h of [...hs].sort((a, b) => a.id.localeCompare(b.id))) {
+      const p = [...(P[h.act] || []), ...(P['*'] || []), ...grille].find(q => !prises.has(q.join())) || [z.x + z.l / 2, z.y + z.h / 2];
+      prises.add(p.join()); out[h.id] = { vue: z.vue, zone: k, x: p[0], y: p[1] };
+    }
+  }
   return out;
 }
 let vuePlan = null;
 const NUIT = () => D.maintenant.heure >= 22 || D.maintenant.heure < 6;
+const PENOMBRE = () => !NUIT() && (D.maintenant.heure >= 19 || D.maintenant.heure < 8);
 /*
  * Le chien se promène d'un héros à l'autre : il reste de vingt secondes à une minute et demie auprès de chacun, puis repart.
  * La nuit, il dort devant la cheminée de la salle commune et ne bouge plus.
  */
 function chienOu() {
-  const pos = positionsPlan(), ids = Object.keys(pos), z0 = ZONES.salle_commune;
-  if (NUIT()) return { vue: 'rdc', x: z0.x + z0.l - 30, y: z0.y + z0.h - 24, mot: `${chien} dort devant la cheminée de la salle commune.` };
-  if (!ids.length) return { vue: 'dehors', x: 300, y: 130, mot: `${chien} attend au portail que quelqu'un rentre.` };
+  const pos = positionsPlan(), ids = Object.keys(pos);
+  if (NUIT()) return { vue: 'rdc', x: 200, y: 50, mot: `${chien} dort devant la cheminée de la salle commune.` };
+  if (!ids.length) return { vue: 'dehors', x: 300, y: 140, mot: `${chien} attend au portail que quelqu'un rentre.` };
   const durees = [...Array(8)].map((_, i) => 20 + Math.floor(graineTxt(`${chien}#arret${i}`) * 70)), total = durees.reduce((a, b) => a + b, 0);
   const s = Math.floor(Date.now() / 1000); let r = s % total, i = 0; while (r >= durees[i]) r -= durees[i++];
   const id = ids[Math.floor(graineTxt(`${chien}#${Math.floor(s / total)}#${i}`) * ids.length)], p = pos[id], h = H(id);
   const FAIT = ['est aux pieds de', 'réclame des caresses à', 'suit partout', 'regarde fixement', 's\'est couché contre les bottes de', 'apporte un bâton à'];
-  return { vue: p.vue, x: p.x + 17, y: p.y + 15, mot: `${chien} ${FAIT[Math.floor(graineTxt(id + i) * FAIT.length)]} ${h.nom}, ${LIEU_PLAN(p.zone)}.` };
+  return { vue: p.vue, x: p.x + 20, y: p.y + 14, mot: `${chien} ${FAIT[Math.floor(graineTxt(id + i) * FAIT.length)]} ${h.nom}, ${LIEU_PLAN(p.zone)}.` };
 }
 const LIEU_PLAN = k => ({ salle_commune: 'dans la salle commune', brief: 'en salle de brief', dortoirs: 'aux dortoirs', remparts: 'sur le chemin de ronde', cour: 'dans la cour', jardin: 'au jardin', table: 'à la taverne', armes: 'à la salle d\'armes', hall: 'dans le grand hall', soins: 'à l\'infirmerie', savoir: 'à la bibliothèque', ecuries: 'aux écuries' }[k] || 'au repère');
 function majChien() {
   const el = $('#chien-plan'), mot = $('#chien-mot'); if (!el) return;
   const c = chienOu();
   el.style.left = `${c.x / 3.6}%`; el.style.top = `${c.y / 4}%`; el.classList.toggle('ailleurs', c.vue !== vuePlan); el.classList.toggle('dort', NUIT());
-  if (mot) mot.textContent = c.mot;
+  const m = D.repere?.meteo?.temps;
+  if (mot) mot.textContent = `${m ? `${METEO_NOM[m] || m}, ${D.maintenant.heure === 0 ? 'minuit' : D.maintenant.heure === 12 ? 'midi' : D.maintenant.heure + ' h'}. ` : ''}${c.mot}`;
   document.querySelectorAll('[data-vue-plan]').forEach(b => b.classList.toggle('a-chien', b.dataset.vuePlan === c.vue && c.vue !== vuePlan));
 }
 setInterval(majChien, 4000);
+
+/* ---- Le décor : dessiné une fois pour toutes, pièce par pièce, en vue du dessus ---- */
+const R = (x, y, l, h, f, rx = 3, o = '') => `<rect x="${x}" y="${y}" width="${l}" height="${h}" rx="${rx}" fill="${f}" ${o}/>`;
+const C = (x, y, r, f, o = '') => `<circle cx="${x}" cy="${y}" r="${r}" fill="${f}" ${o}/>`;
+const E = (x, y, rx, ry, f, o = '') => `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${f}" ${o}/>`;
+const BOIS = '#7a5434', BOIS_F = '#4f3520', DRAP = '#cdbb9b', PIERRE = '#8a7f72';
+const lit = (x, y, bas = false) => R(x, y, 40, 46, BOIS_F, 4) + R(x + 3, y + (bas ? 3 : 12), 34, 31, DRAP, 3) + R(x + 8, y + (bas ? 34 : 4), 24, 9, '#efe4cf', 3) + R(x + 3, y + (bas ? 3 : 26), 34, 6, '#a8946f', 0, 'opacity=".5"');
+const mannequin = (x, y) => C(x, y + 22, 9, 'rgba(0,0,0,.18)') + R(x - 2, y, 4, 24, BOIS_F, 1) + R(x - 12, y + 8, 24, 4, BOIS_F, 2) + C(x, y - 2, 7, '#b99b6b') + C(x, y - 2, 7, 'none', 'stroke="#6b5234" stroke-width="1.2"');
+const tonneau = (x, y, r = 8) => C(x, y, r, '#6a4a2a') + C(x, y, r - 3, 'none', `stroke="${BOIS_F}" stroke-width="1.5"`);
+const etagere = (x, y, l) => R(x, y, l, 12, BOIS_F, 2) + [...Array(Math.floor(l / 7))].map((_, i) => R(x + 2 + i * 7, y + 2, 5, 8, ['#8c3b2e', '#3f5a7a', '#6b7a3a', '#a8814a'][i % 4], 1)).join('');
+const MEUBLES = {
+  salle_commune: () => E(118, 92, 92, 52, '#7a2f2a', 'opacity=".28"') + R(44, 66, 120, 6, BOIS_F) + R(44, 106, 120, 6, BOIS_F) + R(40, 74, 128, 30, BOIS, 6) + R(44, 77, 120, 3, '#9a6d45', 2)
+    + [62, 92, 122, 150].map(x => C(x, 89, 4.5, '#ddd0b6') + C(x + 6, 85, 1.8, '#b98a52')).join('') + R(184, 18, 34, 18, '#4a3b30', 3) + R(190, 23, 22, 9, '#e08a3c', 2, 'class="feu"') + E(200, 50, 16, 9, '#7a2f2a', 'opacity=".6"') + tonneau(178, 150) + tonneau(196, 152, 6),
+  brief: () => R(244, 30, 90, 30, '#c9b48a', 3) + `<path d="M252 50 l12 -8 l14 6 l18 -10 l20 8 l10 -6" fill="none" stroke="#8c3b2e" stroke-width="1.6" stroke-dasharray="3 2"/>` + C(296, 44, 2.5, '#8c3b2e') + R(250, 98, 78, 32, BOIS, 5) + R(262, 104, 22, 14, '#e9dcc3', 1, 'transform="rotate(-6 273 111)"') + C(312, 114, 5, '#6a4a2a') + R(236, 150, 18, 8, '#5a4a3a', 2),
+  table: () => R(20, 182, 150, 16, BOIS_F, 3) + R(24, 185, 142, 4, '#9a6d45', 2) + [[52, 238], [132, 238]].map(([x, y]) => C(x, y + 4, 14, BOIS) + C(x, y + 4, 4, '#ddd0b6')).join('') + tonneau(156, 280) + tonneau(140, 286, 6) + R(24, 286, 26, 8, '#a8814a', 2),
+  armes: () => R(196, 182, 60, 10, BOIS_F, 2) + [200, 210, 220, 230, 240].map(x => R(x, 178, 2, 18, '#b8b8c0', 1)).join('') + R(318, 184, 22, 18, '#3b3633', 3) + R(322, 188, 14, 10, '#e07a3c', 2, 'class="feu"') + R(290, 212, 22, 12, '#4a4a50', 3) + mannequin(262, 230),
+  hall: () => R(30, 342, 300, 18, '#8c2f2a', 2, 'opacity=".7"') + [40, 110, 180, 250].map(x => C(x, 322, 6, PIERRE) + C(x, 378, 6, PIERRE)).join('') + R(318, 332, 18, 36, '#c9b48a', 3) + C(327, 340, 3, '#f2c66a', 'class="flamme"'),
+  dortoirs: () => [0, 1, 2, 3, 4, 5].map(i => lit(26 + i * 54, 32) + lit(26 + i * 54, 104, true)).join('') + R(170, 86, 20, 12, BOIS_F, 2) + C(180, 92, 2.5, '#f2c66a', 'class="flamme"'),
+  soins: () => [0, 1, 2].map(i => lit(22 + i * 54, 194)).join('') + E(78, 272, 38, 14, '#c9c2b4') + E(78, 272, 32, 9, '#7fb0c0', 'opacity=".85"') + R(146, 252, 20, 22, '#e9dcc3', 2) + R(152, 261, 8, 3, '#b03a2e') + R(154, 258, 3, 9, '#b03a2e'),
+  savoir: () => etagere(192, 182, 148) + etagere(192, 196, 70) + R(268, 226, 56, 28, BOIS, 4) + R(276, 232, 18, 12, '#e9dcc3', 1) + C(316, 300, 10, '#3f5a7a') + `<path d="M306 300 h20 M316 290 v20" stroke="#c9b48a" stroke-width="1"/>`,
+  remparts: () => [...Array(16)].map((_, i) => R(18 + i * 21, 326, 13, 8, '#8a7f72', 1)).join('') + R(14, 334, 332, 2, '#3b342c', 0),
+  cour: () => E(110, 70, 90, 34, '#8a7450', 'opacity=".45"') + mannequin(54, 52) + mannequin(104, 52) + mannequin(154, 52) + [16, 11, 6].map((r, i) => C(300, 52, r, ['#e9dcc3', '#b03a2e', '#e9dcc3'][i])).join('') + C(300, 52, 2, '#b03a2e') + R(232, 26, 44, 8, BOIS_F, 2) + [236, 246, 256, 266].map(x => R(x, 20, 2, 20, '#b8b8c0', 1)).join(''),
+  jardin: () => `<path d="M30 386 C 60 330, 90 290, 104 250 S 150 200, 210 214" fill="none" stroke="#6b5a3c" stroke-width="10" stroke-linecap="round" opacity=".55"/>` + R(70, 206, 70, 10, BOIS, 3) + E(150, 330, 32, 20, '#3f6470') + E(146, 326, 20, 10, '#6b98a8', 'opacity=".6" class="eau"')
+    + C(54, 318, 30, '#2f4a2a') + C(46, 308, 18, '#3d5f36') + C(66, 326, 14, '#456b3c') + [[30, 220, '#c95b6a'], [40, 228, '#e8c46a'], [176, 236, '#b18cf2'], [186, 244, '#e8c46a'], [170, 250, '#c95b6a']].map(([x, y, f]) => C(x, y, 3.2, f)).join(''),
+  ecuries: () => [0, 1].map(i => R(230, 178 + i * 66, 108, 2, BOIS_F) + R(283, 178 + i * 66, 2, 56, BOIS_F)).join('') + E(256, 204, 15, 8, '#7a4f2e') + C(244, 204, 5, '#6a4026') + E(310, 270, 15, 8, '#3b2a1c') + C(298, 270, 5, '#2e2016') + R(230, 296, 40, 14, '#c9a85a', 3, 'opacity=".8"'),
+};
+// Une pièce pas encore construite : un chantier, avec des gravats, une bâche et un écriteau, plutôt qu'un cadenas.
+function chantier(z, sl, ouvert) {
+  const cx = z.x + z.l / 2, cy = z.y + z.h / 2, r = k => graineTxt(sl.cle + k);
+  const gravats = [...Array(9)].map((_, i) => { const x = z.x + 14 + r('x' + i) * (z.l - 28), y = z.y + 14 + r('y' + i) * (z.h - 28); return `<path d="M${x} ${y} l${4 + r('a' + i) * 6} -3 l3 6 l-6 3z" fill="#6b5f52" opacity=".7"/>`; }).join('');
+  const planches = [0, 1, 2].map(i => R(z.x + 16 + i * 18, z.y + z.h - 30 + i * 2, 54, 5, '#8a6a44', 1, `transform="rotate(${-14 + i * 9} ${z.x + 40} ${z.y + z.h - 24})"`)).join('');
+  const bache = `<path d="M${z.x + z.l - 60} ${z.y + 14} l46 6 l-6 34 l-44 -8z" fill="#5a6b7a" opacity=".55"/>`;
+  // L'écriteau : le nom sur deux lignes (« La cuisine » / « et la taverne »), puis le prix ou le rang.
+  const [l1, l2 = ''] = sl.nom.split(/ (?=et )/), lg = Math.min(z.l - 20, 128);
+  const ecriteau = R(cx - lg / 2, cy - 18, lg, 46, ouvert ? '#c9a45f' : '#7a6a58', 4) + R(cx - 2, cy + 28, 4, 12, BOIS_F, 1)
+    + [l1, l2].map((t, i) => `<text x="${cx}" y="${cy - 5 + i * 11}" text-anchor="middle" font-family="Alegreya Sans, sans-serif" font-size="9" font-weight="800" fill="#2a1d14">${esc(t)}</text>`).join('')
+    + `<text x="${cx}" y="${cy + 21}" text-anchor="middle" font-family="Alegreya Sans, sans-serif" font-size="8.5" font-weight="700" fill="#3b2a1c">${ouvert ? `Construire · ${sl.prix.toLocaleString('fr-FR')} PO` : `Ouvre au rang ${sl.niveau}`}</text>`;
+  return `<g class="${ouvert ? 'lot' : 'verrou'}" data-salle="${sl.cle}" tabindex="0" role="button" aria-label="${esc(sl.nom)} : ${ouvert ? 'à construire' : 'rang ' + sl.niveau}">`
+    + R(z.x, z.y, z.l, z.h, ouvert ? 'rgba(201,164,95,.08)' : 'rgba(0,0,0,.22)', 14, `stroke="${ouvert ? '#e0b866' : '#5c4a39'}" stroke-width="${ouvert ? 1.8 : 1.2}" stroke-dasharray="${ouvert ? '6 5' : '2 5'}"`)
+    + gravats + planches + bache + ecriteau + '</g>';
+}
+
+/* ---- Le temps qu'il fait : dehors en entier, et sur le chemin de ronde à l'étage ---- */
+const METEO_NOM = { pluie: 'Pluie', neige: 'Neige', brume: 'Brume', soleil: 'Soleil', chaleur: 'Grosse chaleur', orage: 'Orage', vent: 'Vent', gel: 'Gel' };
+function couchesMeteo() {
+  const m = D.repere?.meteo?.temps; if (!m) return '';
+  const boite = vuePlan === 'dehors' ? [0, 0, 100, 100] : vuePlan === 'etage' ? [ZONES.remparts.x / 3.6, ZONES.remparts.y / 4, ZONES.remparts.l / 3.6, ZONES.remparts.h / 4] : null;
+  const puce = '';
+  if (!boite) return puce;
+  const n = { pluie: 46, orage: 60, neige: 34, vent: 12 }[m] || 0;
+  const lent = m === 'neige' ? 5 : m === 'vent' ? 3 : 0.7;
+  const gouttes = [...Array(n)].map((_, i) => `<i style="left:${(hasard(i, 1) * 100).toFixed(1)}%;animation-delay:-${(hasard(i, 2) * lent * 1.6).toFixed(2)}s;animation-duration:${(lent + hasard(i, 3) * lent * 0.8).toFixed(2)}s"></i>`).join('');
+  return puce + `<div class="meteo ${m}" style="left:${boite[0]}%;top:${boite[1]}%;width:${boite[2]}%;height:${boite[3]}%" aria-hidden="true">${gouttes}</div>`;
+}
+
+/* ---- Les héros sur le plan ---- */
+const ICONES_ACT = {
+  dormir: '<text x="12" y="16" text-anchor="middle" font-size="13" font-weight="800" fill="#cfe0ff" font-family="Alegreya Sans, sans-serif">z</text>',
+  entrainement: '<path d="M6 18 18 6M14 6h4v4M8 14l2 2" stroke="#f4e7d4" stroke-width="2.2" fill="none" stroke-linecap="round"/>',
+  lecture: '<path d="M4 7c3-1 5-1 8 1 3-2 5-2 8-1v11c-3-1-5-1-8 1-3-2-5-2-8-1z" fill="none" stroke="#f4e7d4" stroke-width="1.8"/>',
+  discussion: '<path d="M5 6h14v9H10l-4 3v-3H5z" fill="none" stroke="#f4e7d4" stroke-width="1.8" stroke-linejoin="round"/>',
+  jeux: '<rect x="5" y="5" width="14" height="14" rx="3" fill="none" stroke="#f4e7d4" stroke-width="1.8"/><circle cx="9.5" cy="9.5" r="1.4" fill="#f4e7d4"/><circle cx="14.5" cy="14.5" r="1.4" fill="#f4e7d4"/>',
+  repos: '<path d="M15 4a8 8 0 1 0 5 13A7 7 0 0 1 15 4z" fill="#f4e7d4"/>',
+  solitude: '<path d="M6 18C6 10 11 5 19 5c0 8-5 13-13 13zM6 18l7-7" fill="none" stroke="#f4e7d4" stroke-width="1.8"/>',
+  recueillement: '<path d="M12 4c2 3 2 5 0 7-2-2-2-4 0-7zM9 12h6v8H9z" fill="#f4e7d4"/>',
+  soins: '<path d="M10 4h4v6h6v4h-6v6h-4v-6H4v-4h6z" fill="#f4e7d4"/>',
+  brief: '<path d="M4 7l5-2 6 2 5-2v12l-5 2-6-2-5 2z" fill="none" stroke="#f4e7d4" stroke-width="1.8" stroke-linejoin="round"/>',
+};
+const cartesDe = id => D.cartes.filter(c => !repondues[c.id] && c.heros.includes(id));
+// Ce que les héros ont écrit dans le fil ces dernières heures : ça s'affiche en bulle au-dessus de leur tête.
+const BULLES = () => (D.chronique || []).filter(e => e.dec === 'fil' && e.auteur && e.auteur !== 'maitre' && (D.maintenant.t - e.t) <= 8 && !/^\(/.test(e.texte)).slice(-12);
+let derniersPos = {};
+try { derniersPos = JSON.parse(sessionStorage.getItem('gl-pos') || '{}'); } catch {}
+function jeton(h, p, avant) {
+  const c = cartesDe(h.id)[0], depart = avant && avant.vue === p.vue && (avant.x !== p.x || avant.y !== p.y) ? avant : null;
+  const x = (depart || p).x, y = (depart || p).y, d = (2.4 + graineTxt(h.id) * 2.5).toFixed(2), r = (graineTxt(h.id + 'r') * 3).toFixed(2);
+  return `<button type="button" class="jeton ${h.act === 'dormir' ? 'dort' : ''} ${depart ? 'en-route' : 'flane'}" data-point="${h.id}" data-vers="${p.x},${p.y}" style="left:${x / 3.6}%;top:${y / 4}%;--c:${couleur(h.id)};--d:${d}s;--r:-${r}s" aria-label="${esc(h.nom)}, ${esc(h.activite)}${c ? ', une demande en attente' : ''}">`
+    + `<img src="${av(h.id)}" alt="">${ICONES_ACT[h.act] ? `<svg class="act" viewBox="0 0 24 24" aria-hidden="true">${ICONES_ACT[h.act]}</svg>` : ''}`
+    + `${c ? `<i class="pastille-evt" title="${esc(c.titre)}">!</i>` : h.blesse ? '<i class="pastille-evt blesse" title="Blessé">+</i>' : h.reserve ? '<i class="pastille-brief"></i>' : ''}`
+    + `<span class="nom-jeton">${esc(h.nom.split(' ')[0])}</span></button>`;
+}
 function planRepere() {
-  const pos = positionsPlan(), pres = presentsRepere(), absents = D.heros.filter(h => !pres.includes(h));
-  const compte = v => Object.values(pos).filter(p => p.vue === v).length;
+  const pos = positionsPlan(), pres = presentsRepere(), bourg = auBourg(), absents = D.heros.filter(h => !pres.includes(h) && !bourg.includes(h));
+  const compte = v => Object.values(pos).filter(p => p.vue === v).length + (v === 'dehors' ? bourg.length : 0);
   vuePlan ||= VUES.map(v => v[0]).sort((a, b) => compte(b) - compte(a))[0];
   const T = (x, y, t, o = '') => `<text x="${x}" y="${y}" font-family="Alegreya Sans, sans-serif" ${o}>${t}</text>`;
-  const cadenas = (x, y) => `<g transform="translate(${x - 7},${y - 9})" fill="none" stroke="#8f7a64" stroke-width="1.6"><rect x="1" y="7" width="12" height="9" rx="2" fill="#8f7a64" fill-opacity=".25"/><path d="M4 7V4.5a3 3 0 0 1 6 0V7"/></g>`;
   const zones = Object.entries(ZONES).filter(([, z]) => z.vue === vuePlan).map(([k, z]) => {
     const sl = z.salle ? SALLE(z.salle) : null; if (z.salle && !sl) return '';
-    const e = sl ? etatSalle(sl) : 'construite', nom = sl ? sl.nom : z.nom, cx = z.x + z.l / 2, cy = z.y + z.h / 2;
-    if (e === 'construite') return `<g class="piece-plan" ${sl ? `data-salle="${sl.cle}"` : `data-zone="${k}"`} tabindex="0" role="button" aria-label="${esc(nom)}"><rect x="${z.x}" y="${z.y}" width="${z.l}" height="${z.h}" rx="14" fill="${z.fond}" stroke="#2a1d14" stroke-width="2"/><rect x="${z.x + 5}" y="${z.y + 5}" width="${z.l - 10}" height="${z.h - 10}" rx="10" fill="none" stroke="rgba(255,255,255,.07)"/>${T(z.x + 12, z.y + 22, esc(nom.toUpperCase()), 'font-size="10.5" font-weight="800" fill="#f4e7d4" opacity=".9" letter-spacing=".07em"')}</g>`;
-    if (e === 'disponible') return `<g class="lot" data-salle="${sl.cle}" tabindex="0" role="button" aria-label="${esc(nom)} : à construire"><rect x="${z.x}" y="${z.y}" width="${z.l}" height="${z.h}" rx="14" fill="rgba(255,255,255,.05)" stroke="#e0b866" stroke-width="1.8" stroke-dasharray="6 5"/>${T(cx, cy - 12, '+', 'text-anchor="middle" font-size="22" fill="#e0c79d"')}${T(cx, cy + 6, esc(nom), 'text-anchor="middle" font-size="10.5" font-weight="700" fill="#e0c79d"')}${T(cx, cy + 21, sl.prix.toLocaleString('fr-FR') + ' PO', 'text-anchor="middle" font-size="10" fill="#b8a28a"')}</g>`;
-    return `<g class="verrou" data-salle="${sl.cle}" tabindex="0" role="button" aria-label="${esc(nom)} : rang ${sl.niveau}"><rect x="${z.x}" y="${z.y}" width="${z.l}" height="${z.h}" rx="14" fill="rgba(0,0,0,.24)" stroke="#5c4a39" stroke-width="1.2" stroke-dasharray="2 5"/>${cadenas(cx, cy - 14)}${T(cx, cy + 8, esc(nom), `text-anchor="middle" font-size="${nom.length > 30 ? 8.5 : 10}" fill="#a08a72"`)}${T(cx, cy + 22, 'Rang ' + sl.niveau, 'text-anchor="middle" font-size="9.5" fill="#8f7a64"')}</g>`; }).join('');
-  const decor = vuePlan === 'dehors' ? `<rect x="220" y="326" width="126" height="60" rx="14" fill="#241a12" stroke="#8a7155" stroke-width="2"/>${T(283, 352, 'PORTAIL', 'text-anchor="middle" font-size="10" font-weight="800" fill="#b8a28a" letter-spacing=".08em"')}${T(283, 368, 'vers ' + esc(D.repere.bourg), 'text-anchor="middle" font-size="9.5" fill="#8f7a64"')}<circle cx="60" cy="330" r="26" fill="#2f4a2a"/><circle cx="60" cy="330" r="16" fill="#3d5f36"/><ellipse cx="150" cy="340" rx="30" ry="18" fill="#3f6470" opacity=".8"/>`
-    : vuePlan === 'rdc' ? `<rect x="${ZONES.salle_commune.x + ZONES.salle_commune.l - 34}" y="${ZONES.salle_commune.y + 8}" width="24" height="12" rx="3" fill="#e08a3c" opacity=".85"/>` : '';
-  const jetons = pres.filter(h => pos[h.id].vue === vuePlan).map(h => { const p = pos[h.id];
-    return `<button type="button" class="jeton" data-point="${h.id}" style="left:${p.x / 3.6}%;top:${p.y / 4}%;--c:${couleur(h.id)}" aria-label="${esc(h.nom)}, ${esc(h.activite)}"><img src="${av(h.id)}" alt="">${h.reserve ? '<i class="pastille-brief"></i>' : ''}</button>`; }).join('');
+    const e = sl ? etatSalle(sl) : 'construite', nom = sl ? sl.nom : z.nom;
+    if (e !== 'construite') return chantier(z, sl, e === 'disponible');
+    return `<g class="piece-plan ${sl && sl.cle === justeConstruite ? 'neuve' : ''}" ${sl ? `data-salle="${sl.cle}"` : `data-zone="${k}"`} tabindex="0" role="button" aria-label="${esc(nom)}">${R(z.x, z.y, z.l, z.h, z.fond, 14, 'stroke="#2a1d14" stroke-width="2"')}${R(z.x + 5, z.y + 5, z.l - 10, z.h - 10, 'none', 10, 'stroke="rgba(255,255,255,.07)"')}${(MEUBLES[k] || (() => ''))()}${T(z.x + 12, z.y + z.h - 9, esc(nom.toUpperCase()), 'font-size="9" font-weight="800" fill="#f4e7d4" opacity=".75" letter-spacing=".07em"')}</g>`; }).join('');
+  const portail = vuePlan === 'dehors' ? `<g data-zone-portail tabindex="0" role="button" aria-label="Le portail">${R(220, 326, 126, 60, '#241a12', 14, 'stroke="#8a7155" stroke-width="2"')}${[234, 250, 266, 282, 298, 314, 330].map(x => R(x, 332, 3, 30, '#5c4a39', 1)).join('')}${R(226, 344, 114, 4, '#5c4a39', 1)}${C(232, 330, 4, '#f2c66a', 'class="flamme"')}${C(334, 330, 4, '#f2c66a', 'class="flamme"')}${T(283, 378, 'vers ' + esc(D.repere.bourg), 'text-anchor="middle" font-size="9" fill="#b8a28a"')}</g>` : '';
+  // La lumière : la pénombre du soir, la nuit, et ce qui reste allumé (la cheminée, les bougies, les torches du portail).
+  const bati = k => construites.has(k), lumieres = ({ rdc: [[200, 28, 60], bati('hall') && [327, 340, 30], bati('armes') && [329, 194, 34], bati('table') && [92, 240, 40]], etage: [[180, 92, 34], bati('soins') && [88, 272, 24], bati('savoir') && [296, 240, 30]], dehors: [[232, 330, 30], [334, 330, 30]] }[vuePlan] || []).filter(Boolean);
+  const nuit = NUIT() ? `<rect x="4" y="4" width="352" height="392" rx="20" fill="#0a1024" opacity="${vuePlan === 'dehors' ? .62 : .5}" pointer-events="none"/>${lumieres.map(([x, y, r]) => C(x, y, r, 'url(#halo)', 'pointer-events="none"')).join('')}${vuePlan === 'dehors' ? C(326, 34, 9, '#e9e4d0', 'opacity=".9"') + C(330, 31, 8, '#0a1024', 'opacity=".62"') + E(150, 330, 4, 2, '#e9e4d0', 'opacity=".5"') : ''}`
+    : PENOMBRE() ? `<rect x="4" y="4" width="352" height="392" rx="20" fill="#3a1e10" opacity=".22" pointer-events="none"/>${lumieres.map(([x, y, r]) => C(x, y, r * .8, 'url(#halo)', 'pointer-events="none" opacity=".6"')).join('')}` : '';
+  const avant = derniersPos, jetons = pres.filter(h => pos[h.id].vue === vuePlan).map(h => jeton(h, pos[h.id], avant[h.id])).join('');
+  const enVille = vuePlan === 'dehors' && bourg.length ? `<button type="button" class="au-bourg" data-zone-portail style="left:${283 / 3.6}%;top:${352 / 4}%">${bourg.slice(0, 4).map(h => `<img src="${av(h.id)}" alt="">`).join('')}<span>au bourg</span></button>` : '';
+  derniersPos = { ...derniersPos, ...pos }; try { sessionStorage.setItem('gl-pos', JSON.stringify(derniersPos)); } catch {}
   return `<div class="onglets-plan" role="tablist">${VUES.map(([k, n]) => `<button type="button" role="tab" aria-selected="${k === vuePlan}" data-vue-plan="${k}">${n}${compte(k) ? `<b>${compte(k)}</b>` : ''}</button>`).join('')}</div>
-    <div class="plan-cadre" id="plan"><svg viewBox="0 0 360 400" role="img" aria-label="Plan du repère : ${esc(VUES.find(v => v[0] === vuePlan)[1])}">
-    <defs><pattern id="paves" width="12" height="12" patternUnits="userSpaceOnUse"><rect width="12" height="12" fill="${vuePlan === 'dehors' ? '#33402a' : '#3a2b1e'}"/><path d="M0 6h12M6 0v6M0 12h12" stroke="${vuePlan === 'dehors' ? '#2b3723' : '#2f2318'}" stroke-width="1"/></pattern></defs>
-    <rect x="4" y="4" width="352" height="392" rx="20" fill="url(#paves)" stroke="#8a7155" stroke-width="5"/>${decor}${zones}</svg>
-    ${jetons}<button type="button" class="chien-plan" id="chien-plan" data-chien aria-label="${esc(chien)}, le chien">${SVG_CHIEN}</button></div>
+    <div class="plan-cadre ${NUIT() ? 'nuit' : PENOMBRE() ? 'soir' : ''}" id="plan"><svg viewBox="0 0 360 400" role="img" aria-label="Plan du repère : ${esc(VUES.find(v => v[0] === vuePlan)[1])}">
+    <defs><pattern id="paves" width="12" height="12" patternUnits="userSpaceOnUse"><rect width="12" height="12" fill="${vuePlan === 'dehors' ? '#33402a' : '#3a2b1e'}"/><path d="M0 6h12M6 0v6M0 12h12" stroke="${vuePlan === 'dehors' ? '#2b3723' : '#2f2318'}" stroke-width="1"/></pattern>
+    <radialGradient id="halo"><stop offset="0" stop-color="#ffb35c" stop-opacity=".55"/><stop offset=".5" stop-color="#ff9a3c" stop-opacity=".18"/><stop offset="1" stop-color="#ff9a3c" stop-opacity="0"/></radialGradient></defs>
+    <rect x="4" y="4" width="352" height="392" rx="20" fill="url(#paves)" stroke="#8a7155" stroke-width="5"/>${zones}${portail}${nuit}</svg>
+    ${couchesMeteo()}${jetons}${enVille}<div class="dit-plan" id="dit-plan" hidden></div><button type="button" class="chien-plan" id="chien-plan" data-chien aria-label="${esc(chien)}, le chien">${SVG_CHIEN}</button></div>
     <p class="discret" id="chien-mot" style="margin:0"></p>
-    ${absents.length ? `<p class="discret" style="margin:0">Hors du repère : ${absents.map(h => `<button type="button" class="lien-nom" data-fiche="${h.id}">${esc(h.nom)}</button>`).join(', ')}</p>` : ''}`;
+    ${absents.length ? `<p class="discret" style="margin:0">Hors du repère : ${absents.map(h => `<button type="button" class="lien-nom" data-fiche="${h.id}">${esc(h.nom)}</button>${h.etat === 'mission' ? ' (en mission)' : h.etat === 'conges' ? ' (en congés)' : ''}`).join(', ')}</p>` : ''}`;
+}
+/* Après chaque rendu : ceux qui ont changé de place traversent la pièce, la pièce neuve s'illumine, les bulles tournent. */
+let minuteurBulles = null;
+function apresPlan() {
+  const plan = $('#plan'); if (!plan) return;
+  requestAnimationFrame(() => requestAnimationFrame(() => plan.querySelectorAll('.jeton.en-route').forEach(j => { const [x, y] = j.dataset.vers.split(',').map(Number); j.style.left = `${x / 3.6}%`; j.style.top = `${y / 4}%`; setTimeout(() => j.classList.replace('en-route', 'flane'), 1900); })));
+  if (justeConstruite) setTimeout(() => { justeConstruite = null; }, 2500);
+  clearInterval(minuteurBulles);
+  const montrer = () => {
+    const b = $('#dit-plan'); if (!b) return clearInterval(minuteurBulles);
+    const dispo = BULLES().filter(e => plan.querySelector(`.jeton[data-point="${CSS.escape(e.auteur)}"]`));
+    if (!dispo.length) { b.hidden = true; return; }
+    const e = dispo[Math.floor(Date.now() / 7000) % dispo.length], j = plan.querySelector(`.jeton[data-point="${CSS.escape(e.auteur)}"]`);
+    b.textContent = e.texte.length > 90 ? e.texte.slice(0, 88).replace(/\s\S*$/, '') + '…' : e.texte;
+    b.style.left = j.style.left; b.style.top = j.style.top; b.hidden = false; b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop');
+    b.classList.toggle('a-gauche', parseFloat(j.style.left) > 55); b.classList.toggle('dessous', parseFloat(j.style.top) < 28);
+    setTimeout(() => { if (b.textContent === e.texte.slice(0, b.textContent.length)) b.hidden = true; }, 5200);
+  };
+  montrer(); minuteurBulles = setInterval(montrer, 7000);
 }
 /* Toucher un héros sur le plan : ce qu'il fait là, et ce que tu peux lui proposer à cet endroit. */
 function ficheMoment(id) {
@@ -566,6 +746,7 @@ function ficheMoment(id) {
     ${gestes.length ? `<h3 style="margin:.4rem 0 0">Passer un moment ensemble</h3><p class="discret" style="margin:0">Ce que tu peux proposer change selon l'endroit où se trouve ${esc(h.nom)}.${gestes[0].attente ? ` Tu viens de le faire : laisse passer ${gestes[0].attente} h.` : ''}</p>
       <div class="liste-gestes">${gestes.map(g => `<button type="button" class="geste" data-geste="${h.id}|${g.id}" ${g.attente ? 'disabled' : ''}><b>${esc(g.libelle)}</b><small>${g.apporte.map(esc).join(' · ')}</small></button>`).join('')}</div>`
       : `<p class="discret">${h.activite === 'Dort' ? `${esc(h.nom)} dort : on verra demain.` : 'Rien à proposer ici pour le moment.'}</p>`}
+    ${cartesDe(h.id).map(c => `<button type="button" class="btn-plein" data-carte="${c.id}" style="width:100%">À traiter : ${esc(c.titre)}</button>`).join('')}
     <button type="button" class="btn-ligne" data-fiche="${h.id}" style="width:100%">Voir sa fiche complète</button></div>`);
 }
 document.addEventListener('click', async e => {
@@ -578,7 +759,13 @@ document.addEventListener('click', async e => {
   const zo = e.target.closest('[data-zone]');
   if (zo) { const z = ZONES[zo.dataset.zone], la = presentsRepere().filter(h => zoneDe(h) === zo.dataset.zone);
     ouvrir(`<div class="contenu-feuille" style="margin-top:6px"><div style="display:flex;gap:12px;align-items:center"><span class="ico" style="width:42px;height:42px;border-radius:12px;flex:none;background:${z.fond}"></span><h2 style="font-size:1.35rem">${esc(z.nom)}</h2></div><p>${esc(z.mot)}</p>
-      ${la.length ? `<p class="discret" style="margin:0">En ce moment :</p>${la.map(h => `<button type="button" class="ligne-heros" data-point="${h.id}"><img src="${av(h.id)}" alt=""><span><b>${esc(h.nom)}</b><small>${esc(h.fait || h.activite)}</small></span></button>`).join('')}` : '<p class="discret">Personne ici pour l\'instant.</p>'}</div>`); return; }
+      ${la.length ? `<p class="discret" style="margin:0">En ce moment :</p>${la.map(h => `<button type="button" class="ligne-heros" data-point="${h.id}"><img src="${av(h.id)}" alt=""><span><b>${esc(h.nom)}</b><small>${esc(h.fait || h.activite)}</small></span></button>`).join('')}` : '<p class="discret">Personne ici pour l\'instant.</p>'}
+      ${z.cat && D.actions?.categories?.[z.cat] ? `<button type="button" class="btn-ligne" data-actions="${z.cat}" style="width:100%">Organiser quelque chose ici · ${esc(D.actions.categories[z.cat])}</button>` : ''}</div>`); return; }
+  if (e.target.closest('[data-zone-portail]')) { const b = auBourg(), m = D.heros.filter(h => h.etat === 'mission');
+    ouvrir(`<div class="contenu-feuille" style="margin-top:6px"><h2 style="font-size:1.35rem">Le portail</h2><p>C'est par là qu'on part en mission, et par là qu'on file au bourg de ${esc(D.repere.bourg)} quand le repère devient trop petit.</p>
+      ${b.length ? `<p class="discret" style="margin:0">Au bourg en ce moment :</p>${b.map(h => `<button type="button" class="ligne-heros" data-point="${h.id}"><img src="${av(h.id)}" alt=""><span><b>${esc(h.nom)}</b><small>${esc(h.fait || 'En ville')}</small></span></button>`).join('')}` : ''}
+      ${m.length ? `<p class="discret" style="margin:0">Sur les routes :</p>${m.map(h => `<button type="button" class="ligne-heros" data-fiche="${h.id}"><img src="${av(h.id)}" alt=""><span><b>${esc(h.nom)}</b><small>En mission</small></span></button>`).join('')}` : ''}
+      ${!b.length && !m.length ? '<p class="discret">Personne dehors : tout le monde est au repère.</p>' : ''}</div>`); return; }
   const piece = e.target.closest('[data-salle]');
   if (piece) { const sl = SALLE(piece.dataset.salle), etat = etatSalle(sl), net = D.economie.revenu.net, manque = sl.prix - D.po, sem = Math.max(1, Math.ceil(manque / net));
     const suivante = D.salles.filter(x => etatSalle(x) === 'verrouillee').sort((a, b) => a.niveau - b.niveau)[0];
@@ -591,8 +778,8 @@ document.addEventListener('click', async e => {
       ${suivante && etat !== 'verrouillee' ? `<p class="discret">Prochaine pièce : ${esc(suivante.nom)}, au rang ${suivante.niveau}.</p>` : ''}</div>`); return; }
   const bat = e.target.closest('[data-construire]');
   if (bat) { const sl = SALLE(bat.dataset.construire); if (D.po < sl.prix) { bat.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'translateX(0)' }], { duration: 300 }); return; }
-    if (EN_LIGNE) { agir('construire', { salle: sl.cle }).then(r => { if (r) { cocher('batir'); fermer(); toast(`${sl.nom} : les travaux sont finis.`); } }); return; }
-    D.po -= sl.prix; construites.add(sl.cle); cocher('batir'); fermer(); rafraichir();
+    if (EN_LIGNE) { agir('construire', { salle: sl.cle }).then(r => { if (r) { cocher('batir'); fermer(); justeConstruite = sl.cle; vuePlan = ZONES[Object.keys(ZONES).find(k => ZONES[k].salle === sl.cle)]?.vue || vuePlan; rafraichir(); toast(`${sl.nom} : les travaux sont finis.`); } }); return; }
+    D.po -= sl.prix; construites.add(sl.cle); justeConstruite = sl.cle; cocher('batir'); fermer(); rafraichir();
     toast(`${sl.nom} en construction · −${sl.prix.toLocaleString('fr-FR')} PO`, () => { D.po += sl.prix; construites.delete(sl.cle); rafraichir(); }); }
 });
 
@@ -1291,7 +1478,7 @@ document.addEventListener('click', e => {
 });
 const RENDUS = { repere, heros, monde, courrier, chronique };
 if (!EN_LIGNE) setTimeout(() => { let vu = false; try { vu = localStorage.getItem('gl-bienvenue') === '1'; } catch {} if (!vu) bienvenue(); }, 900);
-function rafraichir() { RENDUS[ecran](); majChien(); $('#badge').textContent = D.cartes.filter(c => !repondues[c.id]).length || ''; $('#badge').hidden = !D.cartes.some(c => !repondues[c.id]); }
+function rafraichir() { RENDUS[ecran](); majChien(); apresPlan(); $('#badge').textContent = D.cartes.filter(c => !repondues[c.id]).length || ''; $('#badge').hidden = !D.cartes.some(c => !repondues[c.id]); }
 function aller(e) {
   ecran = e;
   document.querySelectorAll('.onglet').forEach((b, i) => { const on = b.dataset.e === e; b.setAttribute('aria-selected', on); if (on) $('#curseur').style.transform = `translateX(${i * 100}%)`; });
