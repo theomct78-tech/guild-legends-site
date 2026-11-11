@@ -1,7 +1,7 @@
 import { api, onUser, login, logout, watchGuild, watchJournal } from './backend.js';
 import { SHAPES, COLORS, emblemSvg } from './emblems.js';
 import { VERSION } from './config.js';
-import { REGIONS } from './regions.js';
+import { REGIONS, REGIONS_OUVERTES } from './regions.js';
 
 const $app = document.getElementById('app');
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -75,9 +75,11 @@ function ecranFondation() {
       <fieldset class="champ">
         <legend>Région du repère</legend>
         <div class="choix regions" id="c-region">
-          ${Object.entries(REGIONS).map(([k, nom]) => `<button type="button" data-v="${k}" aria-pressed="false">${esc(nom)}</button>`).join('')}
+          ${Object.entries(REGIONS).sort(([a], [b]) => REGIONS_OUVERTES.includes(b) - REGIONS_OUVERTES.includes(a)).map(([k, nom]) => REGIONS_OUVERTES.includes(k)
+            ? `<button type="button" data-v="${k}" aria-pressed="false">${esc(nom)}</button>`
+            : `<button type="button" disabled aria-disabled="true" title="Bientôt ouverte">${esc(nom)}<small>bientôt</small></button>`).join('')}
         </div>
-        <span class="aide">Ce choix est définitif. La proximité compte pour attirer les commanditaires de missions.</span>
+        <span class="aide">Ce choix est définitif. La proximité compte pour attirer les commanditaires de missions. Les régions grisées ouvriront quand leurs missions seront écrites.</span>
       </fieldset>
       <fieldset class="champ">
         <legend>Emblème</legend>
@@ -122,7 +124,7 @@ function ecranFondation() {
   const groupe = (id, cle) => {
     const g = document.getElementById(id);
     g.addEventListener('click', (ev) => {
-      const b = ev.target.closest('button'); if (!b) return;
+      const b = ev.target.closest('button'); if (!b || b.disabled) return;
       choix[cle] = b.dataset.v;
       g.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', x === b));
       majApercu();

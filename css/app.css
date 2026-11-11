@@ -133,6 +133,8 @@ fieldset.champ { border: 0; margin: 0; padding: 0; }
 .choix.couleurs { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 .choix.regions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .choix.regions button { min-height: 44px; font-family: var(--recit); font-weight: 700; font-size: 16px; }
+.choix.regions button[disabled] { opacity: .45; cursor: not-allowed; display: grid; place-content: center; line-height: 1.1; filter: grayscale(1); }
+.choix.regions button[disabled] small { font-family: var(--ui, inherit); font-weight: 600; font-size: 11px; letter-spacing: .5px; text-transform: uppercase; }
 .choix button {
   min-height: 52px; border-radius: 10px; border: 1.5px solid #a88660; background: #f7e8c8;
   display: grid; place-items: center; cursor: pointer; color: var(--encre);
