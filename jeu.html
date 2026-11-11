@@ -182,6 +182,11 @@ p { margin: 0; }
 .bulle.fil .geste-fil { color: var(--cendre); } /* les héros qui ne parlent pas (Sona, Bard, Rek'Sai…) : leur geste, en italique */
 .repondre-fil { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
 .repondre-fil button { padding: 6px 12px; border-radius: 99px; background: var(--bois-clair); font-size: .82rem; font-weight: 800; color: var(--lin); }
+.liasse { border-radius: 14px; background: linear-gradient(180deg, #efe0c2, #e3cfa8); color: #2b1d10; box-shadow: 0 2px 10px rgba(0,0,0,.35); }
+.liasse summary { display: flex; gap: 12px; align-items: center; padding: 12px 14px; cursor: pointer; list-style: none; font-family: var(--f-plume); }
+.liasse summary::-webkit-details-marker { display: none; }
+.liasse summary small { display: block; color: #7a5f3c; font-size: .82rem; }
+.liasse[open] { padding-bottom: 10px; } .liasse[open] .moment { margin: 8px 10px 0; }
 .bulle.papier { background: linear-gradient(180deg, #f3e6cc, #e9d8b6); color: #2b1d10; border: 0; box-shadow: 0 2px 10px rgba(0,0,0,.35); font-family: var(--f-plume); line-height: 1.5; }
 .bulle.papier .meta { color: #7a5f3c; }
 .bulle.papier [data-lex] { color: inherit; text-decoration-color: rgba(60,40,20,.4); }
@@ -1268,6 +1273,18 @@ function montrerSuite(c, o, lignes) {
 let filtre = 'tout';
 // Une lettre reçue (correspondant, habitant, héros en voyage, autre guilde) se lit sur du papier, pas dans une bulle.
 const LETTRE = e => ['courrier', 'voyage'].includes(e.dec);
+/* Un jour avec beaucoup de lettres : elles arrivent en liasse, qu'on ouvre d'un geste, au lieu de noyer la journée. */
+const rendu = x => x.liasse ? `<details class="liasse"><summary><span class="sceau">G</span><span><b>Le courrier du jour</b><small>${x.lettres.length} lettres, ficelées ensemble</small></span></summary>${x.lettres.map(rendu1).join('')}</details>` : rendu1(x);
+const rendu1 = e => e.evt
+      ? `<div class="moment"><span class="icone-evt">${e.evt === 'mission' ? '⚔' : '✦'}</span><div class="bulle fort"><div class="meta">${e.heure} h</div>${annoter(e.texte)}</div></div>`
+      : e.dec === 'fil' ? momentFil(e)
+      : `<div class="moment"><span class="tetes">${e.heros.slice(0, 2).map(id => `<img src="${av(id)}" alt="${esc(id)}">`).join('')}</span><div class="bulle ${LETTRE(e) ? 'papier' : e.importance >= 3 ? 'fort' : ''}"><div class="meta">${e.heure} h${LETTRE(e) ? ' · au courrier' : ''}${e.arc ? ` <span class="pastille miel">${esc(e.arc)}</span>` : ''}${e.quete ? ' <span class="pastille miel">Quête</span>' : ''}</div>${annoter(e.texte)}</div></div>`;
+function regrouper(ls) {
+  const lettres = ls.filter(LETTRE); if (filtre === 'courrier' || lettres.length <= 3) return ls;
+  const out = []; let pose = false;
+  for (const e of ls) { if (!LETTRE(e)) out.push(e); else if (!pose) { out.push({ liasse: true, lettres }); pose = true; } }
+  return out;
+}
 function chronique() {
   const garde = e => filtre === 'tout' || (filtre === 'fort' && e.importance >= 3) || (filtre === 'histoires' && (e.arc || e.quete)) || (filtre === 'courrier' && LETTRE(e));
   const jours = [...new Set(D.chronique.filter(e => !e.evt).map(e => e.jour))];
@@ -1275,10 +1292,7 @@ function chronique() {
   $('#e-chronique').innerHTML = `<h1 style="--i:0">La chronique</h1>
   <div class="filtres" style="--i:1" role="group" aria-label="Filtrer">${[['tout', 'Tout'], ['fort', 'Moments forts'], ['courrier', 'Courrier'], ['histoires', 'Histoires']].map(([k, l]) => `<button data-f="${k}" aria-pressed="${filtre === k}">${l}</button>`).join('')}</div>
   ${jours.map((j, i) => { const ls = enFil(lignes.filter(e => e.jour === j).sort((a, b) => a.heure - b.heure)); if (!ls.length) return '';
-    return `<div class="jour" style="--i:${i + 2}"><h3>${esc(j)}</h3>${ls.map(e => e.evt
-      ? `<div class="moment"><span class="icone-evt">${e.evt === 'mission' ? '⚔' : '✦'}</span><div class="bulle fort"><div class="meta">${e.heure} h</div>${annoter(e.texte)}</div></div>`
-      : e.dec === 'fil' ? momentFil(e)
-      : `<div class="moment"><span class="tetes">${e.heros.slice(0, 2).map(id => `<img src="${av(id)}" alt="${esc(id)}">`).join('')}</span><div class="bulle ${LETTRE(e) ? 'papier' : e.importance >= 3 ? 'fort' : ''}"><div class="meta">${e.heure} h${LETTRE(e) ? ' · au courrier' : ''}${e.arc ? ` <span class="pastille miel">${esc(e.arc)}</span>` : ''}${e.quete ? ' <span class="pastille miel">Quête</span>' : ''}</div>${annoter(e.texte)}</div></div>`).join('')}</div>`; }).join('')}`;
+    return `<div class="jour" style="--i:${i + 2}"><h3>${esc(j)}</h3>${regrouper(ls).map(rendu).join('')}</div>`; }).join('')}`;
   $('#e-chronique').querySelector('.filtres').onclick = e => { const b = e.target.closest('button'); if (!b) return; filtre = b.dataset.f; chronique(); };
 }
 
@@ -1456,8 +1470,10 @@ const CARNET = [
   { k: 'contrat', titre: 'Lire un contrat de la Chambre', mot: "Les contrats paient peu au début. Regarde quand même : la route compte autant que le travail.", ecran: 'monde', cible: '.contrat' },
   { k: 'batir', titre: 'Construire une pièce', mot: "Le repère grandit avec ton rang. Chaque pièce a son utilité : choisis ce qui manque le plus à ta guilde.", ecran: 'repere', cible: '.lot' },
 ];
-const carnet = (() => { try { return JSON.parse(localStorage.getItem('gl-carnet') || '{}'); } catch { return {}; } })();
-function cocher(k) { if (carnet[k] || !CARNET.some(x => x.k === k)) return; carnet[k] = true; try { localStorage.setItem('gl-carnet', JSON.stringify(carnet)); } catch {}
+const carnetLocal = (() => { try { return JSON.parse(localStorage.getItem('gl-carnet') || '{}'); } catch { return {}; } })();
+// Une étape est faite si ce téléphone l'a vue faire, ou si la partie montre qu'elle a été faite (ailleurs, ou autrement).
+const carnet = new Proxy(carnetLocal, { get: (o, k) => o[k] || Boolean(D.premiersPas?.[k]) });
+function cocher(k) { if (carnet[k] || !CARNET.some(x => x.k === k)) return; carnet[k] = true; try { localStorage.setItem('gl-carnet', JSON.stringify(carnetLocal)); } catch {}
   const reste = CARNET.filter(e => !carnet[e.k]).length;
   const msg = reste ? `Carnet : « ${CARNET.find(e => e.k === k).titre} » ✓` : "L'intendante range son carnet : tu n'as plus besoin d'elle. Ou presque.";
   // Pas de bandeau par-dessus une feuille ouverte : il attend qu'on la ferme, pour ne rien cacher.
