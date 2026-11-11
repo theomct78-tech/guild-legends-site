@@ -100,6 +100,11 @@ function ecranFondation() {
           <button type="button" data-v="maîtresse" aria-pressed="false">Maîtresse</button>
         </div>
         <span class="aide">Tes héros t'écrivent et te parlent : ils accorderont tout à ce titre.</span>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
+          <label for="f-maitre" id="f-titre-nom" style="font-weight:700;white-space:nowrap">Maître</label>
+          <input id="f-maitre" maxlength="20" autocomplete="off" placeholder="ton nom" style="flex:1;min-width:0">
+        </div>
+        <span class="aide">Le nom qui suit ton titre. Facultatif, et tu pourras le changer.</span>
       </fieldset>
       <div class="champ">
         <label for="f-chien">Le nom du chien du repère</label>
@@ -131,6 +136,7 @@ function ecranFondation() {
     });
   };
   groupe('c-forme', 'shape'); groupe('c-couleur', 'color'); groupe('c-region', 'region'); groupe('c-titre', 'title');
+  document.getElementById('c-titre').addEventListener('click', () => { document.getElementById('f-titre-nom').textContent = choix.title === 'maîtresse' ? 'Maîtresse' : 'Maître'; });
   document.getElementById('f-nom').addEventListener('input', () => { document.getElementById('f-erreur').innerHTML = ''; });
 
   document.getElementById('form-fondation').onsubmit = async (ev) => {
@@ -146,6 +152,7 @@ function ecranFondation() {
         emblem: { shape: choix.shape, color: choix.color },
         region: choix.region,
         title: choix.title,
+        masterName: document.getElementById('f-maitre').value,
         dog: document.getElementById('f-chien').value,
         flirt: document.getElementById('f-doux').checked,
       });
