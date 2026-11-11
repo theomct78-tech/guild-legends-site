@@ -510,6 +510,27 @@ details.replie > .bloc { padding: 0 14px 14px; }
 .segments button b { display: inline-block; min-width: 20px; margin-left: 6px; padding: 0 6px; border-radius: 99px; background: var(--braise, #d9643a); color: #fff; font-size: .78rem; }
 #e-journal > div { display: grid; gap: 18px; }
 .accueil h1 { font-size: clamp(1.45rem, 6.4vw, 1.9rem); }
+
+/* Détail des statistiques, des épreuves et des compétences (11 nov. 2026). */
+details.stat-d > summary { list-style: none; cursor: pointer; }
+details.stat-d > summary::-webkit-details-marker { display: none; }
+details.stat-d > p { margin: 4px 0 8px; font-size: .88rem; line-height: 1.45; }
+details.stat-d[open] > summary { color: var(--miel); }
+.comp { border-radius: 14px; background: var(--bois-haut); }
+.comp > summary { list-style: none; display: grid; grid-template-columns: 58px 1fr; gap: 10px; align-items: center; padding: 10px 12px; cursor: pointer; }
+.comp > summary::-webkit-details-marker { display: none; }
+.comp .touche { display: grid; place-items: center; height: 30px; border-radius: 9px; background: var(--miel); color: #1b130e; font-weight: 900; font-size: .78rem; }
+.comp.verrou .touche { background: var(--bois-clair); color: var(--cendre); }
+.comp.verrou .nom-comp b { color: var(--cendre); }
+.comp .nom-comp { display: grid; gap: 2px; min-width: 0; } .comp .nom-comp small { color: var(--cendre); font-size: .8rem; }
+.corps-comp { display: grid; gap: 6px; padding: 0 12px 12px; }
+.corps-comp p { margin: 0; font-size: .9rem; font-style: italic; }
+.corps-comp .av { display: grid; grid-template-columns: auto auto 1fr; gap: 4px 8px; align-items: center; font-size: .86rem; }
+.corps-comp .av .discret { grid-column: 1 / -1; font-size: .82rem; }
+.points { display: inline-flex; gap: 3px; } .points i { width: 8px; height: 8px; border-radius: 50%; background: var(--bois-clair); } .points i.on { background: var(--miel); }
+.revers { font-size: .76rem; font-weight: 800; color: var(--braise); }
+.vers-comp { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; font-size: .86rem; }
+.vers-comp .barre { height: 6px; border-radius: 6px; background: var(--bois-clair); overflow: hidden; } .vers-comp .barre i { display: block; height: 100%; background: var(--miel); border-radius: 6px; }
 </style>
 </head>
 <body>
@@ -1391,7 +1412,7 @@ function ficheContrat(id) {
           return `<div class="cand ${x.ecart === 0 ? 'ok' : x.ecart <= 2 ? 'moyen' : 'dur'}" style="opacity:${dispo ? 1 : .5}"><img src="${av(x.id)}" alt=""><span style="flex:1"><b>${esc(h.nom)}</b> <span class="pastille rang">${esc(x.rang)}</span>${p.tenu && reprend ? ' <span class="pastille miel">peut reprendre le poste</span>' : ''}<br><span class="discret">${esc(x.texte)}${x.chance != null ? ` Chances avec lui : ${x.chance} %.` : ''}${dispo ? '' : h.repos ? ` Au repos (${h.repos} h).` : h.reserve ? ' Déjà engagé sur un contrat.' : ' Absent.'}</span></span>${EN_LIGNE && dispo && reprend ? `<button type="button" class="btn-plein" data-placer="${esc(c.id)}|${i}|${esc(x.id)}" style="padding:8px 12px">Envoyer</button>` : ''}</div>`; }).join('') : '<p class="discret">Personne dans ta guilde ne peut tenir ce poste.</p>'}</div>`; }).join('')}
       ${las.length ? `<p class="discret">Au repos : ${las.map(h => `${esc(h.nom)} (${h.repos} h)`).join(', ')}.</p>` : ''}</div>
     ${c.risque ? '<p class="discret">Mission à risque : mieux payée, mais les blessures y sont nettement plus fréquentes.</p>' : ''}
-    ${c.chance != null && c.detailPostes.some(p => p.tenu) ? `<p class="discret">Chances de réussite avec l'équipe actuelle : <b>${c.chance} %</b>.</p>` : ''}
+    ${c.chance != null && c.detailPostes.some(p => p.tenu) ? blocChances(c) : ''}
     <p class="discret">${EN_LIGNE ? `Le recrutement ferme dans ${Math.max(0, c.ferme)} h. Tes héros partent à temps pour être sur place au départ.` : 'Dans cette démo, l\'envoi en mission n\'est pas encore branché.'}</p></div>`);
 }
 
@@ -1461,13 +1482,48 @@ function annonce() {
 }
 
 const COURT = { 'Résistance magique': 'Rés. magique' };
+// Ce que mesure chaque statistique, en une phrase (et où elle compte, d'après la table des épreuves du serveur).
+const SENS_STAT = {
+  Force: "La puissance physique : frapper fort, forcer une porte, tenir une arme lourde.",
+  'Défense': "Encaisser les coups sans plier : armure, garde, carrure.",
+  Magie: "La puissance des sorts. Au combat, un mage frappe avec sa Magie plutôt qu'avec sa Force : la meilleure des deux compte.",
+  'Résistance magique': "Tenir face aux sorts, aux malédictions et aux esprits. Au combat, elle remplace la Défense si elle est plus haute.",
+  Vitesse: "Courir, esquiver, arriver le premier : elle décide des poursuites et des approches discrètes.",
+  'Précision': "Toucher juste, du premier coup : tir, lame, geste sûr.",
+  Endurance: "Tenir dans la durée : longues routes, sièges, combats contre le nombre.",
+  Intelligence: "Comprendre vite, repérer le piège, trouver le chemin : discrétion, voyage, négociation.",
+  Leadership: "Convaincre, rassurer, commander : la clé des missions de parole.",
+};
+const ouCompte = nom => Object.values(D.epreuves || {}).flatMap(e => e.stats.filter(x => x.nom.split(' ou ').includes(nom)).map(x => `${e.label} (${x.poids} %)`));
+const points = f => f < 0 ? '<span class="revers">revers</span>' : `<span class="points" aria-label="force ${f} sur 3">${[1, 2, 3].map(i => `<i class="${i <= f ? 'on' : ''}"></i>`).join('')}</span>`;
+function blocCompetences(h) {
+  const C = h.competences; if (!C?.liste?.length) return '';
+  return `<div class="bloc" style="gap:8px"><div class="tete-bloc"><h2>Compétences</h2><span class="discret">${C.liste.filter(x => x.debloquee).length} sur ${C.liste.length}</span></div>
+    <p class="discret" style="margin:0">En mission, chaque compétence débloquée apporte des avantages à toute l'équipe. Leur effet grandit avec la progression (× ${String(C.force).replace('.', ',')} aujourd'hui, × 2 au sommet).</p>
+    ${C.prochain ? `<div class="vers-comp"><span>Vers « ${esc(C.prochain.nom)} »</span><span class="barre"><i style="width:${C.prochain.avance}%"></i></span><b>${C.prochain.avance} %</b></div>` : ''}
+    ${C.liste.map(x => `<details class="comp ${x.debloquee ? '' : 'verrou'}"><summary><span class="touche">${esc(x.cle === 'P' ? 'Passif' : x.cle === 'R' ? 'Ultime' : x.cle)}</span><span class="nom-comp"><b>${esc(x.nom)}</b><small>${x.debloquee ? x.avantages.map(a => esc(a.label)).join(' · ') : `À débloquer · ${x.seuil} % du chemin`}</small></span></summary>
+      <div class="corps-comp">${x.phrase ? `<p>${esc(x.phrase)}</p>` : ''}${x.avantages.map(a => `<div class="av"><b>${esc(a.label)}</b>${points(a.force)}<span class="discret">${esc(a.effet)}</span></div>`).join('')}
+      ${x.debloquee ? '' : '<p class="discret" style="margin:0">Se débloque en progressant : missions, entraînement, lecture. Le passif et la compétence signature sont là dès l\'arrivée, l\'ultime vient en dernier.</p>'}</div></details>`).join('')}</div>`;
+}
 function combat(h) {
   const c = h.combat; if (!c) return '';
   return `<div class="potentiel ${c.potentiel.revele ? 'revele' : ''}"><span class="sceau-pot">${c.potentiel.revele ? esc(c.potentiel.palier) : '?'}</span><div><b>Potentiel</b><p class="discret">${esc(c.potentiel.texte)}</p></div></div>
   ${h.rang ? `<div class="potentiel" style="background:rgba(201,164,106,.08)"><span class="sceau-pot" style="background:#3a2b1e;color:#e0c79d">${esc(h.rang)}</span><div><b>Rang actuel · ${esc(ROLES[h.role] || h.role)}</b><p class="discret">Ce que vaut ${esc(h.nom)} aujourd'hui à son poste. Il monte avec la progression, jusqu'à son potentiel. <button type="button" class="aide" data-guide="rangs" aria-label="Les rangs" style="display:inline-grid;vertical-align:middle">?</button></p></div></div>` : ''}
-  <div class="bloc" style="gap:10px"><h2>Statistiques</h2>${c.stats.map(s => `<div class="stat"><span>${esc(COURT[s.nom] || s.nom)}</span><span class="barre"><i data-w="${s.valeur}%"></i></span><b>${s.etat ? `<span class="etoile" title="${s.etat === 'sommet' ? 'Au sommet' : 'Proche de son sommet'}">✦</span>` : ''}${s.valeur}</b></div>`).join('')}${c.stats.some(s => s.etat) ? '<p class="discret"><span class="etoile">✦</span> proche de son sommet</p>' : ''}</div>
-  <div class="bloc" style="gap:8px"><h2>Ses chances en mission</h2><p class="discret">Contre une mission ordinaire de ton palier.</p>${c.epreuves.map(e => `<div class="epreuve"><span>${esc(e.label)}</span><span class="pct" style="color:${e.chance >= 70 ? 'var(--sauge)' : e.chance >= 45 ? 'var(--miel)' : 'var(--braise)'}">${e.chance} %</span></div>`).join('')}</div>
-  ${h.specialites?.length ? `<div class="chips">${h.specialites.map(s => `<span class="chip">${esc(s)}</span>`).join('')}</div>` : ''}`;
+  <div class="bloc" style="gap:6px"><h2>Statistiques</h2><p class="discret" style="margin:0 0 4px">Touche une statistique pour savoir ce qu'elle mesure et où elle compte.</p>${c.stats.map(st => `<details class="stat-d"><summary class="stat"><span>${esc(COURT[st.nom] || st.nom)}</span><span class="barre"><i data-w="${st.valeur}%"></i></span><b>${st.etat ? `<span class="etoile" title="${st.etat === 'sommet' ? 'Au sommet' : 'Proche de son sommet'}">✦</span>` : ''}${st.valeur}</b></summary>
+    <p class="discret">${esc(SENS_STAT[st.nom] || '')}${ouCompte(st.nom).length ? ` Compte dans : ${esc(ouCompte(st.nom).join(', '))}.` : ''}${st.etat === 'sommet' ? ' Au sommet : elle ne montera plus.' : st.etat === 'proche' ? ' Proche de son sommet : chaque point coûte plus cher.' : ''}</p></details>`).join('')}${c.stats.some(st => st.etat) ? '<p class="discret"><span class="etoile">✦</span> proche de son sommet</p>' : ''}</div>
+  ${blocCompetences(h)}
+  <div class="bloc" style="gap:6px"><h2>Ses chances en mission</h2><p class="discret" style="margin:0 0 4px">Ses chances, en solo, de passer chaque type d'épreuve dans une mission ordinaire de ton palier. Une mission enchaîne deux à quatre épreuves ; il faut en réussir plus de la moitié. Touche une épreuve pour voir ce qui compte.</p>${c.epreuves.map(e => { const T = D.epreuves?.[e.type];
+    return `<details class="stat-d"><summary class="epreuve"><span>${esc(e.label)}</span><span class="pct" style="color:${e.chance >= 70 ? 'var(--sauge)' : e.chance >= 45 ? 'var(--miel)' : 'var(--braise)'}">${e.chance} %</span></summary>
+    ${T ? `<p class="discret">Ce qui compte : ${esc(T.stats.map(x => `${x.nom} ${x.poids} %`).join(', '))}, et le moral (de −15 % à +10 %). Le meilleur de l'équipe pèse la moitié du score, les autres le soutiennent. Les compétences qui aident : ${esc(T.avantages.join(', '))}.${['diplomatie', 'discretion', 'voyage', 'poursuite'].includes(e.type) ? ` Postes qui pèsent plus ici : ${esc(T.postes.join(', '))}.` : ''}</p>` : ''}</details>`; }).join('')}</div>
+  ${h.specialites?.length ? `<div class="chips">${h.specialites.map(x => `<span class="chip">${esc(x)}</span>`).join('')}</div>` : ''}`;
+}
+/* Les chances d'un contrat, épreuve par épreuve : qui mène, ce qui compte, ce qui manque. */
+function blocChances(c) {
+  const d = c.detail || [];
+  return `<div class="bloc chances" style="gap:6px"><div class="tete-bloc"><h2>Chances : ${c.chance} %</h2></div>
+    <p class="discret" style="margin:0">La mission enchaîne ${d.length} épreuve${d.length > 1 ? 's' : ''} connue${d.length > 1 ? 's' : ''}, et parfois une surprise. Il faut en réussir plus de la moitié ; tout réussir avec brio donne un triomphe.</p>
+    ${d.map(e => `<details class="stat-d"><summary class="epreuve"><span>${esc(e.label)}</span><span class="pct" style="color:${e.chance >= 70 ? 'var(--sauge)' : e.chance >= 45 ? 'var(--miel)' : 'var(--braise)'}">${e.chance} %</span></summary>
+      <p class="discret">Mené par <b>${esc(e.meneur || '?')}</b>${e.poste ? `, à son poste de ${esc(e.poste)} (+12 % sur cette épreuve)` : ''}. Ce qui compte : ${esc(e.stats.join(', '))}.${e.avantages ? ` Compétences de l'équipe : +${String(e.avantages).replace('.', ',')} au score (${esc(e.codes.map(k => ({ ASSAUT: 'Assaut', MAITRISE: 'Maîtrise', NUEE: 'Contre la nuée', SIEGE: 'Siège', INFILTRATION: 'Infiltration', TRAQUE: 'Traque', CELERITE: 'Célérité', RECONNAISSANCE: 'Reconnaissance', INSPIRATION: 'Inspiration', CONCORDE: 'Concorde' })[k] || k).join(', '))}).` : ''}${e.composition ? ` Postes vides ou mal tenus : −${String(e.composition).replace('.', ',')}.` : ''}</p></details>`).join('')}</div>`;
 }
 /* ---------- Courrier ---------- */
 function courrier() {
