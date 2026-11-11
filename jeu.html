@@ -86,8 +86,8 @@ p { margin: 0; }
 .mini::before { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: rgba(20,13,9,.85); }
 .mini span { position: relative; }
 /* Chronique */
-.filtres { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
-.filtres button { padding: 8px 14px; border-radius: 99px; background: var(--bois); font-weight: 700; font-size: .9rem; color: var(--cendre); transition: background .3s var(--doux), color .3s var(--doux); white-space: nowrap; }
+.filtres { display: flex; flex-wrap: wrap; gap: 6px; }
+.filtres button { padding: 7px 12px; border-radius: 99px; background: var(--bois); font-weight: 700; font-size: .9rem; color: var(--cendre); transition: background .3s var(--doux), color .3s var(--doux); white-space: nowrap; }
 .filtres button[aria-pressed="true"] { background: var(--miel); color: var(--nuit); }
 .jour { display: grid; gap: 10px; }
 .jour h3 { margin: 6px 0 0; font: 800 .8rem var(--f-ui); letter-spacing: .12em; text-transform: uppercase; color: var(--cendre); }
@@ -182,6 +182,12 @@ p { margin: 0; }
 .bulle.fil .geste-fil { color: var(--cendre); } /* les héros qui ne parlent pas (Sona, Bard, Rek'Sai…) : leur geste, en italique */
 .repondre-fil { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
 .repondre-fil button { padding: 6px 12px; border-radius: 99px; background: var(--bois-clair); font-size: .82rem; font-weight: 800; color: var(--lin); }
+.journee { border-radius: 14px; background: var(--bois); }
+.journee summary { display: flex; gap: 12px; align-items: center; padding: 10px 12px; cursor: pointer; list-style: none; }
+.journee summary::-webkit-details-marker { display: none; }
+.journee summary small { display: block; color: var(--cendre); font-size: .82rem; }
+.journee summary .tetes { display: flex; } .journee summary .tetes img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 2px solid var(--nuit); margin-right: -8px; }
+.journee[open] { padding-bottom: 8px; } .journee[open] .moment { margin: 8px 10px 0; }
 .liasse { border-radius: 14px; background: linear-gradient(180deg, #efe0c2, #e3cfa8); color: #2b1d10; box-shadow: 0 2px 10px rgba(0,0,0,.35); }
 .liasse summary { display: flex; gap: 12px; align-items: center; padding: 12px 14px; cursor: pointer; list-style: none; font-family: var(--f-plume); }
 .liasse summary::-webkit-details-marker { display: none; }
@@ -195,7 +201,7 @@ p { margin: 0; }
 .attente.oiseau .quand { animation: vol 1.6s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .jeton, .attente.oiseau .quand { animation: none; } .chien-plan { transition: none; } }
 .attente { display: flex; gap: 10px; align-items: baseline; font-size: .92rem; }
-.attente .quand { flex: none; min-width: 52px; text-align: center; padding: 2px 8px; border-radius: 99px; background: rgba(242,182,94,.14); color: var(--miel); font-weight: 800; font-size: .78rem; }
+.attente .quand { flex: none; min-width: 52px; white-space: nowrap; text-align: center; padding: 2px 8px; border-radius: 99px; background: rgba(242,182,94,.14); color: var(--miel); font-weight: 800; font-size: .78rem; }
 .rail-cats { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 6px; scrollbar-width: none; }
 .rail-cats button { flex: none; padding: 7px 12px; border-radius: 99px; border: 1px solid rgba(255,255,255,.12); background: none; color: var(--cendre); font: inherit; font-size: .85rem; font-weight: 700; white-space: nowrap; }
 .rail-cats button[aria-pressed="true"] { background: var(--miel); color: #1b130e; border-color: transparent; }
@@ -220,7 +226,7 @@ p { margin: 0; }
 .jeton .act { position: absolute; right: -6px; bottom: -4px; width: 17px; height: 17px; padding: 2px; border-radius: 50%; background: #2a1d14; border: 1.5px solid var(--c); }
 .jeton.dort .act text { animation: zzz 2.4s ease-in-out infinite; }
 @keyframes zzz { 50% { opacity: .35; } }
-.nom-jeton { position: absolute; left: 50%; top: calc(100% + 1px); translate: -50% 0; font-size: 9.5px; font-weight: 800; color: #f4e7d4; text-shadow: 0 1px 2px #000, 0 0 4px #000; white-space: nowrap; pointer-events: none; }
+.nom-jeton { position: absolute; left: 50%; top: calc(100% + 1px); translate: -50% 0; padding: 0 4px; border-radius: 4px; background: rgba(20,14,10,.78); font-size: 9.5px; font-weight: 800; color: #f4e7d4; white-space: nowrap; pointer-events: none; }
 .pastille-evt { position: absolute; left: -5px; top: -5px; width: 16px; height: 16px; border-radius: 50%; background: var(--miel); color: #2a1d14; font: 900 11px/16px var(--f-ui); font-style: normal; text-align: center; border: 2px solid #1b130e; animation: pouls 1.6s ease-in-out infinite; }
 .pastille-evt.blesse { background: #b03a2e; color: #fff; animation: none; }
 .plan-cadre.nuit .jeton:not(.dort) img { filter: brightness(.8) saturate(.85); }
@@ -265,6 +271,15 @@ p { margin: 0; }
 .chien-plan.ailleurs { opacity: 0 !important; pointer-events: none; }
 .chien-plan.dort { opacity: .6; }
 .liste-gestes { display: grid; gap: 8px; }
+.en-bref { margin: 4px 0 2px; padding: 10px 12px; border-radius: 12px; background: var(--bois); font-size: .95rem; }
+.en-bref.issue-echec { box-shadow: inset 3px 0 0 #8a8a8a; } .en-bref.issue-partielle { box-shadow: inset 3px 0 0 #d9a75a; } .en-bref.issue-reussite, .en-bref.issue-eclatante { box-shadow: inset 3px 0 0 var(--sauge); }
+.pli.non-lu { box-shadow: inset 3px 0 0 var(--miel); }
+.sceau.issue-echec { background: radial-gradient(circle at 35% 30%, #8a8a8a, #4b4b4b); } .sceau.issue-partielle { background: radial-gradient(circle at 35% 30%, #d9a75a, #8a5a1f); }
+.sceau.issue-eclatante { background: radial-gradient(circle at 35% 30%, #ffe3a3, #c88a1f); color: #3b2508; }
+.plus-anciens summary { cursor: pointer; padding: 8px 2px; color: var(--cendre); font-weight: 700; font-size: .9rem; list-style: none; }
+.plus-anciens summary::before { content: '+ '; } .plus-anciens[open] summary::before { content: '− '; }
+.plus-anciens .pli { margin-top: 8px; }
+.ico-guide { width: 22px; height: 22px; color: var(--miel); vertical-align: -5px; margin-right: 8px; }
 .geste { text-align: left; padding: 10px 12px; border-radius: 14px; border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.04); color: var(--lin); font: inherit; display: grid; gap: 2px; }
 .geste small { color: var(--cendre); font-size: .78rem; }
 .geste:disabled { opacity: .45; }
@@ -508,14 +523,14 @@ function repere() {
   ${railStories()}
   ${blocCarnet()}
   ${(D.candidatures || []).length ? `<button type="button" class="pli" data-aller="courrier" style="--i:1"><span class="duo">${D.candidatures.slice(0, 3).map(c => `<img src="${av(c.cle)}" alt="">`).join('')}</span><span><b>${D.candidatures.length} candidature${D.candidatures.length > 1 ? 's' : ''} à la porte</b><small>Dans le courrier</small></span><span class="sceau">G</span></button>` : ''}
-  ${(D.avis || []).length ? `<div class="bloc" style="--i:1"><h2>Les nouvelles</h2>${D.avis.slice(0, 4).map(a => `<p class="discret" style="margin:0"><b style="color:var(--lin)">${esc(a.jour)}, ${a.heure} h</b> · ${annoter(a.texte)}</p>`).join('')}</div>` : ''}
-  ${(D.aVenir || []).length ? `<div class="bloc" style="--i:1"><div class="tete-bloc"><h2>Ce qui t'attend</h2><button type="button" class="aide" data-explique="avenir" aria-label="Ce qui t'attend">?</button></div>${D.aVenir.map(x => `<div class="attente ${x.type}"><span class="quand">${x.dans <= 0 ? 'bientôt' : x.dans >= 24 ? `${Math.round(x.dans / 24)} j` : `${x.dans} h`}</span><span>${esc(x.texte)}</span></div>`).join('')}</div>` : ''}
-  <div class="bloc" style="--i:1"><div class="tete-bloc"><h2>Ton repère</h2><span class="discret">${presentsRepere().length > 1 ? `${presentsRepere().length} héros présents` : presentsRepere().length ? 'un héros présent' : 'personne'}</span></div>${planRepere()}</div>
-  ${blocActions()}
   <div class="bloc" style="--i:2"><div class="tete-bloc"><h2>Sur ton bureau</h2>${ouvertes.length ? `<span class="pastille miel">${ouvertes.length} à traiter</span>` : ''}</div>
     ${ouvertes.length ? ouvertes.map(pli).join('') : '<div class="vide">Rien à signer. Profite du calme.</div>'}</div>
+  <div class="bloc" style="--i:1"><div class="tete-bloc"><h2>Ton repère</h2><span class="discret">${presentsRepere().length > 1 ? `${presentsRepere().length} héros présents` : presentsRepere().length ? 'un héros présent' : 'personne'}</span></div>${planRepere()}</div>
+  ${(D.aVenir || []).length ? `<div class="bloc" style="--i:1"><div class="tete-bloc"><h2>Ce qui t'attend</h2><button type="button" class="aide" data-explique="avenir" aria-label="Ce qui t'attend">?</button></div>${D.aVenir.map(x => `<div class="attente ${x.type}"><span class="quand">${x.dans <= 0 ? 'bientôt' : x.dans >= 24 ? `dans ${Math.round(x.dans / 24)}&nbsp;j` : `dans ${x.dans}&nbsp;h`}</span><span>${esc(x.texte)}</span></div>`).join('')}</div>` : ''}
+  ${blocActions()}
+  ${(D.avis || []).length ? `<div class="bloc" style="--i:1"><h2>Les nouvelles</h2>${(() => { const L = a => `<p class="discret" style="margin:0"><b style="color:var(--lin)">${esc(a.jour)}, ${a.heure} h</b> · ${annoter(a.texte)}</p>`; return D.avis.slice(0, 2).map(L).join('') + (D.avis.length > 2 ? `<details class="plus-anciens"><summary>${Math.min(6, D.avis.length) - 2} nouvelle${Math.min(6, D.avis.length) - 2 > 1 ? 's' : ''} de plus</summary>${D.avis.slice(2, 6).map(L).join('')}</details>` : ''); })()}</div>` : ''}
   ${D.arcs.length ? `<div class="bloc" style="--i:4"><h2>Histoires en cours</h2>${D.arcs.map(a => `<div class="arc"><span class="duo"><img src="${av(a.a)}" alt=""><img src="${av(a.b)}" alt=""></span><div style="min-width:0"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><b>${esc(a.titre)}</b><span class="pastille miel">À suivre</span></div><div class="discret">${esc(NOM(a.a))} et ${esc(NOM(a.b))}</div>${a.dernier && a.total ? `<p class="discret" style="margin-top:6px;font-style:italic">« ${annoter(a.dernier.length > 120 ? a.dernier.slice(0, 118).replace(/\s\S*$/, '') + '…' : a.dernier)} »</p>` : ''}<div class="points">${Array.from({ length: (a.total || a.etape) + 1 }, (_, k) => `<i class="${k < a.etape ? 'fait' : ''}"></i>`).join('')}</div></div></div>`).join('')}</div>` : ''}
-  ${D.soiree ? `<div class="bloc" style="--i:5"><div class="tete-bloc"><h2>La soirée de ${esc(D.soiree.jour)}</h2><span class="discret">${D.soiree.venus.length > 1 ? `${D.soiree.venus.length} présents` : D.soiree.venus.length ? 'un présent' : 'personne pour l\'instant'}</span></div>
+  ${D.soiree && (D.soiree.t == null || D.maintenant.t - D.soiree.t < 16) ? `<div class="bloc" style="--i:5"><div class="tete-bloc"><h2>La soirée de ${esc(D.soiree.jour)}</h2><span class="discret">${D.soiree.venus.length > 1 ? `${D.soiree.venus.length} présents` : D.soiree.venus.length ? 'un présent' : 'personne pour l\'instant'}</span></div>
     <div class="arc" style="display:grid;gap:12px"><div class="presents" style="margin:0;padding:0">${D.soiree.venus.map(id => `<span class="avatar" style="--m:100;width:44px;height:44px"><img src="${av(id)}" alt="${esc(id)}"></span>`).join('')}</div>
     <div class="chips">${D.soiree.absents.map(a => `<span class="chip"><img src="${av(a.id)}" alt="" style="width:18px;height:18px;border-radius:50%;vertical-align:-4px;margin-right:6px">${esc(NOM(a.id))} · ${esc(a.raison)}</span>`).join('')}</div></div></div>` : ''}`;
 }
@@ -559,7 +574,7 @@ const PLACES = {
   dortoirs: { '*': [[46, 60], [100, 60], [154, 60], [208, 60], [262, 60], [316, 60], [46, 128], [100, 128], [154, 128], [208, 128], [262, 128], [316, 128]] },
   soins: { '*': [[42, 222], [96, 222], [150, 222], [130, 282], [30, 290]], soins: [[42, 222], [96, 222], [150, 222]] },
   savoir: { '*': [[214, 236], [256, 266], [300, 236], [328, 288], [220, 292]] },
-  remparts: { '*': [[48, 360], [100, 360], [152, 360], [204, 360], [256, 360], [308, 360]] },
+  remparts: { '*': [[110, 356], [162, 356], [214, 356], [266, 356], [318, 356], [58, 356]] },
   cour: { '*': [[54, 108], [104, 108], [154, 108], [210, 70], [262, 120], [316, 120], [230, 130], [60, 140]], entrainement: [[54, 108], [104, 108], [154, 108], [210, 70]] },
   jardin: { '*': [[84, 194], [126, 194], [118, 300], [178, 300], [40, 246], [150, 248], [40, 372], [190, 372]], solitude: [[118, 300], [178, 300], [84, 194]], recueillement: [[118, 300], [40, 246]] },
   ecuries: { '*': [[246, 222], [300, 222], [246, 290], [300, 290]] },
@@ -822,7 +837,7 @@ function svgMonde({ routes = [], epingles = [] } = {}) {
 }
 // La durée du travail sur place n'est jamais annoncée (demande de Théo, 9 nov. 2026) : on ne montre que la route.
 function barreCal(c) {
-  return `<div class="cal-legende"><span>Route à l'aller <b>${c.aller} h</b></span><span>Sur place <b>durée inconnue</b></span><span>Retour <b>~${c.aller} h</b></span></div>
+  return `<div class="cal-legende"><span>Route à l'aller <b>${c.aller} h</b></span><span>Sur place <b>à découvrir</b></span><span>Retour <b>~${c.aller} h</b></span></div>
   <p class="discret" style="margin:4px 0 0">La Chambre ne dit jamais combien de temps durera le travail : tes héros le découvriront sur place. Le correspondant t'écrira à leur arrivée, puis à la fin.</p>`;
 }
 // Repos estimé (même formule que le serveur : missions.js, reposApresMission), pour une mission réussie sans blessure
@@ -841,12 +856,13 @@ function monde() {
   <div class="bloc" style="--i:3"><div class="tete-bloc"><h2>Contrats de la Chambre</h2><button type="button" class="aide" data-guide="missions" aria-label="Les missions">?</button></div>
     ${D.contrats.map(c => `<div class="contrat" data-contrat="${c.id}" role="button" tabindex="0"><div class="haut"><b>${esc(c.titre)}</b><span class="po">${c.po} PO</span></div>
       <div class="discret"><span class="pastille rang">Rang ${esc(c.rang)}</span> ${esc(c.lieu)} · ${esc(c.postes.join(', '))}${c.risque ? ' · <span class="pastille risque">À risque</span>' : ''}</div>
-      <p style="font-style:italic">${annoter(c.accroche)}</p>${barreCal(c.cal)}
+      <div class="discret">${c.cal ? `${c.cal.aller}&nbsp;h de route` : ''}${c.dangereuse ? ' · <span style="color:var(--braise)">dangereuse</span>' : ''}</div>
       ${(c.briefing || []).length ? `<div class="discret"><b style="color:var(--sauge)">En salle de brief : ${c.briefing.map(b => `${esc(b.nom)}, ${b.depart > 0 ? `départ dans ${b.depart} h` : 'sur le départ'}`).join(' · ')}</b>${c.chance != null ? ` · chances ${c.chance} %` : ''}</div>` : (c.enRoute || []).length ? `<div class="discret"><b style="color:var(--sauge)">Tes héros sont en route : suis-les dans « En mission »</b></div>` : c.ferme != null ? `<div class="discret">Tu peux encore envoyer quelqu'un pendant ${Math.max(0, c.ferme)} h</div>` : ''}</div>`).join('') || '<div class="vide">Pas de contrat ouvert pour l\'instant. La Chambre publie les nouveaux contrats chaque matin à 6 h.</div>'}
     <p class="discret">Au début, les contrats rapportent peu. Ceux marqués « à risque » paient beaucoup mieux, et blessent plus souvent.</p></div>
   ${D.territoires ? `<div class="bloc" style="--i:4"><div class="tete-bloc"><h2>Les territoires</h2><button type="button" class="aide" data-guide="territoires" aria-label="Les territoires">?</button></div>
-    <div class="chips">${Object.keys(REG_CARTE).map(r => { const d = D.territoires.detenteurs[r]; return `<span class="chip ${d === D.guilde.id ? 'plus' : ''}">${esc(REG_CARTE[r].nom)} · ${d ? esc(d === D.guilde.id ? 'à toi' : GUILDE(d)?.nom || '?') : 'libre'}${D.territoires.influences[r]?.[D.guilde.id] ? ` (${D.territoires.influences[r][D.guilde.id]})` : ''}</span>`; }).join('')}</div>
-    <p class="discret">Entre parenthèses : ton influence (réputation gagnée là-bas en 4 semaines). Recompte chaque lundi midi.</p></div>` : ''}
+    ${(() => { const tenus = Object.keys(REG_CARTE).filter(r => D.territoires.detenteurs[r]), mesInf = Object.keys(REG_CARTE).filter(r => D.territoires.influences[r]?.[D.guilde.id]).sort((a, b) => D.territoires.influences[b][D.guilde.id] - D.territoires.influences[a][D.guilde.id]);
+      return `${tenus.length ? `<div class="chips">${tenus.map(r => { const d = D.territoires.detenteurs[r]; return `<span class="chip ${d === D.guilde.id ? 'plus' : ''}">${esc(REG_CARTE[r].nom)} · ${esc(d === D.guilde.id ? 'à toi' : GUILDE(d)?.nom || '?')}</span>`; }).join('')}</div>` : ''}
+      <p class="discret" style="margin:0">${tenus.length ? `Les ${Object.keys(REG_CARTE).length - tenus.length} autres régions sont libres.` : 'Toutes les régions sont libres : personne n\'en tient encore aucune.'}${mesInf.length ? ` Ton influence : ${mesInf.slice(0, 3).map(r => `${esc(REG_CARTE[r].nom)} ${D.territoires.influences[r][D.guilde.id]}`).join(', ')}.` : ''} On recompte chaque lundi midi.</p>`; })()}</div>` : ''}
   ${D.tournoi ? `<div class="bloc" style="--i:4"><div class="tete-bloc"><h2>Le tournoi du mois</h2><button type="button" class="aide" data-guide="tournoi" aria-label="Le tournoi">?</button></div>
     <p class="discret">Le premier samedi du mois, à 18 h. ${D.tournoi.inscrits.length} guilde${D.tournoi.inscrits.length > 1 ? 's' : ''} inscrite${D.tournoi.inscrits.length > 1 ? 's' : ''}. Inscription : ${D.tournoi.frais} PO.</p>
     ${D.tournoi.monEquipe ? `<p>Ton équipe : <b>${D.tournoi.monEquipe.map(NOM).join(', ')}</b></p>` : ''}
@@ -872,21 +888,21 @@ document.addEventListener('click', e => {
 
 /* ---------- Héros ---------- */
 function heros() {
-  $('#e-heros').innerHTML = `<div class="tete-bloc" style="--i:0"><h1>Tes héros</h1><span class="pastille" data-explique="places">${D.heros.length} / ${D.capacite || 9}</span></div>
+  $('#e-heros').innerHTML = `<div class="tete-bloc" style="--i:0"><h1>Tes héros</h1><span class="pastille" data-explique="places">${D.heros.length} héros · ${D.capacite || 9} places</span></div>
   ${D.heros.length ? '<p class="discret" style="margin:0">Le chiffre dans le cercle, c\'est le moral du héros, sur 100. Touche-le pour savoir ce qui pèse dessus.</p>' : ''}
-  <div class="grille">${D.heros.map((h, i) => `<button class="fiche" data-fiche="${h.id}" style="--i:${i + 1}"><img src="${carte(h.id)}" alt=""><span class="moralette mini" data-explique="moral:${h.id}" role="button" aria-label="Moral ${h.moral} sur 100" style="--m:${h.moral};--teinte:${teinte(h.moral)}"><span>${h.moral}</span></span><span class="bas"><b>${esc(h.nom)}</b><span class="discret" data-explique="etat:${h.id}">${ETAT_HEROS(h)}${h.quete ? ' · quête' : ''}</span></span></button>`).join('') || '<div class="vide">Personne encore. Les candidatures arrivent dans le courrier.</div>'}</div>
+  <div class="grille">${D.heros.map((h, i) => `<button class="fiche" data-fiche="${h.id}" style="--i:${i + 1}"><img src="${carte(h.id)}" alt=""><span class="moralette mini" data-explique="moral:${h.id}" role="button" aria-label="Moral ${h.moral} sur 100" style="--m:${h.moral};--teinte:${teinte(h.moral)}"><span>${h.moral}</span></span><span class="bas"><b>${esc(h.nom)}</b><span class="discret" data-explique="etat:${h.id}">${ETAT_HEROS(h)}${h.quete && h.quete.etat === 'ouverte' && !h.quete.enCours && h.etat === 'present' ? ' · une quête l\'attend' : ''}</span></span></button>`).join('') || '<div class="vide">Personne encore. Les candidatures arrivent dans le courrier.</div>'}</div>
   ${(D.inventaire || []).length ? `<div class="bloc" style="--i:2"><div class="tete-bloc"><h2>L'inventaire</h2><button type="button" class="aide" data-guide="equipement" aria-label="L'équipement">?</button></div>${D.inventaire.map(o => `<div class="arc" style="display:block"><b>${esc(o.nom)}</b>${o.recharge ? ` <span class="pastille">recharge ${o.recharge} h</span>` : ''}<p class="discret" style="margin:2px 0 0">${esc(o.texte)}</p></div>`).join('')}<p class="discret">Ouvre la fiche d'un héros pour lui donner un objet.</p></div>` : ''}
   ${(D.pantheon || []).length ? `<div class="bloc" style="--i:3"><h2>Le Panthéon</h2>${D.pantheon.map(m => `<div class="arc" style="display:block"><b>${esc(m.nom)}</b><p class="discret" style="margin:2px 0 0">${esc(m.souvenir)}</p></div>`).join('')}</div>` : ''}`;
 }
 // L'état d'un héros, en mots. Chaque état s'explique au toucher (EXPLIQUE, plus bas).
 function ETAT_HEROS(h) {
-  if (h.etat === 'mission') return 'En mission';
+  if (h.etat === 'mission') return h.quete?.enCours ? 'En quête' : 'En mission';
   if (h.etat === 'rappel') return 'Rappelé, sur le retour';
   if (h.etat === 'voyage') return 'En voyage';
   if (h.etat === 'conges') return 'En congés';
   if (h.reserve) return 'En salle de brief';
   if (h.blesse) return 'Blessure, en soins';
-  if (h.repos) return `Au repos · ${h.repos} h`;
+  if (h.repos) return `Au repos, encore ${h.repos}&nbsp;h`;
   return esc(ROLES[h.role] || h.role);
 }
 function ficheHeros(id) {
@@ -1153,23 +1169,23 @@ function ficheChien() {
  * Tout le jeu en six cartes courtes, ouvrables depuis le « ? » de l'accueil, ou à l'endroit précis où une règle s'applique.
  */
 const GUIDE = [
-  ['role', '👑', 'Ton rôle', "Tu diriges une guilde. Tes héros vivent leur vie sans toi : ils s'entraînent, se disputent, s'attachent. Toi, tu choisis les missions, tu réponds au courrier et tu agrandis le repère. Chaque réponse est jugée : être dur, juste, à l'écoute ou généreux ne plaît pas à tout le monde."],
-  ['heros', '❤', 'Moral, fidélité, estime', "Le moral dit comment un héros va aujourd'hui. La fidélité, s'il compte rester. L'estime, ce qu'il pense de toi. Un héros qui t'estime ose te confier sa quête personnelle ; un héros trop malheureux finit par écrire sa lettre de départ."],
-  ['missions', '⚔', 'Les missions', "La Chambre des Bannières publie des contrats. Une mission compte l'aller, le temps sur place et le retour : jamais plus de 48 h en tout. Plus c'est loin, moins on reste sur place. Au début, ça rapporte peu de pièces d'or (PO). Quelques missions « à risque » paient bien mieux, mais on y rentre plus souvent blessé."],
-  ['repos', '☾', 'Le repos', "Au retour, un héros doit récupérer avant de repartir. Le repos dépend de la durée de la mission, de sa dureté, de son issue et des blessures : quelques heures après une course facile, jusqu'à trois jours après un échec sanglant. Il reste au repère pendant ce temps."],
-  ['rangs', '★', 'Les rangs', "Chaque héros a un rang sur chaque poste, de E à G, selon ce qu'il vaut aujourd'hui. Une recrue part quelques rangs sous son potentiel, et monte en progressant. Chaque contrat a aussi un rang : celui qu'il faut, à chaque poste, pour avoir de bonnes chances. Envoyer un héros plus faible n'est jamais interdit, mais chaque rang manquant rend la mission plus dure. Et tant que le recrutement est ouvert, une autre guilde qui envoie un héros de meilleur rang peut te reprendre un poste que tu tiens sous le rang du contrat. À rang égal, ou si ton héros a déjà le rang demandé, le premier placé garde sa place."],
-  ['equipement', '⚔', "L'équipement", "Les missions réussies peuvent rapporter un objet. Il rejoint l'inventaire, et tu choisis qui le porte : deux objets par héros. Un objet améliore des statistiques, sans jamais dépasser les limites du héros : il ne change pas son potentiel. Les potions soignent (moins de repos), les élixirs servent pour la prochaine mission. Quand un héros part, son équipement revient à l'inventaire."],
-  ['territoires', '⚑', 'Les territoires', "Chaque région de Runeterra peut être tenue par une guilde. Ton influence dans une région, c'est la réputation que tu y as gagnée en mission sur les quatre dernières semaines. Chaque lundi midi, on recompte : la guilde la plus influente tient la région, et pour la lui reprendre il faut 10 % d'influence de plus qu'elle. Tenir une région : contrats mieux payés là-bas (+10 %), un contrat de plus chaque jour, et le moral des héros qui aiment cette région."],
-  ['tournoi', '🏆', 'Le tournoi', "Un tournoi par mois, le premier samedi à 18 h. Chaque guilde inscrit trois héros et paie des frais selon son palier ; la Chambre ajoute sa part à la cagnotte. Jusqu'à six équipes, tout le monde se rencontre ; au-delà, élimination directe. Un match se joue en trois manches : un combat, une épreuve tirée au hasard, un combat. Gains : 60 % de la cagnotte au vainqueur, 30 % au deuxième, 10 % au troisième, et de la réputation."],
-  ['alliances', '🤝', 'Les alliances', "Deux guildes peuvent s'allier : une au palier Inconnue, deux ensuite, trois à la Renommée. Des héros de guildes alliées qui se croisent en mission s'entendent mieux, ce qui aide l'équipe. Une alliance se rompt avec 48 h de préavis, puis il faut attendre deux semaines pour se réallier."],
-  ['registre', '📜', 'Le Registre', "Les héros qui quittent une guilde vont au Registre. Si l'un d'eux t'intéresse, inscris-toi sur sa liste : il te sera proposé, en priorité, à une prochaine montée de niveau. Un héros qui a quitté ta guilde ne reviendra pas chez toi."],
-  ['repere', '⌂', 'Le repère', "Le repère a trois niveaux : le rez-de-chaussée, l'étage et l'extérieur, avec la cour et le jardin. Tes héros y apparaissent là où ils sont : touche un portrait pour voir ce qu'il fait et passer un moment avec lui. Six pièces peuvent s'ajouter, une tous les 7 rangs (7, 14, 21, 28, 35, 42), à prix fixe. Chacune est grande et change vraiment la vie de la guilde : touche-la pour lire son effet."],
-  ['recrutement', '✉', 'Le recrutement', "À chaque montée de niveau, 3 à 10 héros postulent, au hasard : rien ne garantit le rôle qui te manque. Entre-temps, une candidature spontanée peut arriver (une chance sur dix par jour). Plus ta guilde est réputée et ancienne, plus les grands noms se présentent. Contre des PO, une annonce à la Chambre augmente tes chances d'attirer le rôle voulu à la prochaine montée de niveau."],
-  ['guildes', '⚑', 'Les autres guildes', "Tes amis dirigent leurs propres guildes. Vous vous croisez sur les contrats ouverts à tous : chaque poste va au premier qui le prend. Touche un héros allié ou une guilde pour voir sa fiche publique. Son moral et ses secrets restent l'affaire de son maître."],
+  ['role', '<path d="M4 18h16l-1.5-9-4 4L12 6l-2.5 7-4-4z"/>', 'Ton rôle', "Tu diriges une guilde. Tes héros vivent leur vie sans toi : ils s'entraînent, se disputent, s'attachent. Toi, tu choisis les missions, tu réponds au courrier et tu agrandis le repère. Chaque réponse est jugée : être dur, juste, à l'écoute ou généreux ne plaît pas à tout le monde."],
+  ['heros', '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>', 'Moral, fidélité, estime', "Le moral dit comment un héros va aujourd'hui. La fidélité, s'il compte rester. L'estime, ce qu'il pense de toi. Un héros qui t'estime ose te confier sa quête personnelle ; un héros trop malheureux finit par écrire sa lettre de départ."],
+  ['missions', '<path d="M5 19 19 5M15 5h4v4M5 5l14 14M5 15v4h4"/>', 'Les missions', "La Chambre des Bannières publie des contrats. Une mission compte l'aller, le temps sur place et le retour : jamais plus de 48 h en tout. Plus c'est loin, moins on reste sur place. Au début, ça rapporte peu de pièces d'or (PO). Quelques missions « à risque » paient bien mieux, mais on y rentre plus souvent blessé."],
+  ['repos', '<path d="M17 4a8 8 0 1 0 3 12A7 7 0 0 1 17 4z"/>', 'Le repos', "Au retour, un héros doit récupérer avant de repartir. Le repos dépend de la durée de la mission, de sa dureté, de son issue et des blessures : quelques heures après une course facile, jusqu'à trois jours après un échec sanglant. Il reste au repère pendant ce temps."],
+  ['rangs', '<path d="m12 4 2.4 5 5.6.7-4 3.9 1 5.4-5-2.7-5 2.7 1-5.4-4-3.9 5.6-.7z"/>', 'Les rangs', "Chaque héros a un rang sur chaque poste, de E à G, selon ce qu'il vaut aujourd'hui. Une recrue part quelques rangs sous son potentiel, et monte en progressant. Chaque contrat a aussi un rang : celui qu'il faut, à chaque poste, pour avoir de bonnes chances. Envoyer un héros plus faible n'est jamais interdit, mais chaque rang manquant rend la mission plus dure. Et tant que le recrutement est ouvert, une autre guilde qui envoie un héros de meilleur rang peut te reprendre un poste que tu tiens sous le rang du contrat. À rang égal, ou si ton héros a déjà le rang demandé, le premier placé garde sa place."],
+  ['equipement', '<path d="M6 4h12v6c0 5-6 10-6 10S6 15 6 10z"/>', "L'équipement", "Les missions réussies peuvent rapporter un objet. Il rejoint l'inventaire, et tu choisis qui le porte : deux objets par héros. Un objet améliore des statistiques, sans jamais dépasser les limites du héros : il ne change pas son potentiel. Les potions soignent (moins de repos), les élixirs servent pour la prochaine mission. Quand un héros part, son équipement revient à l'inventaire."],
+  ['territoires', '<path d="M6 21V4M6 4h11l-2 4 2 4H6"/>', 'Les territoires', "Chaque région de Runeterra peut être tenue par une guilde. Ton influence dans une région, c'est la réputation que tu y as gagnée en mission sur les quatre dernières semaines. Chaque lundi midi, on recompte : la guilde la plus influente tient la région, et pour la lui reprendre il faut 10 % d'influence de plus qu'elle. Tenir une région : contrats mieux payés là-bas (+10 %), un contrat de plus chaque jour, et le moral des héros qui aiment cette région."],
+  ['tournoi', '<path d="M8 4h8v5a4 4 0 0 1-8 0zM5 5H3v2a3 3 0 0 0 5 2M19 5h2v2a3 3 0 0 1-5 2M12 13v4M8 20h8"/>', 'Le tournoi', "Un tournoi par mois, le premier samedi à 18 h. Chaque guilde inscrit trois héros et paie des frais selon son palier ; la Chambre ajoute sa part à la cagnotte. Jusqu'à six équipes, tout le monde se rencontre ; au-delà, élimination directe. Un match se joue en trois manches : un combat, une épreuve tirée au hasard, un combat. Gains : 60 % de la cagnotte au vainqueur, 30 % au deuxième, 10 % au troisième, et de la réputation."],
+  ['alliances', '<path d="M7 12l3 3 7-7M4 12l4 4M14 6l6 6-4 4"/>', 'Les alliances', "Deux guildes peuvent s'allier : une au palier Inconnue, deux ensuite, trois à la Renommée. Des héros de guildes alliées qui se croisent en mission s'entendent mieux, ce qui aide l'équipe. Une alliance se rompt avec 48 h de préavis, puis il faut attendre deux semaines pour se réallier."],
+  ['registre', '<path d="M6 3h9l3 3v15H6zM9 9h6M9 13h6M9 17h4"/>', 'Le Registre', "Les héros qui quittent une guilde vont au Registre. Si l'un d'eux t'intéresse, inscris-toi sur sa liste : il te sera proposé, en priorité, à une prochaine montée de niveau. Un héros qui a quitté ta guilde ne reviendra pas chez toi."],
+  ['repere', '<path d="M4 11 12 4l8 7v9H4zM10 20v-5h4v5"/>', 'Le repère', "Le repère a trois niveaux : le rez-de-chaussée, l'étage et l'extérieur, avec la cour et le jardin. Tes héros y apparaissent là où ils sont : touche un portrait pour voir ce qu'il fait et passer un moment avec lui. Six pièces peuvent s'ajouter, une tous les 7 rangs (7, 14, 21, 28, 35, 42), à prix fixe. Chacune est grande et change vraiment la vie de la guilde : touche-la pour lire son effet."],
+  ['recrutement', '<path d="M4 6h16v12H4zM4 7l8 6 8-6"/>', 'Le recrutement', "À chaque montée de niveau, 3 à 10 héros postulent, au hasard : rien ne garantit le rôle qui te manque. Entre-temps, une candidature spontanée peut arriver (une chance sur dix par jour). Plus ta guilde est réputée et ancienne, plus les grands noms se présentent. Contre des PO, une annonce à la Chambre augmente tes chances d'attirer le rôle voulu à la prochaine montée de niveau."],
+  ['guildes', '<path d="M6 21V4M6 4h11l-2 4 2 4H6"/>', 'Les autres guildes', "Tes amis dirigent leurs propres guildes. Vous vous croisez sur les contrats ouverts à tous : chaque poste va au premier qui le prend. Touche un héros allié ou une guilde pour voir sa fiche publique. Son moral et ses secrets restent l'affaire de son maître."],
 ];
 function guide(cle) {
   ouvrir(`<div class="contenu-feuille" style="margin-top:6px"><h2 style="font-size:1.4rem">Comment ça marche</h2>
-    ${GUIDE.map(([k, ico, t, txt]) => `<section class="guide-sec ${k === cle ? 'vise' : ''}" id="g-${k}"><h3><span>${ico}</span>${t}</h3><p>${annoter(txt)}</p></section>`).join('')}
+    ${GUIDE.map(([k, ico, t, txt]) => `<section class="guide-sec ${k === cle ? 'vise' : ''}" id="g-${k}"><h3><svg class="ico-guide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ico}</svg>${t}</h3><p>${annoter(txt)}</p></section>`).join('')}
     <p class="discret">Les mots soulignés s'expliquent d'un toucher.</p></div>`);
   if (cle) requestAnimationFrame(() => $('#g-' + cle)?.scrollIntoView({ block: 'center', behavior: 'smooth' }));
 }
@@ -1214,14 +1230,16 @@ function courrier() {
   const ouvertes = D.cartes.filter(c => !repondues[c.id]);
   const R = D.recrutement;
   $('#e-courrier').innerHTML = `<h1 style="--i:0">Le courrier</h1>
-  <div class="bloc" style="--i:1"><div class="tete-bloc"><h2>Recrutement</h2><button type="button" class="aide" data-guide="recrutement" aria-label="Le recrutement">?</button></div>
-    <div class="contrat"><p>Réputation <b>${esc(R.palier)}</b>. À la prochaine montée de niveau, <b>${R.dossiers} héros</b> postuleront. Entre-temps, une candidature spontanée peut arriver chaque jour.</p>
-    ${D.annonce ? `<span class="pastille miel" style="justify-self:start">Annonce affichée : ${esc(D.annonce)}</span>` : `<button type="button" class="btn-voir" data-annonce>Chercher un rôle · ${R.prixAnnonce} PO</button>`}</div></div>
+  <div class="bloc" style="--i:1"><div class="tete-bloc"><h2>À traiter</h2>${ouvertes.length ? `<span class="pastille miel">${ouvertes.length}</span>` : ''}</div>${ouvertes.length ? ouvertes.map(pli).join('') : '<div class="vide">Tout est signé.</div>'}</div>
   ${(D.candidatures || []).length ? `<div class="bloc" style="--i:1"><h2>À la porte</h2>${D.candidatures.map(c => `<div class="cand ok" style="align-items:flex-start"><img src="${av(c.cle)}" alt=""><span style="flex:1"><b>${esc(c.nom)}</b> <span class="pastille rang">${esc(c.rang)}</span>${c.indice ? ` <span class="pastille">${esc(c.indice)}</span>` : ''}<br><span class="discret">${esc(ROLES[c.role] || c.role)} · ${esc(MOT[c.motivation] || '')} · ${c.salaire} PO par semaine · ${c.fondation ? 'dossier de fondation' : c.spontanee ? 'candidature spontanée' : 'dossier de montée de niveau'} · expire dans ${c.expire} h</span>${c.presentation ? `<span class="discret" style="display:block;margin-top:4px;font-style:italic">${annoter(c.presentation.length > 160 ? c.presentation.slice(0, 158).replace(/\s\S*$/, '') + '…' : c.presentation)}</span>` : ''}</span></div>
     <div style="display:flex;gap:8px;margin:-4px 0 10px 56px">${EN_LIGNE ? `<button type="button" class="btn-plein" data-recruter="${esc(c.cle)}">Accueillir</button><button type="button" class="btn-voir" data-refuser="${esc(c.cle)}">Refuser</button>` : ''}</div>`).join('')}
     <p class="discret">${D.effectif ?? D.heros.length} héros sur ${D.capacite || 9} places.${(D.effectif ?? D.heros.length) >= (D.capacite || 9) ? ' Repère plein : accueillir quelqu\'un, c\'est laisser partir quelqu\'un.' : ''}</p></div>` : ''}
-  ${(D.rapports || []).length ? `<div class="bloc" style="--i:1"><h2>Rapports de mission</h2>${D.rapports.map(r => `<button class="pli" data-rapport="${r.id}"><span class="duo">${r.heros.map(id => `<img src="${av(id)}" alt="">`).join('')}</span><span><b>${esc(r.titre)}</b><small>${esc({ eclatante: 'Un triomphe', reussite: 'Mission réussie', partielle: 'Mission à moitié réussie', echec: 'Mission ratée' }[r.issue])} · ${esc(r.lieu)}</small></span><span class="sceau">${r.lu === false ? '•' : 'G'}</span></button>`).join('')}</div>` : ''}
-  <div class="bloc" style="--i:1"><h2>À traiter</h2>${ouvertes.length ? ouvertes.map(pli).join('') : '<div class="vide">Tout est signé.</div>'}</div>
+  ${(D.rapports || []).length ? (() => { const pliR = r => `<button class="pli ${r.lu === false ? 'non-lu' : ''}" data-rapport="${r.id}"><span class="duo">${r.heros.map(id => `<img src="${av(id)}" alt="">`).join('')}</span><span><b>${esc(r.titre)}</b><small>${esc({ eclatante: 'Un triomphe', reussite: 'Mission réussie', partielle: 'Mission à moitié réussie', echec: 'Mission ratée' }[r.issue])}${r.po ? ` · +${r.po} PO` : ''} · ${esc(r.lieu)}</small></span><span class="sceau issue-${r.issue}">${r.lu === false ? '•' : 'G'}</span></button>`;
+    const nonLus = D.rapports.filter(r => r.lu === false), lus = D.rapports.filter(r => r.lu !== false), tete = [...nonLus, ...lus].slice(0, Math.max(3, Math.min(5, nonLus.length))), reste = [...nonLus, ...lus].slice(tete.length);
+    return `<div class="bloc" style="--i:2"><div class="tete-bloc"><h2>Rapports de mission</h2>${nonLus.length ? `<span class="pastille miel">${nonLus.length} à lire</span>` : ''}</div>${tete.map(pliR).join('')}${reste.length ? `<details class="plus-anciens"><summary>${reste.length} rapport${reste.length > 1 ? 's' : ''} plus ancien${reste.length > 1 ? 's' : ''}</summary>${reste.map(pliR).join('')}</details>` : ''}</div>`; })() : ''}
+  <div class="bloc" style="--i:1"><div class="tete-bloc"><h2>Recrutement</h2><button type="button" class="aide" data-guide="recrutement" aria-label="Le recrutement">?</button></div>
+    <div class="contrat"><p>Réputation <b>${esc(R.palier)}</b>. À la prochaine montée de niveau, <b>${R.dossiers} héros</b> postuleront. Entre-temps, une candidature spontanée peut arriver chaque jour.</p>
+    ${D.annonce ? `<span class="pastille miel" style="justify-self:start">Annonce affichée : ${esc(D.annonce)}</span>` : `<button type="button" class="btn-voir" data-annonce>Chercher un rôle · ${R.prixAnnonce} PO</button>`}</div></div>
   ${Object.keys(repondues).length ? `<div class="bloc" style="--i:2"><h2>Tes réponses</h2>${D.cartes.filter(c => repondues[c.id]).map(c => `<div class="arc"><span class="duo">${c.heros.map(id => `<img src="${av(id)}" alt="">`).join('')}</span><div><b>${esc(c.options.find(o => o.id === repondues[c.id]).libelle)}</b><div class="discret">${esc(c.titre.replace(/ : « .* »$/, ''))}</div></div></div>`).join('')}</div>` : ''}
   ${D.traitees.length ? `<div class="bloc" style="--i:3"><h2>Restées sans réponse</h2>${D.traitees.map(t => `<div class="arc" style="display:block"><b>${esc(t.titre)}</b><p class="discret">Réponse par défaut : ${esc(t.reponse)}. ${esc(t.consequences.join(' '))}</p></div>`).join('')}</div>` : ''}`;
 }
@@ -1229,9 +1247,9 @@ function ouvrirRapport(id) {
   const r = D.rapports.find(x => x.id === id);
   ouvrir(`<div class="contenu-feuille" style="margin-top:6px">
     <div style="display:flex;gap:14px;align-items:center"><span class="duo" style="flex:none">${r.heros.map(h => `<img src="${av(h)}" alt="">`).join('')}</span><h2 style="font-size:1.3rem">Rapport : ${esc(r.titre)}</h2></div>
+    <p class="en-bref issue-${r.issue}"><b>${esc({ eclatante: 'Un triomphe.', reussite: 'Mission réussie.', partielle: 'À moitié réussie.', echec: 'Mission ratée.' }[r.issue] || '')}</b> ${r.resume ? esc(r.resume) : ''}</p>
+    ${r.po != null ? `<div class="chips" style="margin-bottom:6px"><span class="chip plus">+${r.po} PO</span><span class="chip plus">+${r.reputation} réputation</span>${r.objet ? `<span class="chip plus">${esc(r.objet)}</span>` : ''}${(r.allies || []).length ? `<span class="chip">Avec ${r.allies.map(a => esc(a.nom)).join(', ')}</span>` : ''}</div>` : ''}
     <div class="lettre">${r.paragraphes.map(p => `<p style="margin:0 0 .8em">${annoter(p)}</p>`).join('')}</div>
-    ${r.po != null ? `<div class="chips"><span class="chip plus">+${r.po} PO</span><span class="chip plus">+${r.reputation} réputation</span>${r.objet ? `<span class="chip plus">${esc(r.objet)}</span>` : ''}${(r.allies || []).length ? `<span class="chip">Avec ${r.allies.map(a => esc(a.nom)).join(', ')}</span>` : ''}</div>` : ''}
-    <p class="discret">Le rapport raconte ce qui s'est vraiment passé : qui a mené chaque épreuve, ce qui a réussi, ce qui a raté.</p>
     <button type="button" class="btn-plein" id="ranger" style="width:100%">Ranger le rapport</button></div>`);
   $('#ranger').onclick = fermer;
   if (EN_LIGNE && r.lu === false) agir('lu', { rapport: r.id });
@@ -1274,15 +1292,23 @@ let filtre = 'tout';
 // Une lettre reçue (correspondant, habitant, héros en voyage, autre guilde) se lit sur du papier, pas dans une bulle.
 const LETTRE = e => ['courrier', 'voyage'].includes(e.dec);
 /* Un jour avec beaucoup de lettres : elles arrivent en liasse, qu'on ouvre d'un geste, au lieu de noyer la journée. */
-const rendu = x => x.liasse ? `<details class="liasse"><summary><span class="sceau">G</span><span><b>Le courrier du jour</b><small>${x.lettres.length} lettres, ficelées ensemble</small></span></summary>${x.lettres.map(rendu1).join('')}</details>` : rendu1(x);
+const rendu = x => x.journee ? `<details class="journee"><summary><span class="tetes">${[...new Set(x.moments.flatMap(m => m.heros))].slice(0, 3).map(id => `<img src="${av(id)}" alt="">`).join('')}</span><span><b>Le reste de la journée au repère</b><small>${x.moments.length} petits moments</small></span></summary>${x.moments.map(rendu1).join('')}</details>` : x.liasse ? `<details class="liasse"><summary><span class="sceau">G</span><span><b>Le courrier du jour</b><small>${x.lettres.length} lettres, ficelées ensemble</small></span></summary>${x.lettres.map(rendu1).join('')}</details>` : rendu1(x);
 const rendu1 = e => e.evt
-      ? `<div class="moment"><span class="icone-evt">${e.evt === 'mission' ? '⚔' : '✦'}</span><div class="bulle fort"><div class="meta">${e.heure} h</div>${annoter(e.texte)}</div></div>`
+      ? `<div class="moment"><span class="icone-evt"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">${e.evt === 'mission' ? '<path d="M5 19 19 5M15 5h4v4M5 5l14 14M5 15v4h4"/>' : '<path d="m12 4 2.4 5 5.6.7-4 3.9 1 5.4-5-2.7-5 2.7 1-5.4-4-3.9 5.6-.7z"/>'}</svg></span><div class="bulle fort"><div class="meta">${e.heure} h</div>${annoter(e.texte)}</div></div>`
       : e.dec === 'fil' ? momentFil(e)
       : `<div class="moment"><span class="tetes">${e.heros.slice(0, 2).map(id => `<img src="${av(id)}" alt="${esc(id)}">`).join('')}</span><div class="bulle ${LETTRE(e) ? 'papier' : e.importance >= 3 ? 'fort' : ''}"><div class="meta">${e.heure} h${LETTRE(e) ? ' · au courrier' : ''}${e.arc ? ` <span class="pastille miel">${esc(e.arc)}</span>` : ''}${e.quete ? ' <span class="pastille miel">Quête</span>' : ''}</div>${annoter(e.texte)}</div></div>`;
+// Les petits moments racontés par le narrateur (une partie de cartes, un entraînement, une soirée au coin du feu) se
+// regroupent en fin de journée, repliés : la journée appartient d'abord aux héros qui parlent et aux lettres.
+const MINEUR = e => !e.evt && e.dec !== 'fil' && !LETTRE(e) && (e.importance || 0) < 3 && !e.arc && !e.quete && !['geste', 'action', 'contrat', 'recit_mission', 'arrivee'].includes(e.dec);
 function regrouper(ls) {
-  const lettres = ls.filter(LETTRE); if (filtre === 'courrier' || lettres.length <= 3) return ls;
-  const out = []; let pose = false;
-  for (const e of ls) { if (!LETTRE(e)) out.push(e); else if (!pose) { out.push({ liasse: true, lettres }); pose = true; } }
+  if (filtre !== 'tout') return ls;
+  const lettres = ls.filter(LETTRE), mineurs = ls.filter(MINEUR), out = []; let pose = false;
+  for (const e of ls) {
+    if (LETTRE(e) && lettres.length > 3) { if (!pose) { out.push({ liasse: true, lettres }); pose = true; } continue; }
+    if (MINEUR(e) && mineurs.length > 3) continue;
+    out.push(e);
+  }
+  if (mineurs.length > 3) out.push({ journee: true, moments: mineurs });
   return out;
 }
 function chronique() {
